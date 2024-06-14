@@ -1,3 +1,5 @@
+package seller;
+
 import io.appium.java_client.AppiumDriver;
 import mobile.seller.home.HomeScreen;
 import mobile.seller.login.LoginScreen;
