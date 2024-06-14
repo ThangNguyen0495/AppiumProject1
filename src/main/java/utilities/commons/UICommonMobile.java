@@ -5,6 +5,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.Activity;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
+import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
@@ -14,7 +15,10 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utilities.data.DataGenerator;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -105,20 +109,21 @@ public class UICommonMobile {
         getElement(locator, index).click();
     }
 
-    public void sendKeys(By locator, String text) {
-        getElement(locator).clear();
-        getElement(locator).sendKeys(text);
+    public void sendKeys(By locator, CharSequence content) {
+        WebElement element = getElement(locator);
+        element.clear();
+        element.sendKeys(content);
     }
 
-    public void sendKeys(String resourceId, String text) {
+    public void sendKeys(String resourceId, CharSequence content) {
         getElement(resourceId).clear();
-        getElement(resourceId).sendKeys(text);
+        getElement(resourceId).sendKeys(content);
     }
 
-    public void sendKeys(By locator, int index, String text) {
+    public void sendKeys(By locator, int index, CharSequence content) {
         WebElement element = getElement(locator, index);
         element.clear();
-        element.sendKeys(text);
+        element.sendKeys(content);
     }
 
     public String getText(By locator) {
@@ -295,6 +300,18 @@ public class UICommonMobile {
         do {
             isLoaded = driver.getPageSource().contains(locator.toString().replaceAll("B.*?'|'.+", ""));
         } while (!isLoaded);
+    }
+
+    @SneakyThrows
+    public void pushFileToMobileDevices(String fileNames) {
+        // Specify the file to be uploaded
+        File file = new File(new DataGenerator().getFilePath(fileNames));
+
+        // Convert the file to a byte array
+        byte[] fileContent = Files.readAllBytes(file.toPath());
+
+        // Push the file to the device
+        ((AndroidDriver) driver).pushFile("/sdcard/Download/%s".formatted(fileNames), file);
     }
 
 }
