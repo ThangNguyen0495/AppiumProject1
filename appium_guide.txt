@@ -29,6 +29,7 @@
 ***** RUN TEST ******
 1. Start server
     - For inspector web: appium --allow-cors
-    - For appium ver2.0: appium --port 4723 --address 0.0.0.0 --allow-cors
+    - For appium ver2.0: appium -a 0.0.0.0 -p 4723 -pa /wd/hub --allow-cors
+    Appium server documentation: https://appium.io/docs/en/2.4/cli/args/
 
 2. Inspector web: https://inspector.appiumpro.com/
