@@ -97,6 +97,50 @@ public class UICommonMobile {
         return elements.get(index);
     }
 
+    public WebElement getElement(String parentResourceId, By locator) {
+        // move into parent element
+        getElement(parentResourceId);
+
+        // if element is not presented, scroll more to get element.
+        if (driver.findElements(locator).isEmpty()) scrollDown();
+        return driver.findElement(locator);
+    }
+
+    public WebElement getElement(String parentResourceId, By locator, int index) {
+        // move into parent element
+        getElement(parentResourceId);
+
+        // get all elements in this screen
+        List<WebElement> elements = new ArrayList<>(driver.findElements(locator));
+
+        // init current number of elements
+        int currentSize = elements.size();
+
+        // find list elements
+        while (currentSize <= index) {
+            // init temp arr
+            List<WebElement> tempArr = new ArrayList<>(elements);
+
+            // scroll more to get new element
+            scrollDown();
+
+            // add new element to list
+            tempArr.addAll(driver.findElements(locator));
+
+            // remove duplicate element
+            elements = tempArr.stream().distinct().toList();
+
+            // check has new element or not
+            if (elements.size() == currentSize) break;
+
+            // get current number of elements
+            currentSize = elements.size();
+        }
+
+        // return element
+        return elements.get(index);
+    }
+
     public void click(By locator) {
         getElement(locator).click();
     }
@@ -105,8 +149,16 @@ public class UICommonMobile {
         getElement(resourceId).click();
     }
 
+    public void click(String resourceId, By locator) {
+        getElement(resourceId, locator).click();
+    }
+
     public void click(By locator, int index) {
         getElement(locator, index).click();
+    }
+
+    public void click(String parentResourceId, By locator, int index) {
+        getElement(parentResourceId, locator, index).click();
     }
 
     public void sendKeys(By locator, CharSequence content) {
@@ -120,11 +172,24 @@ public class UICommonMobile {
         getElement(resourceId).sendKeys(content);
     }
 
+    public void sendKeys(String parentResourceId, By locator, CharSequence content) {
+        WebElement element = getElement(parentResourceId, locator);
+        element.clear();
+        element.sendKeys(content);
+    }
+
     public void sendKeys(By locator, int index, CharSequence content) {
         WebElement element = getElement(locator, index);
         element.clear();
         element.sendKeys(content);
     }
+
+    public void sendKeys(String parentResourceId, By locator, int index, CharSequence content) {
+        WebElement element = getElement(parentResourceId, locator, index);
+        element.clear();
+        element.sendKeys(content);
+    }
+
 
     public String getText(By locator) {
         return getElement(locator).getText();
@@ -303,15 +368,17 @@ public class UICommonMobile {
     }
 
     @SneakyThrows
-    public void pushFileToMobileDevices(String fileNames) {
+    public void pushFileToMobileDevices(String fileName) {
         // Specify the file to be uploaded
-        File file = new File(new DataGenerator().getFilePath(fileNames));
+        File file = new File(new DataGenerator().getFilePath(fileName));
 
         // Convert the file to a byte array
         byte[] fileContent = Files.readAllBytes(file.toPath());
 
         // Push the file to the device
-        ((AndroidDriver) driver).pushFile("/sdcard/Download/%s".formatted(fileNames), file);
+        ((AndroidDriver) driver).pushFile("/sdcard/Download/%s".formatted(fileName), file);
+
+        logger.info("Push file to mobile device, file name: {}", fileName);
     }
 
 }
