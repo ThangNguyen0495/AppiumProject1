@@ -16,7 +16,10 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utilities.data.DataGenerator;
+import utilities.screenshot.Screenshot;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -378,7 +381,60 @@ public class UICommonMobile {
         // Push the file to the device
         ((AndroidDriver) driver).pushFile("/sdcard/Download/%s".formatted(fileName), file);
 
+        // Log
         logger.info("Push file to mobile device, file name: {}", fileName);
+    }
+
+    public boolean isCheckedWithImageAlgorithms(By locator) {
+        // Get element screenshot
+        new Screenshot().takeScreenShot(driver, getElement(locator));
+
+        // Compare screenshot with checked sample image
+        return compareImages();
+    }
+
+    public boolean isCheckedWithImageAlgorithms(By locator, int index) {
+        // Get element screenshot
+        new Screenshot().takeScreenShot(driver, getElement(locator, index));
+
+        // Compare screenshot with checked sample image
+        return compareImages();
+    }
+
+    public boolean isCheckedWithImageAlgorithms(String resourceId) {
+        // Get element screenshot
+        new Screenshot().takeScreenShot(driver, getElement(resourceId));
+
+        // Compare screenshot with checked sample image
+        return compareImages();
+    }
+
+    public boolean isCheckedWithImageAlgorithms(String resourceId, By locator, int index) {
+        // Get element screenshot
+        new Screenshot().takeScreenShot(driver, getElement(resourceId, locator, index));
+
+        // Compare screenshot with checked sample image
+        return compareImages();
+    }
+
+    @SneakyThrows
+    boolean compareImages() {
+        // Load the images
+        BufferedImage img1 = ImageIO.read(new File(new DataGenerator().getFilePath("checked.png")));
+        BufferedImage img2 = ImageIO.read(new File(new DataGenerator().getFilePath("el_image.png")));
+
+        // Compare pixel by pixel
+        int totalPixel = img1.getHeight() * img1.getWidth() / 4;
+        int matchPixel = 0;
+        for (int height = 0; height < img1.getHeight() / 2; height++) {
+            for (int width = 0; width < img1.getWidth() / 2; width++) {
+                if (img1.getRGB(width, height) == img2.getRGB(width, height)) {
+                    matchPixel++;
+                }
+            }
+        }
+
+        return Math.round((float) matchPixel / totalPixel) == 1;
     }
 
 }
