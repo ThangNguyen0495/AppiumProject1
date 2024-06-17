@@ -1,5 +1,6 @@
 package mobile.seller.login;
 
+import lombok.Getter;
 import mobile.seller.home.HomeScreen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +20,8 @@ public class LoginScreen {
     WebDriver driver;
     WebDriverWait wait;
     UICommonMobile commonAction;
-    private static final LoginInformation loginInfo = new LoginInformation();
+    @Getter
+    private static LoginInformation loginInformation = new LoginInformation();
 
     public LoginScreen(WebDriver driver) {
         this.driver = driver;
@@ -163,16 +165,15 @@ public class LoginScreen {
         return this;
     }
 
-    public void performLogin(String userName, String password) {
-        inputUsername(userName);
-        inputPassword(password);
+    public void performLogin(LoginInformation loginInformation) {
+        // Get login information
+        LoginScreen.loginInformation = loginInformation;
+
+        // Perform login
+        inputUsername(loginInformation.getEmail());
+        inputPassword(loginInformation.getPassword());
         clickAgreeTerm();
         clickLoginBtn();
-
-        // set login information
-        loginInfo.setEmail(userName);
-        loginInfo.setPassword(password);
-        new HomeScreen(driver);
     }
 
     public HomeScreen performLogin(String countryCode, String userName, String password) {
@@ -183,16 +184,9 @@ public class LoginScreen {
         clickLoginBtn();
 
         // set login information
-        loginInfo.setPhoneCode(new DataGenerator().getPhoneCode(countryCode));
-        loginInfo.setPhoneNumber(userName);
-        loginInfo.setPassword(password);
+        loginInformation.setPhoneCode(new DataGenerator().getPhoneCode(countryCode));
+        loginInformation.setPhoneNumber(userName);
+        loginInformation.setPassword(password);
         return new HomeScreen(driver);
     }
-
-    // get phone code, phone number, email, password
-    public LoginInformation getLoginInfo() {
-        return loginInfo;
-    }
-
-
 }
