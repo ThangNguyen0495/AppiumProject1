@@ -2,7 +2,6 @@ package utilities.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import utilities.utils.jsonFileUtility;
@@ -306,6 +305,11 @@ public class DataGenerator {
                 .filter(path -> path.getFileName().toString().equals(folderName))
                 .findFirst();
         return folderPath.map(Path::toString).orElse("");
+    }
+
+    public List<String> getAllFileNamesInFolder(String folderName) {
+        File root = new File(getFolderPath(folderName));
+        return Arrays.stream(Objects.requireNonNull(root.listFiles())).filter(File::isFile).map(File::getName).toList();
     }
 
 
