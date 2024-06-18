@@ -19,14 +19,14 @@ public class LoginScreen {
 
     WebDriver driver;
     WebDriverWait wait;
-    UICommonMobile commonAction;
+    UICommonMobile commonMobile;
     @Getter
     private static LoginInformation loginInformation = new LoginInformation();
 
     public LoginScreen(WebDriver driver) {
         this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        commonAction = new UICommonMobile(driver);
+        commonMobile = new UICommonMobile(driver);
     }
 
     By loc_tabAdmin = By.xpath("//android.widget.LinearLayout[@content-desc='Quản trị viên' or @content-desc='Admin']/android.widget.TextView");
@@ -53,24 +53,24 @@ public class LoginScreen {
 
 
     public LoginScreen clickAdminTab() {
-        commonAction.getElement(loc_tabAdmin).click();
+        commonMobile.getElement(loc_tabAdmin).click();
         logger.info("Clicked on Admin tab.");
         return this;
     }
 
     public LoginScreen clickStaffTab() {
-        commonAction.getElement(loc_tabStaff).click();
+        commonMobile.getElement(loc_tabStaff).click();
         logger.info("Clicked on Staff tab.");
         return this;
     }
 
     public void clickCountryCodeField() {
-        commonAction.getElement(COUNTRY_CODE).click();
+        commonMobile.getElement(COUNTRY_CODE).click();
         logger.info("Clicked on Country code field.");
     }
 
     public void inputCountryCodeToSearchBox(String country) {
-        commonAction.getElement(COUNTRY_SEARCH_BOX).sendKeys(country);
+        commonMobile.getElement(COUNTRY_SEARCH_BOX).sendKeys(country);
         logger.info("Input Country code: {}", country);
     }
 
@@ -78,28 +78,28 @@ public class LoginScreen {
         clickCountryCodeField();
         inputCountryCodeToSearchBox(country);
 
-        commonAction.click(COUNTRY_SEARCH_RESULT);
+        commonMobile.click(COUNTRY_SEARCH_RESULT);
         logger.info("Selected country: {}", country);
     }
 
     public LoginScreen clickUsername() {
-        commonAction.getElement(USERNAME).click();
+        commonMobile.getElement(USERNAME).click();
         logger.info("Clicked on Username field.");
         return this;
     }
 
     public void inputUsername(String username) {
-        commonAction.sendKeys(USERNAME, username);
+        commonMobile.sendKeys(USERNAME, username);
         logger.info("Input '{}' into Username field.", username);
     }
 
     public void inputPassword(String password) {
-        commonAction.sendKeys(PASSWORD, password);
+        commonMobile.sendKeys(PASSWORD, password);
         logger.info("Input '{}' into Password field.", password);
     }
 
     public boolean isTermAgreementChecked() {
-        boolean isChecked = commonAction.isChecked(TERM_CHECKBOX);
+        boolean isChecked = commonMobile.isChecked(commonMobile.getElement(TERM_CHECKBOX));
         logger.info("Is Term Agreement checkbox checked: {}", isChecked);
         return isChecked;
     }
@@ -108,59 +108,59 @@ public class LoginScreen {
         if (isTermAgreementChecked()) {
             return;
         }
-        commonAction.getElement(TERM_CHECKBOX).click();
+        commonMobile.getElement(TERM_CHECKBOX).click();
         logger.info("Clicked on Term Agreement checkbox.");
     }
 
     public void clickLoginBtn() {
-        commonAction.getElement(LOGIN_BTN).click();
+        commonMobile.getElement(LOGIN_BTN).click();
         logger.info("Clicked on Login button.");
     }
 
     public boolean isLoginBtnEnabled() {
-        boolean isEnabled = commonAction.getElement(LOGIN_BTN).isEnabled();
+        boolean isEnabled = commonMobile.getElement(LOGIN_BTN).isEnabled();
         logger.info("Is Login button enabled: {}", isEnabled);
         return isEnabled;
     }
 
     public String getUsernameError() {
-        String text = commonAction.getText(USERNAME_ERROR);
+        String text = commonMobile.getText(USERNAME_ERROR);
         logger.info("Retrieved error for username field: {}", text);
         return text;
     }
 
     public String getPasswordError() {
-        String text = commonAction.getText(PASSWORD_ERROR);
+        String text = commonMobile.getText(PASSWORD_ERROR);
         logger.info("Retrieved error for password field: {}", text);
         return text;
     }
 
     public LoginScreen clickAvailableShop() {
-        commonAction.getElement(AVAILABLE_SHOP_BTN).click();
+        commonMobile.getElement(AVAILABLE_SHOP_BTN).click();
         logger.info("Clicked on an available shop for staff.");
         return this;
     }
 
     public LoginScreen clickForgotPassword() {
-        commonAction.getElement(FORGOT_PASS_LINK).click();
+        commonMobile.getElement(FORGOT_PASS_LINK).click();
         logger.info("Clicked on Forgot Password link text.");
         return this;
     }
 
     public LoginScreen inputNewPassword(String password) {
-        commonAction.sendKeys(NEW_PASSWORD, password);
+        commonMobile.sendKeys(NEW_PASSWORD, password);
         logger.info("Input '{}' into New Password field.", password);
         return this;
     }
 
     public LoginScreen clickSendBtn() {
-        commonAction.getElement(SEND_BTN).click();
+        commonMobile.getElement(SEND_BTN).click();
         logger.info("Clicked on Send button.");
         return this;
     }
 
     public LoginScreen inputVerificationCode(String code) {
-        commonAction.sendKeys(VERIFICATION_CODE, code);
+        commonMobile.sendKeys(VERIFICATION_CODE, code);
         logger.info("Input '{}' into Verification Code field.", code);
         return this;
     }
