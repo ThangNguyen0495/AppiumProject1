@@ -1,0 +1,66 @@
+package mobile.seller.products.child_screen.crud_variations;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.WebDriver;
+import utilities.assert_customize.AssertCustomize;
+import utilities.commons.UICommonMobile;
+import utilities.data.DataGenerator;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
+
+public class CRUDVariationScreen extends CRUDVariationElement {
+    WebDriver driver;
+    AssertCustomize assertCustomize;
+    UICommonMobile commonMobile;
+    Logger logger = LogManager.getLogger();
+
+    public CRUDVariationScreen(WebDriver driver) {
+        this.driver = driver;
+        assertCustomize = new AssertCustomize(driver);
+        commonMobile = new UICommonMobile(driver);
+    }
+
+    public void addVariation(String defaultLanguage) {
+        // Init variation map
+        Map<String, List<String>> variationMap = new DataGenerator().randomVariationMap(defaultLanguage);
+
+        // Remove old variation
+        if (commonMobile.isShown(rsId_btnRemoveVariationGroup2))
+            commonMobile.click(rsId_btnRemoveVariationGroup2);
+        if (commonMobile.isShown(rsId_btnRemoveVariationGroup1))
+            commonMobile.click(rsId_btnRemoveVariationGroup1);
+        logger.info("Remove old variations");
+
+        // Add variation
+        IntStream.range(0, variationMap.keySet().size()).forEachOrdered(groupIndex -> {
+            // Get variation group
+            String variationGroup = variationMap.keySet().stream().toList().get(groupIndex);
+
+            // Get variation value
+            List<String> variationValue = variationMap.get(variationGroup);
+
+            // Add new variation group
+            commonMobile.click(rsId_btnAddVariation);
+
+            // Input variation group
+            commonMobile.sendKeys(groupIndex == 0 ? rsId_txtVariationGroup1 : rsId_txtVariationGroup2, variationGroup);
+            logger.info("Add variation group {}, group: {}", groupIndex + 1, variationGroup);
+
+            // Input variation value
+            for (String value : variationValue) {
+                commonMobile.sendKeys(groupIndex == 0 ? rsId_txtVariationValue1 : rsId_txtVariationValue2, value);
+                commonMobile.click(groupIndex == 0 ? rsId_btnAddVariationValue1 : rsId_btnAddVariationValue2);
+                logger.info("Add variation value for group {}, value: {}", groupIndex + 1, value);
+            }
+        });
+
+        // Save changes
+        commonMobile.click(rsId_btnSave);
+
+        // Log
+        logger.info("Complete add variations");
+    }
+}
