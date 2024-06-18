@@ -162,12 +162,7 @@ public class DataGenerator {
     /**
      * generate variation maps (variation name : get variation value)
      */
-    public Map<String, List<String>> randomVariationMap() {
-        // init variation map
-        // key: variation name
-        // values: get of variation name
-        Map<String, List<String>> map = new HashMap<>();
-
+    public Map<String, List<String>> randomVariationMap(String defaultLanguage) {
         // generate number of variation
         int variationNum = RandomUtils.nextInt(MAX_VARIATION_QUANTITY) + 1;
 
@@ -178,21 +173,16 @@ public class DataGenerator {
         numberOfVariationValue.add(RandomUtils.nextInt(MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION) + 1);
 
         // get number variation value of other variation
-        for (int i = 1; i < variationNum; i++) {
-            int prevMulti = 1;
-            for (int id = 0; id < i; id++) {
-                prevMulti = prevMulti * numberOfVariationValue.get(id);
-            }
-            numberOfVariationValue.add(RandomUtils.nextInt(Math.min((MAX_VARIATION_QUANTITY_FOR_ALL_VARIATIONS / prevMulti), MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION)) + 1);
-        }
+        IntStream.range(1, variationNum)
+                .map(groupIndex -> IntStream.range(0, groupIndex).map(numberOfVariationValue::get).reduce(1, (a, b) -> a * b))
+                .forEach(prevMulti -> numberOfVariationValue.add(RandomUtils.nextInt(Math.min((MAX_VARIATION_QUANTITY_FOR_ALL_VARIATIONS / prevMulti), MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION)) + 1));
 
         // generate random data for variation map
-        for (int i = 0; i < numberOfVariationValue.size(); i++) {
-            map.put("var%s".formatted(i + 1), generateListString(i + 1, numberOfVariationValue.get(i)));
-        }
-
-        // return variation map
-        return new TreeMap<>(map);
+        return IntStream.range(0, numberOfVariationValue.size())
+                .boxed()
+                .collect(Collectors.toMap(valueIndex -> "%s_var%s".formatted(defaultLanguage, valueIndex + 1),
+                        valueIndex -> generateListString(valueIndex + 1, numberOfVariationValue.get(valueIndex)),
+                        (a, b) -> b));
     }
 
     /**
@@ -200,11 +190,11 @@ public class DataGenerator {
      * <p> example: var1 = {a, b, c} and var2 = {d}</p>
      * <p> with above variations, we have 3 variation value {a|d, b|d, c|d}</p>
      */
-    public List<String> mixVariationValue(List<String> variationValueList1, List<String> variationValueList2, String language) {
+    public List<String> mixVariationValue(List<String> variationValueList1, List<String> variationValueList2) {
         List<String> mixedVariationValueList = new ArrayList<>();
         for (String var1 : variationValueList1) {
             for (String var2 : variationValueList2) {
-                mixedVariationValueList.add("%s|%s_%s".formatted(var1, language, var2));
+                mixedVariationValueList.add("%s|%s".formatted(var1, var2));
             }
         }
         return mixedVariationValueList;
@@ -223,9 +213,9 @@ public class DataGenerator {
             variationList.add("%s_%s".formatted(language, var));
         }
         if (varValue.size() > 1) {
-            for (int i = 1; i < varValue.size(); i++) {
+            for (int valueIndex = 1; valueIndex < varValue.size(); valueIndex++) {
                 variationList = new DataGenerator()
-                        .mixVariationValue(variationList, varValue.get(i), language);
+                        .mixVariationValue(variationList, varValue.get(valueIndex));
             }
         }
         return variationList;
