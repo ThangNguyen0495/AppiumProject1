@@ -33,3 +33,9 @@
     Appium server documentation: https://appium.io/docs/en/2.4/cli/args/
 
 2. Inspector web: https://inspector.appiumpro.com/
+
+3. Clear session error:
+    - adb uninstall io.appium.uiautomator2.server
+    - adb uninstall io.appium.uiautomator2.server.test
+    - adb uninstall io.appium.unlock
+    - adb uninstall io.appium.settings
