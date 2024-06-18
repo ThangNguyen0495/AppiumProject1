@@ -24,7 +24,7 @@ public class Screenshot {
     }
 
     @SneakyThrows
-    public void takeScreenShot(WebDriver driver, WebElement element) {
+    public Screenshot takeScreenShot(WebDriver driver, WebElement element) {
         // Get entire page screenshot
         File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         BufferedImage fullImg = ImageIO.read(screenshot);
@@ -43,5 +43,28 @@ public class Screenshot {
         // Copy the element screenshot to disk
         File screenshotLocation = new File(new DataGenerator().getFolderPath("element_image") + File.separator + "el_image.png");
         FileUtils.copyFile(screenshot, screenshotLocation);
+
+        return this;
     }
+
+    @SneakyThrows
+    public boolean compareImages() {
+        // Load the images
+        BufferedImage img1 = ImageIO.read(new File(new DataGenerator().getFilePath("checked.png")));
+        BufferedImage img2 = ImageIO.read(new File(new DataGenerator().getFilePath("el_image.png")));
+
+        // Compare pixel by pixel
+        int totalPixel = img1.getHeight() * img1.getWidth() / 4;
+        int matchPixel = 0;
+        for (int height = 0; height < img1.getHeight() / 2; height++) {
+            for (int width = 0; width < img1.getWidth() / 2; width++) {
+                if (img1.getRGB(width, height) == img2.getRGB(width, height)) {
+                    matchPixel++;
+                }
+            }
+        }
+
+        return Math.round((float) matchPixel / totalPixel) == 1;
+    }
+
 }

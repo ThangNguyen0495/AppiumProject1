@@ -18,8 +18,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import utilities.data.DataGenerator;
 import utilities.screenshot.Screenshot;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -59,7 +57,13 @@ public class UICommonMobile {
     public WebElement getElement(String resourceId) {
         By locator = AppiumBy.androidUIAutomator(
                 "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().resourceId(\"%s\"))".formatted(resourceId));
-        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        try {
+            // Can scroll into element
+            return driver.findElement(locator);
+        } catch (NoSuchElementException ex) {
+            // In case, can not scroll into element
+            return wait.until(ExpectedConditions.presenceOfElementLocated(By.id(resourceId)));
+        }
     }
 
     public WebElement getElement(By locator) {
@@ -274,6 +278,36 @@ public class UICommonMobile {
         });
     }
 
+    public boolean isShown(String resourceId) {
+        return !driver.findElements(By.id(resourceId)).isEmpty();
+    }
+
+    public List<WebElement> getListElement(By locator) {
+        // move to top screen
+        scrollToTopOfScreen();
+
+        // get list WebElement
+        List<WebElement> elements = driver.findElements(locator);
+
+        // get current size
+        int currentSize = elements.size();
+
+        do {
+            // int temp arr
+            List<WebElement> tempArr = new ArrayList<>(elements);
+
+            // scroll down to get new element
+            scrollDown();
+
+            // get new element
+            tempArr.addAll(driver.findElements(locator));
+
+            // remove duplicate element
+            elements = tempArr.stream().distinct().toList();
+        } while (elements.size() != currentSize);
+        return elements;
+    }
+
     public List<String> getListElementText(By locator) {
         // move to top screen
         scrollToTopOfScreen();
@@ -354,8 +388,18 @@ public class UICommonMobile {
         waitSplashScreenLoaded();
     }
 
-    public boolean isChecked(By locator) {
-        return getElement(locator).getAttribute("checked").equals("true");
+    public boolean isChecked(WebElement element) {
+        if (element.getAttribute("class").equals("android.widget.ImageView")) {
+            // Get element screenshot then compare screenshot with checked sample image
+            try {
+                return new Screenshot().takeScreenShot(driver, element).compareImages();
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                // In case, element is not shown full, swipe down and try again
+                swipeByCoordinatesInPercent(0.5, 0.8, 0.5, 0.6);
+                return new Screenshot().takeScreenShot(driver, element).compareImages();
+            }
+        }
+        return element.getAttribute("checked").equals("true");
     }
 
     public boolean isDisplayed(By locator) {
@@ -383,58 +427,6 @@ public class UICommonMobile {
 
         // Log
         logger.info("Push file to mobile device, file name: {}", fileName);
-    }
-
-    public boolean isCheckedWithImageAlgorithms(By locator) {
-        // Get element screenshot
-        new Screenshot().takeScreenShot(driver, getElement(locator));
-
-        // Compare screenshot with checked sample image
-        return compareImages();
-    }
-
-    public boolean isCheckedWithImageAlgorithms(By locator, int index) {
-        // Get element screenshot
-        new Screenshot().takeScreenShot(driver, getElement(locator, index));
-
-        // Compare screenshot with checked sample image
-        return compareImages();
-    }
-
-    public boolean isCheckedWithImageAlgorithms(String resourceId) {
-        // Get element screenshot
-        new Screenshot().takeScreenShot(driver, getElement(resourceId));
-
-        // Compare screenshot with checked sample image
-        return compareImages();
-    }
-
-    public boolean isCheckedWithImageAlgorithms(String resourceId, By locator, int index) {
-        // Get element screenshot
-        new Screenshot().takeScreenShot(driver, getElement(resourceId, locator, index));
-
-        // Compare screenshot with checked sample image
-        return compareImages();
-    }
-
-    @SneakyThrows
-    boolean compareImages() {
-        // Load the images
-        BufferedImage img1 = ImageIO.read(new File(new DataGenerator().getFilePath("checked.png")));
-        BufferedImage img2 = ImageIO.read(new File(new DataGenerator().getFilePath("el_image.png")));
-
-        // Compare pixel by pixel
-        int totalPixel = img1.getHeight() * img1.getWidth() / 4;
-        int matchPixel = 0;
-        for (int height = 0; height < img1.getHeight() / 2; height++) {
-            for (int width = 0; width < img1.getWidth() / 2; width++) {
-                if (img1.getRGB(width, height) == img2.getRGB(width, height)) {
-                    matchPixel++;
-                }
-            }
-        }
-
-        return Math.round((float) matchPixel / totalPixel) == 1;
     }
 
 }
