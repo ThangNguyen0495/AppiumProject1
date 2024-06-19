@@ -178,11 +178,11 @@ public class DataGenerator {
                 .forEach(prevMulti -> numberOfVariationValue.add(RandomUtils.nextInt(Math.min((MAX_VARIATION_QUANTITY_FOR_ALL_VARIATIONS / prevMulti), MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION)) + 1));
 
         // generate random data for variation map
-        return IntStream.range(0, numberOfVariationValue.size())
+        return new TreeMap<>(IntStream.range(0, numberOfVariationValue.size())
                 .boxed()
                 .collect(Collectors.toMap(valueIndex -> "%s_var%s".formatted(defaultLanguage, valueIndex + 1),
                         valueIndex -> generateListString(valueIndex + 1, numberOfVariationValue.get(valueIndex)),
-                        (a, b) -> b));
+                        (a, b) -> b)));
     }
 
     /**
@@ -280,8 +280,9 @@ public class DataGenerator {
         File root = new File(System.getProperty("user.dir"));
         List<Path> paths = Files.walk(Paths.get(root.toString())).toList();
         Optional<Path> filePath = paths.stream()
-                .filter(path1 -> !Files.isDirectory(path1))
-                .filter(path -> path.getFileName().toString().equals(fileName))
+                .filter(path -> !Files.isDirectory(path))
+                .filter(path -> path.toString().contains("resources")
+                                && path.getFileName().toString().equals(fileName))
                 .findFirst();
         return filePath.map(Path::toString).orElse("");
     }
