@@ -249,15 +249,18 @@ public class CreateProductScreen extends CreateProductElement {
         if (manageByLot && !status && !manageByIMEI) commonMobile.click(rsId_chkManageByLot);
 
         // Log
-        logger.info("Manage product by lot date: {}", manageByLot && !status && !manageByIMEI);
+        logger.info("Manage product by lot date: {}", manageByLot && !manageByIMEI || status);
     }
 
     void addWithoutVariationStock(int... branchStock) {
-        // Navigate to inventory screen
-        commonMobile.click(rsId_btnInventory);
+        // Check product is managed by lot or not
+        if (!manageByLot || manageByIMEI) {
+            // Navigate to inventory screen
+            commonMobile.click(rsId_btnInventory);
 
-        // Add without variation stock
-        new InventoryScreen(driver).addStock(manageByIMEI, branchInfo, "", branchStock);
+            // Add without variation stock
+            new InventoryScreen(driver).addStock(manageByIMEI, branchInfo, "", branchStock);
+        } else logger.info("Product is managed by lot-date, requiring stock updates in the lot-date screen.");
     }
 
     void modifyShippingInformation() {
@@ -371,7 +374,7 @@ public class CreateProductScreen extends CreateProductElement {
             editMultipleScreen.bulkUpdatePrice(hasDiscount);
 
             // Bulk update stock
-            editMultipleScreen.bulkUpdateStock(manageByIMEI, branchInfo, increaseNum, branchStock);
+            editMultipleScreen.bulkUpdateStock(manageByIMEI, manageByLot, branchInfo, increaseNum, branchStock);
 
             // Save changes
 

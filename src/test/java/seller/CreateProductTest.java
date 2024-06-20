@@ -5,7 +5,9 @@ import mobile.seller.login.LoginScreen;
 import mobile.seller.products.create_product.CreateProductScreen;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import utilities.driver.InitAppiumDriver;
 import utilities.model.sellerApp.login.LoginInformation;
+import utilities.utils.PropertiesUtil;
 
 import static mobile.seller.home.HomeElement.QuickActions.addProduct;
 import static org.apache.commons.lang.math.RandomUtils.nextBoolean;
@@ -19,7 +21,8 @@ public class CreateProductTest extends BaseTest {
     @BeforeClass
     void setup() {
         // init WebDriver
-        driver = getSellerDriver();
+        String uuid = PropertiesUtil.getEnvironmentData("uuidAndroidThang");
+        driver = new InitAppiumDriver().getSellerDriver(uuid);
 
         // init login information
         loginInformation = new LoginInformation(ADMIN_ACCOUNT_THANG, ADMIN_PASSWORD_THANG);
