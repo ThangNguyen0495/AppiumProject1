@@ -22,10 +22,9 @@ import java.io.File;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfAllElementsLocatedBy;
 
@@ -318,43 +317,22 @@ public class UICommonMobile {
         });
     }
 
-    public boolean isShown(String resourceId) {
-        return !driver.findElements(By.id(resourceId)).isEmpty();
+    public String getCurrentActivity() {
+        String currentActivity = ((AndroidDriver) driver).currentActivity();
+        try {
+            customWait(3000).until((ExpectedCondition<Boolean>) driver -> {
+                AndroidDriver androidDriver = (AndroidDriver) driver;
+                assert androidDriver != null;
+                String activity = Optional.ofNullable(androidDriver.currentActivity()).orElse("");
+                return !(activity.isEmpty() ||  activity.equals(currentActivity));
+            });
+        } catch (TimeoutException ignored) {
+        }
+        return ((AndroidDriver) driver).currentActivity();
     }
 
-    public List<String> getListElementText(By locator) {
-        // move to top screen
-        scrollToTopOfScreen();
-
-        // move and find start point
-        getElement(locator);
-
-        // get list text element
-        List<WebElement> listElement;
-        List<String> listElementText = new ArrayList<>();
-        do {
-            // get list elementId
-            listElement = driver.findElements(locator);
-
-            // if list.size() > 0
-            // add element text if not contains
-            if (!listElement.isEmpty()) for (int index = 0; index < listElement.size(); index++) {
-                String elementText = driver.findElements(locator).get(index).getText();
-                if (!listElementText.contains(elementText)) listElementText.add(elementText);
-            }
-            String currentPageSource = driver.getPageSource();
-
-            //swipe screen to get next element list
-            scrollDown();
-
-            String nextPageSource = driver.getPageSource();
-            if (currentPageSource.equals(nextPageSource)) break;
-
-            // get new element list
-            listElement = driver.findElements(locator);
-
-        } while (((listElement.isEmpty()) & (listElementText.isEmpty())) || ((!listElement.isEmpty()) & !new HashSet<>(listElementText).containsAll(IntStream.range(0, listElement.size()).mapToObj(index -> driver.findElements(locator).get(index).getText()).toList())));
-        return listElementText;
+    public boolean isShown(String resourceId) {
+        return !driver.findElements(By.id(resourceId)).isEmpty();
     }
 
     public WebElement getElementByText(String elText) {
