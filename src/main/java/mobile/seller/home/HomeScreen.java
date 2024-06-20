@@ -4,10 +4,7 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import utilities.commons.UICommonMobile;
-
-import java.time.Duration;
 
 import static mobile.seller.home.HomeElement.QuickActions.getAllActions;
 
@@ -16,12 +13,10 @@ public class HomeScreen extends HomeElement {
     final static Logger logger = LogManager.getLogger(HomeScreen.class);
 
     WebDriver driver;
-    WebDriverWait wait;
     UICommonMobile commonAction;
 
     public HomeScreen(WebDriver driver) {
         this.driver = driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         commonAction = new UICommonMobile(driver);
     }
 
