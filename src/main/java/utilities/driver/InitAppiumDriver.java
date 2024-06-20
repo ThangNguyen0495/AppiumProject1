@@ -3,13 +3,18 @@ package utilities.driver;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import lombok.SneakyThrows;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static utilities.environment.EnvironmentInformation.*;
+import static utilities.environment.EnvironmentInformation.goBuyerActivity;
+
 
 public class InitAppiumDriver {
+	private final static String url = "http://127.0.0.1:4723/wd/hub";
 
 	/**
 	 * This method returns an instance of the AppiumDriver class. It takes in the following parameters:
@@ -47,4 +52,15 @@ public class InitAppiumDriver {
     		throw new IllegalArgumentException("Unknown platform: " + platformNameFromCapacity);
     	}
     }
+
+	@SneakyThrows
+	public AppiumDriver getSellerDriver(String udid) {
+		return getAppiumDriver(udid, "ANDROID", goSELLERBundleId, goSELLERLoginActivity, url);
+	}
+
+	@SneakyThrows
+	public AppiumDriver getBuyerDriver(String udid) {
+		return getAppiumDriver(udid, "ANDROID", goBuyerBundleId, goBuyerActivity, url);
+	}
+
 }
