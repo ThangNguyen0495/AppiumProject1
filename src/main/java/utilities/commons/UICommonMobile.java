@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
@@ -226,6 +227,12 @@ public class UICommonMobile {
         WebElement element = getElement(parentResourceId, locator, index);
         element.clear();
         element.sendKeys(content);
+    }
+
+    public void sendKeysActions(WebElement element, CharSequence content) {
+        element.clear();
+        element.click();
+        new Actions(driver).sendKeys(content).build().perform();
     }
 
 

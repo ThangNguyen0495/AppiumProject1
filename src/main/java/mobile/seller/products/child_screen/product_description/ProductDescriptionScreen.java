@@ -17,7 +17,7 @@ public class ProductDescriptionScreen extends ProductDescriptionElement {
 
     public void inputDescription(String description) {
         // Input product description
-        commonMobile.sendKeys(loc_txtContent, description);
+        commonMobile.sendKeysActions(commonMobile.getElement(loc_txtContent), description);
 
         // Save changes
         commonMobile.click(rsId_btnSave);
