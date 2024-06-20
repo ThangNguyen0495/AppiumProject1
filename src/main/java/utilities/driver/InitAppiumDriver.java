@@ -10,7 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import static utilities.environment.EnvironmentInformation.*;
-import static utilities.environment.EnvironmentInformation.goBuyerActivity;
+import static utilities.environment.EnvironmentInformation.goBUYERSplashActivity;
 
 
 public class InitAppiumDriver {
@@ -59,8 +59,8 @@ public class InitAppiumDriver {
 	}
 
 	@SneakyThrows
-	public AppiumDriver getBuyerDriver(String udid) {
-		return getAppiumDriver(udid, "ANDROID", goBuyerBundleId, goBuyerActivity, url);
+	public AppiumDriver getBuyerDriver(String udid, String goBuyerBundleId) {
+		return getAppiumDriver(udid, "ANDROID", goBuyerBundleId, goBUYERSplashActivity, url);
 	}
 
 }
