@@ -13,7 +13,6 @@ import mobile.seller.products.child_screen.select_image_popup.SelectImagePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.AfterMethod;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonMobile;
 import utilities.data.DataGenerator;
@@ -349,7 +348,7 @@ public class CreateProductScreen extends CreateProductElement {
 
             // Log
             logger.info("Product priority: {}", priority);
-        } else logger.info("Product do not have priority");
+        } else logger.info("Product do not have priority configure");
     }
 
     void addVariations() {
@@ -392,7 +391,12 @@ public class CreateProductScreen extends CreateProductElement {
         commonMobile.click(rsId_btnSave);
 
         // Wait product management screen loaded
-        commonMobile.waitUntilScreenLoaded(goSELLERProductManagementActivity);
+        assertCustomize.assertEquals(commonMobile.getCurrentActivity(),
+                goSELLERProductManagementActivity,
+                "Can not create product");
+
+        // Assert
+        AssertCustomize.verifyTest();
     }
 
     public void createProductWithoutVariation(int... branchStock) {
@@ -427,10 +431,5 @@ public class CreateProductScreen extends CreateProductElement {
         addVariations();
         bulkUpdateVariations(increaseNum, branchStock);
         completeCreateProduct();
-    }
-
-    @AfterMethod
-    void teardown() {
-        new UICommonMobile(driver).relaunchApp(goSELLERBundleId, "");
     }
 }
