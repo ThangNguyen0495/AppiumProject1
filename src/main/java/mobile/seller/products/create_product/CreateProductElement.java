@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import static utilities.environment.EnvironmentInformation.goSELLERBundleId;
 
 public class CreateProductElement {
+    String rsId_btnSave = "%s:id/tvActionBarIconRight".formatted(goSELLERBundleId);
     String rsId_btnSelectImage = "%s:id/rlSelectImages".formatted(goSELLERBundleId);
     String rsId_txtProductName = "%s:id/edtProductName".formatted(goSELLERBundleId);
     String rsId_btnProductDescription = "%s:id/tvProductDescription".formatted(goSELLERBundleId);

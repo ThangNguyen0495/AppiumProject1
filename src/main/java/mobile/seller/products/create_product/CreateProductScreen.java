@@ -1,17 +1,23 @@
 package mobile.seller.products.create_product;
 
+import api.Seller.setting.BranchManagement;
 import api.Seller.setting.StoreInformation;
+import io.appium.java_client.android.AndroidDriver;
 import lombok.SneakyThrows;
 import mobile.seller.login.LoginScreen;
 import mobile.seller.products.child_screen.crud_variations.CRUDVariationScreen;
+import mobile.seller.products.child_screen.edit_multiple.EditMultipleScreen;
+import mobile.seller.products.child_screen.inventory.InventoryScreen;
 import mobile.seller.products.child_screen.product_description.ProductDescriptionScreen;
 import mobile.seller.products.child_screen.select_image_popup.SelectImagePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterMethod;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonMobile;
 import utilities.data.DataGenerator;
+import utilities.model.dashboard.setting.branchInformation.BranchInfo;
 
 import java.time.Instant;
 import java.util.List;
@@ -20,6 +26,7 @@ import java.util.Objects;
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 import static utilities.character_limit.CharacterLimit.MAX_PRICE;
+import static utilities.environment.EnvironmentInformation.*;
 
 public class CreateProductScreen extends CreateProductElement {
     WebDriver driver;
@@ -27,17 +34,27 @@ public class CreateProductScreen extends CreateProductElement {
     UICommonMobile commonMobile;
     Logger logger = LogManager.getLogger();
     private static String defaultLanguage;
+    private static BranchInfo branchInfo;
 
     public CreateProductScreen(WebDriver driver) {
+        // Get driver
         this.driver = driver;
+
+        // Init assert class
         assertCustomize = new AssertCustomize(driver);
+
+        // Init commons class
         commonMobile = new UICommonMobile(driver);
+
+        // Get store default language
         defaultLanguage = new StoreInformation(LoginScreen.getLoginInformation())
                 .getInfo()
                 .getDefaultLanguage();
+
+        // Get branch information
+        branchInfo = new BranchManagement(LoginScreen.getLoginInformation()).getInfo();
     }
 
-    long currentEpoch = Instant.now().toEpochMilli();
     private boolean hideRemainingStock = false;
     private boolean showOutOfStock = true;
     private boolean manageByIMEI = false;
@@ -66,7 +83,7 @@ public class CreateProductScreen extends CreateProductElement {
         return this;
     }
 
-    public CreateProductScreen getManageByLot(boolean manageByLot) {
+    public CreateProductScreen getManageByLotDate(boolean manageByLot) {
         this.manageByLot = manageByLot;
         return this;
     }
@@ -99,6 +116,22 @@ public class CreateProductScreen extends CreateProductElement {
         return this;
     }
 
+    private static long getCurrentEpoch() {
+        return Instant.now().toEpochMilli();
+    }
+
+    public CreateProductScreen navigateToCreateProductScreen() {
+        // Navigate to create product screen
+        if (!((AndroidDriver) driver).currentActivity().equals(goSELLERCreateProductActivity)) {
+            commonMobile.relaunchApp(goSELLERBundleId, goSELLERCreateProductActivity);
+        }
+
+        // Log
+        logger.info("Navigate to create product screen.");
+
+        return this;
+    }
+
     void selectProductImages() {
         // Get list images
         List<String> imageFileNames = new DataGenerator().getAllFileNamesInFolder("images");
@@ -118,7 +151,7 @@ public class CreateProductScreen extends CreateProductElement {
 
     void inputProductName() {
         // Input product name
-        String name = "[%s] Product name %s".formatted(defaultLanguage, currentEpoch);
+        String name = "[%s] Product name %s".formatted(defaultLanguage, getCurrentEpoch());
         commonMobile.sendKeys(rsId_txtProductName, name);
 
         // Log
@@ -130,7 +163,7 @@ public class CreateProductScreen extends CreateProductElement {
         commonMobile.click(rsId_btnProductDescription);
 
         // Input product description
-        String description = "[%s] Product description %s".formatted(defaultLanguage, currentEpoch);
+        String description = "[%s] Product description %s".formatted(defaultLanguage, getCurrentEpoch());
         new ProductDescriptionScreen(driver).inputDescription(description);
 
         // Log
@@ -157,7 +190,7 @@ public class CreateProductScreen extends CreateProductElement {
 
     void inputWithoutVariationSKU() {
         // Input without variation SKU
-        String sku = "SKU%s".formatted(currentEpoch);
+        String sku = "SKU%s".formatted(getCurrentEpoch());
         commonMobile.sendKeys(rsId_txtWithoutVariationSKU, sku);
 
         // Log
@@ -166,7 +199,7 @@ public class CreateProductScreen extends CreateProductElement {
 
     void inputWithoutVariationBarcode() {
         // Input without variation barcode
-        String barcode = "Barcode%s".formatted(currentEpoch);
+        String barcode = "Barcode%s".formatted(getCurrentEpoch());
         commonMobile.sendKeys(rsId_txtWithoutVariationBarcode, barcode);
 
         // Log
@@ -217,6 +250,14 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Log
         logger.info("Manage product by lot date: {}", manageByLot && !status && !manageByIMEI);
+    }
+
+    void addWithoutVariationStock(int... branchStock) {
+        // Navigate to inventory screen
+        commonMobile.click(rsId_btnInventory);
+
+        // Add without variation stock
+        new InventoryScreen(driver).addStock(manageByIMEI, branchInfo, "", branchStock);
     }
 
     void modifyShippingInformation() {
@@ -315,13 +356,62 @@ public class CreateProductScreen extends CreateProductElement {
         new CRUDVariationScreen(driver).addVariation(defaultLanguage);
     }
 
-    public void createProduct() {
+    void bulkUpdateVariations(int increaseNum, int... branchStock) {
+        // Get total variations
+        int totalVariations = CRUDVariationScreen.getVariationMap().values().stream().mapToInt(List::size).reduce(1, (a, b) -> a * b);
+
+        // Navigate to edit multiple screen
+        if (totalVariations > 1) {
+            commonMobile.click(rsId_btnEditMultiple);
+
+            // Init edit multiple model
+            EditMultipleScreen editMultipleScreen = new EditMultipleScreen(driver);
+
+            // Bulk update price
+            editMultipleScreen.bulkUpdatePrice(hasDiscount);
+
+            // Bulk update stock
+            editMultipleScreen.bulkUpdateStock(manageByIMEI, branchInfo, increaseNum, branchStock);
+
+            // Save changes
+
+        } else {
+            // When total variations = 1, Edit multiple button is hidden
+            logger.info("Can not bulk actions when total of variations is 1.");
+        }
+
+    }
+
+    void completeCreateProduct() {
+        // Save all product information
+        commonMobile.click(rsId_btnSave);
+
+        // Wait product management screen loaded
+        commonMobile.waitUntilScreenLoaded(goSELLERProductManagementActivity);
+    }
+
+    public void createProductWithoutVariation(int... branchStock) {
         selectProductImages();
         inputProductName();
         inputProductDescription();
-//        inputWithoutVariationPrice();
-//        inputWithoutVariationSKU();
-//        inputWithoutVariationBarcode();
+        inputWithoutVariationPrice();
+        inputWithoutVariationSKU();
+        inputWithoutVariationBarcode();
+        hideRemainingStockOnOnlineStore();
+        displayIfOutOfStock();
+        selectManageInventory();
+        manageProductByLot();
+        addWithoutVariationStock(branchStock);
+        modifyShippingInformation();
+        modifyProductSellingPlatform();
+        modifyPriority();
+        completeCreateProduct();
+    }
+
+    public void createProductWithVariation(int increaseNum, int... branchStock) {
+        selectProductImages();
+        inputProductName();
+        inputProductDescription();
         hideRemainingStockOnOnlineStore();
         displayIfOutOfStock();
         selectManageInventory();
@@ -330,5 +420,12 @@ public class CreateProductScreen extends CreateProductElement {
         modifyProductSellingPlatform();
         modifyPriority();
         addVariations();
+        bulkUpdateVariations(increaseNum, branchStock);
+        completeCreateProduct();
+    }
+
+    @AfterMethod
+    void teardown() {
+        new UICommonMobile(driver).relaunchApp(goSELLERBundleId, "");
     }
 }
