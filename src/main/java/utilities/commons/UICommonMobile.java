@@ -427,4 +427,8 @@ public class UICommonMobile {
         logger.info("Push file to mobile device, file name: {}", fileName);
     }
 
+    public void waitInvisible(String resourceId) {
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id(resourceId)));
+    }
+
 }

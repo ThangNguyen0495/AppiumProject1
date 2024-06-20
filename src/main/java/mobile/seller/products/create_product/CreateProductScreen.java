@@ -391,6 +391,9 @@ public class CreateProductScreen extends CreateProductElement {
         commonMobile.click(rsId_btnSave);
 
         // Wait product management screen loaded
+        commonMobile.waitInvisible(rsId_prgLoading);
+
+        // Verify that product management screen is shown
         assertCustomize.assertEquals(commonMobile.getCurrentActivity(),
                 goSELLERProductManagementActivity,
                 "Can not create product");
