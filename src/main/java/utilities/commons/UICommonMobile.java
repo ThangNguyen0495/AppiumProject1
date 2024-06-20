@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfAllElementsLocatedBy;
+
 public class UICommonMobile {
 
     private final static Logger logger = LogManager.getLogger(UICommonMobile.class);
@@ -36,6 +38,10 @@ public class UICommonMobile {
     public UICommonMobile(WebDriver driver) {
         this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public WebDriverWait customWait(int milSeconds) {
+        return new WebDriverWait(driver, Duration.ofMillis(milSeconds));
     }
 
     public void scrollToTopOfScreen() {
@@ -54,27 +60,37 @@ public class UICommonMobile {
         driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward()"));
     }
 
+    public List<WebElement> getListElement(By locator) {
+        try {
+            customWait(1000).until(ExpectedConditions.presenceOfElementLocated(locator));
+        } catch (TimeoutException ignore) {
+        }
+        return driver.findElements(locator).isEmpty()
+                ? List.of()
+                : wait.until(presenceOfAllElementsLocatedBy(locator));
+    }
+
     public WebElement getElement(String resourceId) {
         By locator = AppiumBy.androidUIAutomator(
                 "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().resourceId(\"%s\"))".formatted(resourceId));
         try {
+            // In case, element is present, must not scroll more.
+            return driver.findElement(By.id(resourceId));
+        } catch (NoSuchElementException ex) {
             // Can scroll into element
             return driver.findElement(locator);
-        } catch (NoSuchElementException ex) {
-            // In case, can not scroll into element
-            return wait.until(ExpectedConditions.presenceOfElementLocated(By.id(resourceId)));
         }
     }
 
     public WebElement getElement(By locator) {
         // if element is not presented, scroll more to get element.
-        if (driver.findElements(locator).isEmpty()) scrollDown();
+        if (getListElement(locator).isEmpty()) scrollDown();
         return driver.findElement(locator);
     }
 
     public WebElement getElement(By locator, int index) {
         // get all elements in this screen
-        List<WebElement> elements = new ArrayList<>(driver.findElements(locator));
+        List<WebElement> elements = new ArrayList<>(getListElement(locator));
 
         // init current number of elements
         int currentSize = elements.size();
@@ -153,19 +169,35 @@ public class UICommonMobile {
     }
 
     public void click(String resourceId) {
-        getElement(resourceId).click();
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(resourceId))).click();
+        } catch (StaleElementReferenceException ex) {
+            getElement(resourceId).click();
+        }
     }
 
-    public void click(String resourceId, By locator) {
-        getElement(resourceId, locator).click();
+    public void click(String parentResourceId, By locator) {
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(parentResourceId, locator))).click();
+        } catch (StaleElementReferenceException ex) {
+            getElement(parentResourceId, locator).click();
+        }
     }
 
     public void click(By locator, int index) {
-        getElement(locator, index).click();
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(locator, index))).click();
+        } catch (StaleElementReferenceException ex) {
+            getElement(locator, index).click();
+        }
     }
 
     public void click(String parentResourceId, By locator, int index) {
-        getElement(parentResourceId, locator, index).click();
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(parentResourceId, locator, index))).click();
+        } catch (StaleElementReferenceException ex) {
+            getElement(parentResourceId, locator, index).click();
+        }
     }
 
     public void sendKeys(By locator, CharSequence content) {
@@ -278,34 +310,16 @@ public class UICommonMobile {
         });
     }
 
-    public boolean isShown(String resourceId) {
-        return !driver.findElements(By.id(resourceId)).isEmpty();
+    public void waitUntilScreenLoaded(String screenActivity) {
+        wait.until((ExpectedCondition<Boolean>) driver -> {
+            AndroidDriver androidDriver = (AndroidDriver) driver;
+            assert androidDriver != null;
+            return Objects.requireNonNull(androidDriver.currentActivity()).equals(screenActivity);
+        });
     }
 
-    public List<WebElement> getListElement(By locator) {
-        // move to top screen
-        scrollToTopOfScreen();
-
-        // get list WebElement
-        List<WebElement> elements = driver.findElements(locator);
-
-        // get current size
-        int currentSize = elements.size();
-
-        do {
-            // int temp arr
-            List<WebElement> tempArr = new ArrayList<>(elements);
-
-            // scroll down to get new element
-            scrollDown();
-
-            // get new element
-            tempArr.addAll(driver.findElements(locator));
-
-            // remove duplicate element
-            elements = tempArr.stream().distinct().toList();
-        } while (elements.size() != currentSize);
-        return elements;
+    public boolean isShown(String resourceId) {
+        return !driver.findElements(By.id(resourceId)).isEmpty();
     }
 
     public List<String> getListElementText(By locator) {
@@ -385,7 +399,6 @@ public class UICommonMobile {
         Activity activity = new Activity(appPackage, appActivity);
         activity.setStopApp(false);
         ((StartsActivity) driver).startActivity(activity);
-        waitSplashScreenLoaded();
     }
 
     public boolean isChecked(WebElement element) {
