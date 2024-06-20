@@ -49,7 +49,7 @@ public class EditMultipleScreen extends EditMultipleElement {
     public void bulkUpdateStock(boolean manageByIMEI, boolean manageByLot, BranchInfo branchInfo, int increaseNum, int... branchStock) {
         // Not supported for product managed by IMEI/Serial number
         if (manageByIMEI) logger.info("Can not bulk update stock with product that is managed by IMEI/Serial number.");
-        else if (manageByLot) logger.info("Product is managed by lot-date, requiring stock updates in the lot-date screen.");
+        else if (manageByLot) logger.info("Product is managed by lot, requiring stock updates in the lot-date screen.");
         else {
             // Update stock for each branch
             IntStream.range(0, branchInfo.getBranchName().size()).forEach(branchIndex -> {

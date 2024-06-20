@@ -61,7 +61,7 @@ public class CreateProductScreen extends CreateProductElement {
     private boolean manageByLot = false;
     private boolean hasDiscount = true;
     private boolean hasCostPrice = true;
-    private boolean hasDimension = true;
+    private boolean hasDimension = false;
     private boolean showOnWeb = true;
     private boolean showOnApp = true;
     private boolean showInStore = true;
@@ -242,14 +242,16 @@ public class CreateProductScreen extends CreateProductElement {
     }
 
     void manageProductByLot() {
-        // Get current manage by lot checkbox status
-        boolean status = commonMobile.isChecked(commonMobile.getElement(rsId_chkManageByLot));
+        if (!manageByIMEI) {
+            // Get current manage by lot checkbox status
+            boolean status = commonMobile.isChecked(commonMobile.getElement(rsId_chkManageByLot));
 
-        // Manage product by lot
-        if (manageByLot && !status && !manageByIMEI) commonMobile.click(rsId_chkManageByLot);
+            // Manage product by lot
+            if (manageByLot && !status) commonMobile.click(rsId_chkManageByLot);
 
-        // Log
-        logger.info("Manage product by lot date: {}", manageByLot && !manageByIMEI || status);
+            // Log
+            logger.info("Manage product by lot date: {}", manageByLot);
+        } else logger.info("Lot only support for the product has inventory managed by product");
     }
 
     void addWithoutVariationStock(int... branchStock) {
@@ -260,7 +262,7 @@ public class CreateProductScreen extends CreateProductElement {
 
             // Add without variation stock
             new InventoryScreen(driver).addStock(manageByIMEI, branchInfo, "", branchStock);
-        } else logger.info("Product is managed by lot-date, requiring stock updates in the lot-date screen.");
+        } else logger.info("Product is managed by lot, requiring stock updates in the lot screen.");
     }
 
     void modifyShippingInformation() {
