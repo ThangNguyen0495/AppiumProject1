@@ -2,9 +2,16 @@ package mobile.seller.products.child_screen.edit_multiple;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonMobile;
+import utilities.model.dashboard.setting.branchInformation.BranchInfo;
+
+import java.util.stream.IntStream;
+
+import static org.apache.commons.lang.math.JVMRandom.nextLong;
+import static utilities.character_limit.CharacterLimit.MAX_PRICE;
 
 public class EditMultipleScreen extends EditMultipleElement {
     WebDriver driver;
@@ -16,5 +23,69 @@ public class EditMultipleScreen extends EditMultipleElement {
         this.driver = driver;
         assertCustomize = new AssertCustomize(driver);
         commonMobile = new UICommonMobile(driver);
+    }
+
+    public void bulkUpdatePrice(boolean hasDiscount) {
+        // Open list actions
+        commonMobile.click(loc_lblActions);
+
+        // Select bulk update price actions
+        commonMobile.click(loc_lblUpdatePriceActions);
+
+        // Input listing price
+        long listingPrice = nextLong(MAX_PRICE);
+        commonMobile.sendKeys(loc_dlgUpdatePrice_txtListingPrice, String.valueOf(listingPrice));
+        logger.info("Bulk listing price: %,d".formatted(listingPrice));
+
+        // Input selling price
+        long sellingPrice = hasDiscount ? nextLong(Math.max(listingPrice, 1)) : listingPrice;
+        commonMobile.sendKeys(loc_dlgUpdatePrice_txtSellingPrice, String.valueOf(sellingPrice));
+        logger.info("Bulk selling price: %,d".formatted(sellingPrice));
+
+        // Save changes
+        commonMobile.click(rsId_dlgUpdatePrice_btnOK);
+    }
+
+    public void bulkUpdateStock(boolean manageByIMEI, BranchInfo branchInfo, int increaseNum, int... branchStock) {
+        // Not supported for product managed by IMEI/Serial number
+        if (manageByIMEI) {
+            logger.info("Can not bulk update stock with product that is managed by IMEI/Serial number.");
+        } else {
+            // Update stock for each branch
+            IntStream.range(0, branchInfo.getBranchName().size()).forEach(branchIndex -> {
+                // Get branch name
+                String branchName = branchInfo.getBranchName().get(branchIndex);
+
+                // Get branch quantity
+                int branchQuantity = ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]) + branchIndex * increaseNum;
+
+                // Open list branches
+                commonMobile.click(rsId_ddvSelectedBranch);
+
+                // Switch branch
+                commonMobile.click(By.xpath(xpath_ddvBranch.formatted(branchName)));
+
+                // Open list actions
+                commonMobile.click(loc_lblActions);
+
+                // Select bulk update stock actions
+                commonMobile.click(loc_lblUpdateStockActions);
+
+                // Switch to change tab
+                commonMobile.click(loc_dlgUpdateStock_tabChange);
+
+                // Input quantity
+                commonMobile.sendKeys(rsId_dlgUpdateStock_txtQuantity, String.valueOf(branchQuantity));
+
+                // Save changes
+                commonMobile.click(rsId_dlgUpdateStock_btnOK);
+
+                // Log
+                logger.info("Bulk update stock for branch '{}', quantity: {}", branchName, branchQuantity);
+            });
+        }
+
+        // Save changes
+        commonMobile.click(rsId_btnSave);
     }
 }

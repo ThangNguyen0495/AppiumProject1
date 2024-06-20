@@ -1,5 +1,6 @@
 package mobile.seller.products.child_screen.crud_variations;
 
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -16,6 +17,8 @@ public class CRUDVariationScreen extends CRUDVariationElement {
     AssertCustomize assertCustomize;
     UICommonMobile commonMobile;
     Logger logger = LogManager.getLogger();
+    @Getter
+    private static Map<String, List<String>> variationMap;
 
     public CRUDVariationScreen(WebDriver driver) {
         this.driver = driver;
@@ -25,7 +28,7 @@ public class CRUDVariationScreen extends CRUDVariationElement {
 
     public void addVariation(String defaultLanguage) {
         // Init variation map
-        Map<String, List<String>> variationMap = new DataGenerator().randomVariationMap(defaultLanguage);
+        variationMap = new DataGenerator().randomVariationMap(defaultLanguage);
 
         // Remove old variation
         if (commonMobile.isShown(rsId_btnRemoveVariationGroup2))
