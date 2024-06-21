@@ -9,8 +9,9 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static utilities.environment.EnvironmentInformation.*;
-import static utilities.environment.EnvironmentInformation.goBUYERSplashActivity;
+import static utilities.environment.goBUYEREnvironment.goBUYERSplashActivity;
+import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
+import static utilities.environment.goSELLEREnvironment.goSELLERLoginActivity;
 
 
 public class InitAppiumDriver {
