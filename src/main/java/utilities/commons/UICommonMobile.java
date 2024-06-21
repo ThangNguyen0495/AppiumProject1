@@ -339,7 +339,16 @@ public class UICommonMobile {
     }
 
     public boolean isShown(String resourceId) {
-        return !driver.findElements(By.id(resourceId)).isEmpty();
+        return !getListElement(By.id(resourceId)).isEmpty();
+    }
+
+    public boolean isShown(By locator) {
+        return !getListElement(locator).isEmpty();
+    }
+
+    public boolean isShown(String parentResourceId, By locator) {
+        getElement(parentResourceId);
+        return !getListElement(locator).isEmpty();
     }
 
     public WebElement getElementByText(String elText) {
@@ -384,6 +393,13 @@ public class UICommonMobile {
         Activity activity = new Activity(appPackage, appActivity);
         activity.setStopApp(false);
         ((StartsActivity) driver).startActivity(activity);
+    }
+
+    public void navigateToScreen(String appPackage, String activity) {
+        // Navigate to screen by activity
+        if (!((AndroidDriver) driver).currentActivity().equals(activity)) {
+            relaunchApp(appPackage, activity);
+        }
     }
 
     public boolean isChecked(WebElement element) {
