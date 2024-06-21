@@ -1,6 +1,6 @@
 package mobile.seller.products.child_screen.inventory.add_imei;
 
-import static utilities.environment.EnvironmentInformation.goSELLERBundleId;
+import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class AddIMEIElement {
     String rsId_txtIMEI = "%s:id/edtInputImeiSerialNumberValue".formatted(goSELLERBundleId);
