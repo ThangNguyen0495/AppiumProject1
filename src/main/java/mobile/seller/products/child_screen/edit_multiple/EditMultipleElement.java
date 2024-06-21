@@ -2,7 +2,7 @@ package mobile.seller.products.child_screen.edit_multiple;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.EnvironmentInformation.goSELLERBundleId;
+import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class EditMultipleElement {
     String rsId_btnSave = "%s:id/tvActionBarIconRight".formatted(goSELLERBundleId);

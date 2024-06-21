@@ -5,7 +5,7 @@ import org.openqa.selenium.By;
 import java.util.Arrays;
 import java.util.List;
 
-import static utilities.environment.EnvironmentInformation.goSELLERBundleId;
+import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class HomeElement {
     String rsId_sectionQuickAccess = "%s:id/rlvQuickActions".formatted(goSELLERBundleId);

@@ -1,5 +1,6 @@
 package mobile.seller.home;
 
+import io.appium.java_client.android.AndroidDriver;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +67,6 @@ public class HomeScreen extends HomeElement {
         commonAction.getElement(rsId_sectionManagement);
 
         // Actions
-        commonAction.click(loc_btnQuickAccessActions, getAllManagementActions().indexOf(actions));
+        commonAction.click(loc_btnManagementActions, getAllManagementActions().indexOf(actions));
     }
 }

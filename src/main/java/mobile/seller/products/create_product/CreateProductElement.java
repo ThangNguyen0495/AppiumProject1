@@ -2,7 +2,7 @@ package mobile.seller.products.create_product;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.EnvironmentInformation.goSELLERBundleId;
+import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class CreateProductElement {
     String rsId_prgLoading = "%s:id/pbLoading".formatted(goSELLERBundleId);

@@ -2,7 +2,6 @@ package mobile.seller.products.create_product;
 
 import api.Seller.setting.BranchManagement;
 import api.Seller.setting.StoreInformation;
-import io.appium.java_client.android.AndroidDriver;
 import lombok.SneakyThrows;
 import mobile.seller.login.LoginScreen;
 import mobile.seller.products.child_screen.crud_variations.CRUDVariationScreen;
@@ -25,7 +24,7 @@ import java.util.Objects;
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 import static utilities.character_limit.CharacterLimit.MAX_PRICE;
-import static utilities.environment.EnvironmentInformation.*;
+import static utilities.environment.goSELLEREnvironment.*;
 
 public class CreateProductScreen extends CreateProductElement {
     WebDriver driver;
@@ -121,9 +120,7 @@ public class CreateProductScreen extends CreateProductElement {
 
     public CreateProductScreen navigateToCreateProductScreen() {
         // Navigate to create product screen
-        if (!((AndroidDriver) driver).currentActivity().equals(goSELLERCreateProductActivity)) {
-            commonMobile.relaunchApp(goSELLERBundleId, goSELLERCreateProductActivity);
-        }
+        commonMobile.navigateToScreen(goSELLERBundleId, goSELLERCreateProductActivity);
 
         // Log
         logger.info("Navigate to create product screen.");
