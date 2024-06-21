@@ -151,12 +151,8 @@ public class DataGenerator {
     /**
      * generate Variation value
      */
-    private List<String> generateListString(int index, int size) {
-        List<String> randomList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            randomList.add("var%s_%s".formatted(index, i + 1));
-        }
-        return randomList;
+    private List<String> generateListString(String defaultLanguage, int index, int size) {
+        return IntStream.range(0, size).mapToObj(i -> "%s_var%s_%s".formatted(defaultLanguage, index, i + 1)).toList();
     }
 
     /**
@@ -181,7 +177,7 @@ public class DataGenerator {
         return new TreeMap<>(IntStream.range(0, numberOfVariationValue.size())
                 .boxed()
                 .collect(Collectors.toMap(valueIndex -> "%s_var%s".formatted(defaultLanguage, valueIndex + 1),
-                        valueIndex -> generateListString(valueIndex + 1, numberOfVariationValue.get(valueIndex)),
+                        valueIndex -> generateListString(defaultLanguage, valueIndex + 1, numberOfVariationValue.get(valueIndex)),
                         (a, b) -> b)));
     }
 
@@ -192,11 +188,7 @@ public class DataGenerator {
      */
     public List<String> mixVariationValue(List<String> variationValueList1, List<String> variationValueList2) {
         List<String> mixedVariationValueList = new ArrayList<>();
-        for (String var1 : variationValueList1) {
-            for (String var2 : variationValueList2) {
-                mixedVariationValueList.add("%s|%s".formatted(var1, var2));
-            }
-        }
+        variationValueList1.forEach(var1 -> variationValueList2.stream().map(var2 -> "%s|%s".formatted(var1, var2)).forEach(mixedVariationValueList::add));
         return mixedVariationValueList;
     }
 
