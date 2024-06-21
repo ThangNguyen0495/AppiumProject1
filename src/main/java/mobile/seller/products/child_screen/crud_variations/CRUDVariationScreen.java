@@ -26,16 +26,23 @@ public class CRUDVariationScreen extends CRUDVariationElement {
         commonMobile = new UICommonMobile(driver);
     }
 
-    public void addVariation(String defaultLanguage) {
-        // Init variation map
-        variationMap = new DataGenerator().randomVariationMap(defaultLanguage);
-
+    public CRUDVariationScreen removeOldVariation() {
         // Remove old variation
         if (commonMobile.isShown(rsId_btnRemoveVariationGroup2))
             commonMobile.click(rsId_btnRemoveVariationGroup2);
         if (commonMobile.isShown(rsId_btnRemoveVariationGroup1))
             commonMobile.click(rsId_btnRemoveVariationGroup1);
         logger.info("Remove old variations");
+
+        return this;
+    }
+
+    public void addVariation(String defaultLanguage) {
+        // Init variation map
+        variationMap = new DataGenerator().randomVariationMap(defaultLanguage);
+
+        // Remove old variation
+        removeOldVariation();
 
         // Add variation
         IntStream.range(0, variationMap.keySet().size()).forEachOrdered(groupIndex -> {
@@ -61,9 +68,14 @@ public class CRUDVariationScreen extends CRUDVariationElement {
         });
 
         // Save changes
-        commonMobile.click(rsId_btnSave);
+        saveChanges();
 
         // Log
         logger.info("Complete add variations");
+    }
+
+    public void saveChanges() {
+        // Save changes
+        commonMobile.click(rsId_btnSave);
     }
 }

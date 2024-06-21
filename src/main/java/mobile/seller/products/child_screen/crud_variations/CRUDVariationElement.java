@@ -1,6 +1,6 @@
 package mobile.seller.products.child_screen.crud_variations;
 
-import static utilities.environment.EnvironmentInformation.goSELLERBundleId;
+import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class CRUDVariationElement {
     String rsId_btnRemoveVariationGroup1 = "%s:id/ivDeleteVariation1".formatted(goSELLERBundleId);
