@@ -13,6 +13,8 @@ import utilities.model.sellerApp.login.LoginInformation;
 
 import java.time.Duration;
 
+import static utilities.environment.goSELLEREnvironment.goSELLERHomeActivity;
+
 public class LoginScreen {
 
     final static Logger logger = LogManager.getLogger(LoginScreen.class);
@@ -174,6 +176,9 @@ public class LoginScreen {
         inputPassword(loginInformation.getPassword());
         clickAgreeTerm();
         clickLoginBtn();
+
+        // Wait login success
+        commonMobile.waitUntilScreenLoaded(goSELLERHomeActivity);
     }
 
     public HomeScreen performLogin(String countryCode, String userName, String password) {
