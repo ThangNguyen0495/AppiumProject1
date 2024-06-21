@@ -129,6 +129,23 @@ public class CreateProductTest extends BaseTest {
                 .createProductWithoutVariation(5);
     }
 
+    @Test
+    void CR_PRODUCT_G1_13_CreateProductWithPriority() {
+        createProductScreen.getManageByIMEI(false)
+                .getHasPriority(true)
+                .navigateToCreateProductScreen()
+                .createProductWithoutVariation(5);
+    }
+
+    @Test
+    void CR_PRODUCT_G1_14_CreateProductWithoutPriority() {
+        createProductScreen.getManageByIMEI(false)
+                .getHasPriority(false)
+                .navigateToCreateProductScreen()
+                .createProductWithoutVariation(5);
+    }
+
+
     //G2: IMEI product without variation
     @Test
     void CR_PRODUCT_G2_01_CreateProductWithoutDimension() {
@@ -204,6 +221,22 @@ public class CreateProductTest extends BaseTest {
     void CR_PRODUCT_G2_10_CreateProductWithAnyPlatform() {
         createProductScreen.getManageByIMEI(true)
                 .getProductSellingPlatform(nextBoolean(), nextBoolean(), nextBoolean(), nextBoolean())
+                .navigateToCreateProductScreen()
+                .createProductWithoutVariation(5);
+    }
+
+    @Test
+    void CR_PRODUCT_G2_11_CreateProductWithPriority() {
+        createProductScreen.getManageByIMEI(true)
+                .getHasPriority(true)
+                .navigateToCreateProductScreen()
+                .createProductWithoutVariation(5);
+    }
+
+    @Test
+    void CR_PRODUCT_G2_12_CreateProductWithoutPriority() {
+        createProductScreen.getManageByIMEI(true)
+                .getHasPriority(false)
                 .navigateToCreateProductScreen()
                 .createProductWithoutVariation(5);
     }
@@ -303,6 +336,22 @@ public class CreateProductTest extends BaseTest {
                 .createProductWithVariation(1, 1);
     }
 
+    @Test
+    void CR_PRODUCT_G3_13_CreateProductWithPriority() {
+        createProductScreen.getManageByIMEI(false)
+                .getHasPriority(true)
+                .navigateToCreateProductScreen()
+                .createProductWithVariation(1, 1);
+    }
+
+    @Test
+    void CR_PRODUCT_G3_14_CreateProductWithoutPriority() {
+        createProductScreen.getManageByIMEI(false)
+                .getHasPriority(false)
+                .navigateToCreateProductScreen()
+                .createProductWithVariation(1, 1);
+    }
+
     //G4: IMEI product with variation
     @Test
     void CR_PRODUCT_G4_01_CreateProductWithoutDimension() {
@@ -379,6 +428,22 @@ public class CreateProductTest extends BaseTest {
     void CR_PRODUCT_G4_10_CreateProductWithAnyPlatform() {
         createProductScreen.getManageByIMEI(true)
                 .getProductSellingPlatform(nextBoolean(), nextBoolean(), nextBoolean(), nextBoolean())
+                .navigateToCreateProductScreen()
+                .createProductWithVariation(1, 1);
+    }
+
+    @Test
+    void CR_PRODUCT_G4_11_CreateProductWithPriority() {
+        createProductScreen.getManageByIMEI(true)
+                .getHasPriority(true)
+                .navigateToCreateProductScreen()
+                .createProductWithVariation(1, 1);
+    }
+
+    @Test
+    void CR_PRODUCT_G4_12_CreateProductWithoutPriority() {
+        createProductScreen.getManageByIMEI(true)
+                .getHasPriority(false)
                 .navigateToCreateProductScreen()
                 .createProductWithVariation(1, 1);
     }
