@@ -8,7 +8,7 @@ public class EditProductElement {
     String rsId_prgLoading = "%s:id/pbLoading".formatted(goSELLERBundleId);
     String rsId_btnSave = "%s:id/tvActionBarIconRight".formatted(goSELLERBundleId);
     String rsId_btnSelectImage = "%s:id/rlSelectImages".formatted(goSELLERBundleId);
-    By loc_icnDeleteImages = By.xpath("//*[@* = 'com.mediastep.GoSellForSeller.STG:id/ivDelete']");
+    By loc_icnDeleteImages = By.xpath("//*[@* = '%s:id/ivDelete']".formatted(goSELLERBundleId));
     String rsId_txtProductName = "%s:id/edtProductName".formatted(goSELLERBundleId);
     String rsId_btnProductDescription = "%s:id/tvProductDescription".formatted(goSELLERBundleId);
     String rsId_sctPrice = "%s:id/clProductPriceContainer".formatted(goSELLERBundleId);
@@ -33,7 +33,7 @@ public class EditProductElement {
     String rsId_swInStorePlatform = "%s:id/swPlatformInstore".formatted(goSELLERBundleId);
     String rsId_swGoSocialPlatform = "%s:id/swPlatformGoSocial".formatted(goSELLERBundleId);
     String rsId_btnAddCollection = "%s:id/tvAddCollection".formatted(goSELLERBundleId);
-    By loc_icnRemoveCollections = By.xpath("//*[@* = 'com.mediastep.GoSellForSeller.STG:id/ivDelete']");
+    By loc_icnRemoveCollections = By.xpath("//*[@* = '%s:id/ivDelete']".formatted(goSELLERBundleId));
     String rsId_swPriority = "%s:id/swPriority".formatted(goSELLERBundleId);
     String rsId_txtPriority = "%s:id/edtPriority".formatted(goSELLERBundleId);
     String rsId_swVariations = "%s:id/swVariation".formatted(goSELLERBundleId);

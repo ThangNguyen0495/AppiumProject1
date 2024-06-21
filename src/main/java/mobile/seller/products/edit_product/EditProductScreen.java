@@ -290,7 +290,7 @@ public class EditProductScreen extends EditProductElement {
             commonMobile.click(rsId_btnInventory);
 
             // Add without variation stock
-            new InventoryScreen(driver).addStock(manageByIMEI, branchInfo, "", branchStock);
+            new InventoryScreen(driver).updateStock(manageByIMEI, branchInfo, "", branchStock);
         } else logger.info("Product is managed by lot, requiring stock updates in the lot screen.");
     }
 
