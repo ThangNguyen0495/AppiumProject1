@@ -6,7 +6,8 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import utilities.commons.UICommonMobile;
 
-import static mobile.seller.home.HomeElement.QuickActions.getAllActions;
+import static mobile.seller.home.HomeElement.ManagementActions.*;
+import static mobile.seller.home.HomeElement.QuickActions.getAllQuickActions;
 
 public class HomeScreen extends HomeElement {
 
@@ -52,10 +53,19 @@ public class HomeScreen extends HomeElement {
 
     @SneakyThrows
     public void navigate(QuickActions actions) {
-        // move to quick access section
-        commonAction.getElement(str_resourceIdQuickAccess);
+        // Move to Quick access section
+        commonAction.getElement(rsId_sectionQuickAccess);
 
-        // actions
-        commonAction.click(loc_btnQuickAccessActions, getAllActions().indexOf(actions));
+        // Actions
+        commonAction.click(loc_btnQuickAccessActions, getAllQuickActions().indexOf(actions));
+    }
+
+    @SneakyThrows
+    public void navigate(ManagementActions actions) {
+        // Move into management section
+        commonAction.getElement(rsId_sectionManagement);
+
+        // Actions
+        commonAction.click(loc_btnQuickAccessActions, getAllManagementActions().indexOf(actions));
     }
 }
