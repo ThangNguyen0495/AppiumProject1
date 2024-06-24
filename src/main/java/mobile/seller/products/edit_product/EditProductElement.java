@@ -37,7 +37,9 @@ public class EditProductElement {
     String rsId_swPriority = "%s:id/swPriority".formatted(goSELLERBundleId);
     String rsId_txtPriority = "%s:id/edtPriority".formatted(goSELLERBundleId);
     String rsId_swVariations = "%s:id/swVariation".formatted(goSELLERBundleId);
+    String rsId_lblVariation = "%s:id/tvVariationLabel".formatted(goSELLERBundleId);
+    String rsId_imgVariation = "%s:id/rivVariationImage".formatted(goSELLERBundleId);
     String rsId_btnAddVariation = "%s:id/tvAddVariation".formatted(goSELLERBundleId);
     String rsId_btnEditMultiple = "%s:id/clEditMultiple".formatted(goSELLERBundleId);
-
+    String rsId_dlgWarningManagedByLot_btnOK = "%s:id/tvRightButton".formatted(goSELLERBundleId);
 }

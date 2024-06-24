@@ -45,7 +45,7 @@ public class CreateProductTest extends BaseTest {
     }
 
     @Test
-    void CR_PRODUCT_G1_02_CreateProductWitDimension() {
+    void CR_PRODUCT_G1_02_CreateProductWithDimension() {
         createProductScreen.getManageByIMEI(false)
                 .getHasDimension(true)
                 .navigateToCreateProductScreen()
@@ -156,7 +156,7 @@ public class CreateProductTest extends BaseTest {
     }
 
     @Test
-    void CR_PRODUCT_G2_02_CreateProductWitDimension() {
+    void CR_PRODUCT_G2_02_CreateProductWithDimension() {
         createProductScreen.getManageByIMEI(true)
                 .getHasDimension(true)
                 .navigateToCreateProductScreen()
@@ -251,7 +251,7 @@ public class CreateProductTest extends BaseTest {
     }
 
     @Test
-    void CR_PRODUCT_G3_02_CreateProductWitDimension() {
+    void CR_PRODUCT_G3_02_CreateProductWithDimension() {
         createProductScreen.getManageByIMEI(false)
                 .getHasDimension(true)
                 .navigateToCreateProductScreen()
@@ -362,7 +362,7 @@ public class CreateProductTest extends BaseTest {
     }
 
     @Test
-    void CR_PRODUCT_G4_02_CreateProductWitDimension() {
+    void CR_PRODUCT_G4_02_CreateProductWithDimension() {
         createProductScreen.getManageByIMEI(true)
                 .getHasDimension(true)
                 .navigateToCreateProductScreen()
