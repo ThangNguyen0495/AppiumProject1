@@ -9,6 +9,7 @@ import mobile.seller.products.child_screen.crud_variations.CRUDVariationScreen;
 import mobile.seller.products.child_screen.edit_multiple.EditMultipleScreen;
 import mobile.seller.products.child_screen.inventory.InventoryScreen;
 import mobile.seller.products.child_screen.product_description.ProductDescriptionScreen;
+import mobile.seller.products.child_screen.product_variation.ProductVariationScreen;
 import mobile.seller.products.child_screen.select_image_popup.SelectImagePopup;
 import mobile.seller.products.product_management.ProductManagementScreen;
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +24,7 @@ import utilities.model.dashboard.setting.branchInformation.BranchInfo;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
@@ -36,6 +38,8 @@ public class EditProductScreen extends EditProductElement {
     Logger logger = LogManager.getLogger();
     private static String defaultLanguage;
     private static BranchInfo branchInfo;
+    private ProductInfo productInfo;
+    ProductManagementScreen productManagementScreen;
 
     public EditProductScreen(WebDriver driver) {
         // Get driver
@@ -46,6 +50,9 @@ public class EditProductScreen extends EditProductElement {
 
         // Init commons class
         commonMobile = new UICommonMobile(driver);
+
+        // Init product management POM
+        productManagementScreen = new ProductManagementScreen(driver);
 
         // Get store default language
         defaultLanguage = new StoreInformation(LoginScreen.getLoginInformation())
@@ -115,11 +122,12 @@ public class EditProductScreen extends EditProductElement {
     private static long getCurrentEpoch() {
         return Instant.now().toEpochMilli();
     }
+
     private boolean hasLot;
 
     public EditProductScreen navigateToProductDetailScreen(int productId) {
         // Get product information
-        ProductInfo productInfo = new APIProductDetail(LoginScreen.getLoginInformation()).getInfo(productId);
+        this.productInfo = new APIProductDetail(LoginScreen.getLoginInformation()).getInfo(productId);
 
         // Get lot manage status
         this.hasLot = productInfo.getLotAvailable();
@@ -130,15 +138,19 @@ public class EditProductScreen extends EditProductElement {
         // get inventory manage type
         manageByIMEI = productInfo.getManageInventoryByIMEI();
 
-        // Init product management POM
-        ProductManagementScreen productManagementScreen = new ProductManagementScreen(driver);
-
         // Navigate to product detail screen
         productManagementScreen.navigateToProductManagementScreen()
                 .navigateToProductDetailScreen(productName);
 
         // Log
         logger.info("Navigate to product detail screen");
+
+        return this;
+    }
+
+    void removeOldVariations() {
+        // Get product name
+        String productName = productInfo.getMainProductNameMap().get(defaultLanguage);
 
         // If product has model, remove model and saves changes.
         if (productInfo.isHasModel() && !productInfo.getLotAvailable()) {
@@ -153,8 +165,6 @@ public class EditProductScreen extends EditProductElement {
             // log
             logger.info("Remove old variation and navigate to product detail again");
         }
-
-        return this;
     }
 
     void selectProductImages() {
@@ -182,7 +192,7 @@ public class EditProductScreen extends EditProductElement {
 
     void inputProductName() {
         // Input product name
-        String name = "[%s] Product name %s".formatted(defaultLanguage, getCurrentEpoch());
+        String name = "[%s][%s] Product name %s".formatted(defaultLanguage, manageByIMEI ? "IMEI" : "NORMAL", getCurrentEpoch());
         commonMobile.sendKeys(rsId_txtProductName, name);
 
         // Log
@@ -395,7 +405,7 @@ public class EditProductScreen extends EditProductElement {
             logger.info("Product that is managed by Lot, do not allow remove variation");
         }
         // If product has variation, remove old variation
-        else if (commonMobile.isShown(rsId_imgVariation)) {
+        else if (commonMobile.isShown(loc_imgVariation)) {
             // Navigate to Add/Edit variation
             commonMobile.click(rsId_btnAddVariation);
 
@@ -459,6 +469,7 @@ public class EditProductScreen extends EditProductElement {
     }
 
     public void updateProductWithoutVariation(int... branchStock) {
+        removeOldVariations();
         selectProductImages();
         inputProductName();
         inputProductDescription();
@@ -476,6 +487,7 @@ public class EditProductScreen extends EditProductElement {
     }
 
     public void updateProductWithVariation(int increaseNum, int... branchStock) {
+        removeOldVariations();
         selectProductImages();
         inputProductName();
         inputProductDescription();
@@ -487,6 +499,24 @@ public class EditProductScreen extends EditProductElement {
         modifyPriority();
         addVariations();
         bulkUpdateVariations(increaseNum, branchStock);
+        completeUpdateProduct();
+    }
+
+    public void updateEachVariationInformation(int... branchStock) {
+        // Init variation POM
+        ProductVariationScreen productVariationScreen = new ProductVariationScreen(driver);
+
+        // Update variation information
+        IntStream.range(0, productInfo.getVariationModelList().size()).forEach(variationIndex -> {
+            // Navigate to variation detail screen
+            commonMobile.click(rsId_lblVariation, loc_imgVariation, variationIndex);
+
+            // Update variation information
+            productVariationScreen.getVariationInformation(defaultLanguage, branchInfo, hasDiscount, hasCostPrice, variationIndex, productInfo)
+                    .updateVariationInformation(branchStock);
+        });
+
+        // Save changes
         completeUpdateProduct();
     }
 }

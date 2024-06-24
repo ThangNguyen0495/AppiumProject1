@@ -42,30 +42,25 @@ public class EditProductTest extends BaseTest {
     @BeforeGroups(groups = "[UPDATE] Normal product - Without variation")
     void preCondition_G1() {
         // Get product ID
-        productId = apiCreateProduct.createWithoutVariationProduct(false)
-                .getProductID();
+        productId = apiCreateProduct.createWithoutVariationProduct(false).getProductID();
     }
 
     @BeforeGroups(groups = "[UPDATE] IMEI product - Without variation")
     void preCondition_G2() {
         // Get product ID
-        productId = apiCreateProduct.createWithoutVariationProduct(true)
-                .getProductID();
+        productId = apiCreateProduct.createWithoutVariationProduct(true).getProductID();
     }
 
     @BeforeGroups(groups = "[UPDATE] Normal product - Variation")
     void preCondition_G3() {
         // Get product ID
-        productId = 1287335;
-                //apiCreateProduct.createVariationProduct(false, 0)
-//                .getProductID();
+        productId = apiCreateProduct.createVariationProduct(false, 0).getProductID();
     }
 
     @BeforeGroups(groups = "[UPDATE] IMEI product - Variation")
     void preCondition_G4() {
         // Get product ID
-        productId = apiCreateProduct.createVariationProduct(true, 0)
-                .getProductID();
+        productId = apiCreateProduct.createVariationProduct(true, 0).getProductID();
     }
 
     //G1: Normal product without variation
@@ -347,6 +342,16 @@ public class EditProductTest extends BaseTest {
                 .updateProductWithVariation(1, 1);
     }
 
+    @Test
+    void UP_PRODUCT_G3_15_UpdateProductInformationByEachVariation() {
+        // Get product ID for new test
+        productId = apiCreateProduct.createVariationProduct(false, 0).getProductID();
+
+        // Update each variation
+        editProductScreen.navigateToProductDetailScreen(productId)
+                .updateEachVariationInformation(5);
+    }
+
     //G4: IMEI product with variation
     @Test(groups = "[UPDATE] IMEI product - Variation")
     void UP_PRODUCT_G4_01_UpdateProductWithoutDimension() {
@@ -429,5 +434,15 @@ public class EditProductTest extends BaseTest {
         editProductScreen.getHasPriority(false)
                 .navigateToProductDetailScreen(productId)
                 .updateProductWithVariation(1, 1);
+    }
+
+    @Test
+    void UP_PRODUCT_G4_13_UpdateProductInformationByEachVariation() {
+        // Get product ID for new test
+        productId = apiCreateProduct.createVariationProduct(true, 0).getProductID();
+
+        // Update each variation
+        editProductScreen.navigateToProductDetailScreen(productId)
+                .updateEachVariationInformation(5);
     }
 }

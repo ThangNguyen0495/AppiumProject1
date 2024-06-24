@@ -28,7 +28,7 @@ public class AddIMEIScreen extends AddIMEIElement {
         // Add imei value for variation
         IntStream.range(0, quantity).forEach(index -> {
             // Input imei value
-            String imei = "%s%s_%s".formatted(variation.isEmpty() ? "" : "_%s".formatted(variation), branchName, index);
+            String imei = "%s%s_%s".formatted(variation.isEmpty() ? "" : "%s_".formatted(variation), branchName, index);
             commonMobile.sendKeys(rsId_txtIMEI, imei);
 
             // Add

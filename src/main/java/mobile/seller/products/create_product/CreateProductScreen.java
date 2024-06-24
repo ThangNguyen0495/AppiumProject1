@@ -147,7 +147,7 @@ public class CreateProductScreen extends CreateProductElement {
 
     void inputProductName() {
         // Input product name
-        String name = "[%s] Product name %s".formatted(defaultLanguage, getCurrentEpoch());
+        String name = "[%s][%s] Product name %s".formatted(defaultLanguage, manageByIMEI ? "IMEI" : "NORMAL", getCurrentEpoch());
         commonMobile.sendKeys(rsId_txtProductName, name);
 
         // Log
