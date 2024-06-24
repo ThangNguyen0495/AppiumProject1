@@ -56,8 +56,9 @@ public class EditProductTest extends BaseTest {
     @BeforeGroups(groups = "[UPDATE] Normal product - Variation")
     void preCondition_G3() {
         // Get product ID
-        productId = apiCreateProduct.createVariationProduct(false, 0)
-                .getProductID();
+        productId = 1287335;
+                //apiCreateProduct.createVariationProduct(false, 0)
+//                .getProductID();
     }
 
     @BeforeGroups(groups = "[UPDATE] IMEI product - Variation")

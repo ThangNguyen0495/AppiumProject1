@@ -7,6 +7,7 @@
                 <methods>
                     <include name="preCondition_G1"/>
                     <include name="UP_PRODUCT_G1_01_UpdateProductWithoutDimension"/>
+                    <include name="UP_PRODUCT_G1_02_UpdateProductWithDimension"/>
                     <include name="UP_PRODUCT_G1_03_UpdateProductWithInStock"/>
                     <include name="UP_PRODUCT_G1_04_UpdateProductWithOutOfStock"/>
                     <include name="UP_PRODUCT_G1_05_UpdateProductWithDiscountPrice"/>
@@ -22,6 +23,7 @@
 
                     <include name="preCondition_G2"/>
                     <include name="UP_PRODUCT_G2_01_UpdateProductWithoutDimension"/>
+                    <include name="UP_PRODUCT_G2_02_UpdateProductWithDimension"/>
                     <include name="UP_PRODUCT_G2_03_UpdateProductWithInStock"/>
                     <include name="UP_PRODUCT_G2_04_UpdateProductWithOutOfStock"/>
                     <include name="UP_PRODUCT_G2_05_UpdateProductWithDiscountPrice"/>
@@ -35,6 +37,7 @@
 
                     <include name="preCondition_G3"/>
                     <include name="UP_PRODUCT_G3_01_UpdateProductWithoutDimension"/>
+                    <include name="UP_PRODUCT_G3_02_UpdateProductWithDimension"/>
                     <include name="UP_PRODUCT_G3_03_UpdateProductWithInStock"/>
                     <include name="UP_PRODUCT_G3_04_UpdateProductWithOutOfStock"/>
                     <include name="UP_PRODUCT_G3_05_UpdateProductWithDiscountPrice"/>
@@ -50,6 +53,7 @@
 
                     <include name="preCondition_G4"/>
                     <include name="UP_PRODUCT_G4_01_UpdateProductWithoutDimension"/>
+                    <include name="UP_PRODUCT_G4_02_UpdateProductWithDimension"/>
                     <include name="UP_PRODUCT_G4_03_UpdateProductWithInStock"/>
                     <include name="UP_PRODUCT_G4_04_UpdateProductWithOutOfStock"/>
                     <include name="UP_PRODUCT_G4_05_UpdateProductWithDiscountPrice"/>

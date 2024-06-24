@@ -115,10 +115,14 @@ public class EditProductScreen extends EditProductElement {
     private static long getCurrentEpoch() {
         return Instant.now().toEpochMilli();
     }
+    private boolean hasLot;
 
     public EditProductScreen navigateToProductDetailScreen(int productId) {
         // Get product information
         ProductInfo productInfo = new APIProductDetail(LoginScreen.getLoginInformation()).getInfo(productId);
+
+        // Get lot manage status
+        this.hasLot = productInfo.getLotAvailable();
 
         // Get product name
         String productName = productInfo.getMainProductNameMap().get(defaultLanguage);
@@ -136,34 +140,21 @@ public class EditProductScreen extends EditProductElement {
         // Log
         logger.info("Navigate to product detail screen");
 
-        // remove variation
-        removeVariation();
+        // If product has model, remove model and saves changes.
+        if (productInfo.isHasModel() && !productInfo.getLotAvailable()) {
 
-        // Navigate to product detail screen
-        productManagementScreen.navigateToProductManagementScreen()
-                .navigateToProductDetailScreen(productName);
+            // remove variation
+            removeVariation();
 
-        // log
-        logger.info("Navigate to product detail screen again");
+            // Navigate to product detail screen
+            productManagementScreen.navigateToProductManagementScreen()
+                    .navigateToProductDetailScreen(productName);
+
+            // log
+            logger.info("Remove old variation and navigate to product detail again");
+        }
 
         return this;
-    }
-
-    void clearOldData() {
-//        // Remove product collections
-//        while (commonMobile.isShown(rsId_btnAddCollection, loc_icnRemoveCollections)) {
-//            commonMobile.click(rsId_btnAddCollection, loc_icnRemoveCollections);
-//        }
-//        logger.info("Remove old product collections");
-
-        // Remove variation
-        removeVariation();
-
-//        // Log
-//        logger.info("Remove old variations");
-//
-//        // Save changes
-//        commonMobile.click(rsId_btnSave);
     }
 
     void selectProductImages() {
@@ -273,13 +264,13 @@ public class EditProductScreen extends EditProductElement {
     void manageProductByLot() {
         if (!manageByIMEI) {
             // Get current manage by lot checkbox status
-            boolean status = commonMobile.isChecked(commonMobile.getElement(rsId_chkManageByLot));
+            boolean status = !commonMobile.isEnabled(rsId_chkManageByLot);
 
             // Manage product by lot
             if (manageByLot && !status) commonMobile.click(rsId_chkManageByLot);
 
             // Log
-            logger.info("Manage product by lot date: {}", manageByLot);
+            logger.info("Manage product by lot date: {}", manageByLot || status);
         } else logger.info("Lot only support for the product has inventory managed by product");
     }
 
@@ -382,26 +373,35 @@ public class EditProductScreen extends EditProductElement {
     }
 
     void addVariations() {
-        // Navigate to Add/Edit variation
-        commonMobile.click(rsId_swVariations);
-        commonMobile.click(rsId_btnAddVariation);
+        // If product is managed by Lot, that is not allow to remove variation
+        if (this.hasLot) {
+            logger.info("Product that is managed by Lot, do not allow add variation");
+        } else {
+            // Else navigate to Add/Edit variation screen to add new variation
+            commonMobile.click(rsId_swVariations);
+            commonMobile.click(rsId_btnAddVariation);
 
-        // Add/Edit variation
-        new CRUDVariationScreen(driver).addVariation(defaultLanguage);
+            // Add/Edit variation
+            new CRUDVariationScreen(driver).addVariation(defaultLanguage);
+        }
     }
 
     void removeVariation() {
+        // Move into variation section
+        commonMobile.getElement(rsId_lblVariation);
+
+        // If product is managed by Lot, that is not allow to remove variation
+        if (this.hasLot) {
+            logger.info("Product that is managed by Lot, do not allow remove variation");
+        }
         // If product has variation, remove old variation
-        if (commonMobile.isShown(rsId_btnAddVariation)) {
+        else if (commonMobile.isShown(rsId_imgVariation)) {
             // Navigate to Add/Edit variation
             commonMobile.click(rsId_btnAddVariation);
 
             // Remove all variations and save changes
             new CRUDVariationScreen(driver).removeOldVariation()
                     .saveChanges();
-
-            // Log
-            logger.info("Remove old variations");
 
             // Save changes
             commonMobile.click(rsId_btnSave);
@@ -437,6 +437,14 @@ public class EditProductScreen extends EditProductElement {
     void completeUpdateProduct() {
         // Save all product information
         commonMobile.click(rsId_btnSave);
+
+        // If product are managed by lot, accept when warning shows
+        if (commonMobile.isShown(rsId_dlgWarningManagedByLot_btnOK)) {
+            commonMobile.click(rsId_dlgWarningManagedByLot_btnOK);
+
+            // Log
+            logger.info("Confirm managed by lot");
+        }
 
         // Wait product management screen loaded
         commonMobile.waitInvisible(rsId_prgLoading);

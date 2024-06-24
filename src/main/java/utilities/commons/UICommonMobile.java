@@ -62,7 +62,7 @@ public class UICommonMobile {
 
     public List<WebElement> getListElement(By locator) {
         try {
-            customWait(1000).until(ExpectedConditions.presenceOfElementLocated(locator));
+            customWait(3000).until(ExpectedConditions.presenceOfElementLocated(locator));
         } catch (TimeoutException ignore) {
         }
         return driver.findElements(locator).isEmpty()
@@ -246,6 +246,10 @@ public class UICommonMobile {
 
     public boolean isEnabled(By locator) {
         return getElement(locator).isEnabled();
+    }
+
+    public boolean isEnabled(String resourceId) {
+        return getElement(resourceId).isEnabled();
     }
 
     public boolean isEnabled(By locator, int index) {
