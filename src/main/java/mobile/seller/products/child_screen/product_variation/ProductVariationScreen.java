@@ -1,5 +1,7 @@
 package mobile.seller.products.child_screen.product_variation;
 
+import lombok.Data;
+import lombok.Getter;
 import mobile.seller.products.child_screen.inventory.InventoryScreen;
 import mobile.seller.products.child_screen.product_description.ProductDescriptionScreen;
 import mobile.seller.products.child_screen.select_image_popup.SelectImagePopup;
@@ -14,6 +16,7 @@ import utilities.model.dashboard.setting.branchInformation.BranchInfo;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextBoolean;
@@ -44,10 +47,25 @@ public class ProductVariationScreen extends ProductVariationElement {
         commonMobile = new UICommonMobile(driver);
     }
 
+    @Data
+    public static class VariationInfo {
+        private String modelCode;
+        private String name;
+        private String description;
+        private String barcode;
+        private long listingPrice;
+        private long sellingPrice;
+        private long costPrice;
+        private List<Integer> stockQuantity;
+        private String status;
+    }
+
     private static long getCurrentEpoch() {
         return Instant.now().toEpochMilli();
     }
 
+    @Getter
+    public static VariationInfo variationInfo;
     public ProductVariationScreen getVariationInformation(String defaultLanguage, BranchInfo branchInfo, boolean hasDiscount, boolean hasCostPrice, int variationIndex, ProductInfo productInfo) {
         // Get default language
         this.defaultLanguage = defaultLanguage;
@@ -73,6 +91,12 @@ public class ProductVariationScreen extends ProductVariationElement {
         // Log
         logger.info("Update information of '{}' variation", variationValue);
 
+        //Init variation information model
+        variationInfo = new VariationInfo();
+
+        // Get variation model code
+        variationInfo.setModelCode(productInfo.getVariationModelList().get(variationIndex));
+
         return this;
     }
 
@@ -95,9 +119,12 @@ public class ProductVariationScreen extends ProductVariationElement {
     }
 
     void updateVariationName() {
-        // Input product name
+        // Input variation name
         String name = "[%s][%s] Variation name %s".formatted(defaultLanguage, variationValue, getCurrentEpoch());
         commonMobile.sendKeys(rsId_txtVariationName, name);
+
+        // Get variation name
+        variationInfo.setName(name);
 
         // Log
         logger.info("Input variation name: {}", name);
@@ -108,11 +135,14 @@ public class ProductVariationScreen extends ProductVariationElement {
         boolean reuseParentDescription = nextBoolean();
 
         if (reuseParentDescription) {
+            // Get variation description
+            variationInfo.setDescription(productInfo.getMainProductDescriptionMap().get(defaultLanguage));
+
             // Log
             logger.info("Reuse parent description");
         } else {
             // Get current reuse description checkbox status
-            boolean status = commonMobile.isChecked( commonMobile.getElement(rsId_chkReuseProductDescription));
+            boolean status = commonMobile.isChecked(commonMobile.getElement(rsId_chkReuseProductDescription));
 
             // Uncheck reuse description checkbox
             if (status) commonMobile.click(rsId_chkReuseProductDescription);
@@ -124,10 +154,12 @@ public class ProductVariationScreen extends ProductVariationElement {
             String description = "[%s][%s] Variation description %s".formatted(defaultLanguage, variationValue, getCurrentEpoch());
             new ProductDescriptionScreen(driver).inputDescription(description);
 
+            // Get variation description
+            variationInfo.setDescription(description);
+
             // Log
             logger.info("Input variation description: {}", description);
         }
-
     }
 
     void updateVariationPrice() {
@@ -145,6 +177,11 @@ public class ProductVariationScreen extends ProductVariationElement {
         long costPrice = hasCostPrice ? nextLong(Math.max(sellingPrice, 1)) : 0;
         commonMobile.sendKeys(rsId_sctPrice, loc_txtVariationCostPrice, String.valueOf(costPrice));
         logger.info("Input variation cost price: %,d".formatted(costPrice));
+
+        // Get variation price
+        variationInfo.setListingPrice(listingPrice);
+        variationInfo.setSellingPrice(sellingPrice);
+        variationInfo.setCostPrice(costPrice);
     }
 
     void updateVariationSKU() {
@@ -163,6 +200,9 @@ public class ProductVariationScreen extends ProductVariationElement {
 
         // Log
         logger.info("Input variation barcode: {}", barcode);
+
+        // Get variation barcode
+        variationInfo.setBarcode(barcode);
     }
 
     void updateVariationStock(int... branchStock) {
@@ -173,6 +213,12 @@ public class ProductVariationScreen extends ProductVariationElement {
 
             // Add variation stock
             new InventoryScreen(driver).updateStock(productInfo.getManageInventoryByIMEI(), branchInfo, variationValue, branchStock);
+
+            // Get new stock quantity
+            List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
+                    .mapToObj(branchIndex -> (branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex])
+                    .toList();
+            variationInfo.setStockQuantity(stockQuantity);
         } else logger.info("Product is managed by lot, requiring stock updates in the lot screen.");
     }
 
@@ -188,6 +234,9 @@ public class ProductVariationScreen extends ProductVariationElement {
             commonMobile.click(rsId_btnDeactivate);
         }
 
+        // Get variation status
+        variationInfo.setStatus(newStatus);
+
         // Log
         logger.info("New variation's status: {}", newStatus);
     }
@@ -196,16 +245,9 @@ public class ProductVariationScreen extends ProductVariationElement {
         // Save all product information
         commonMobile.click(rsId_btnSave);
 
-        // Wait product management screen loaded
+        // Wait product detail screen loaded
         commonMobile.waitInvisible(rsId_prgLoading);
-
-        // Verify that product management screen is shown
-        assertCustomize.assertEquals(commonMobile.getCurrentActivity(),
-                goSELLERProductDetailActivity,
-                "Can not update variation");
-
-        // Assert
-        AssertCustomize.verifyTest();
+        commonMobile.waitUntilScreenLoaded(goSELLERProductDetailActivity);
     }
 
     public void updateVariationInformation(int... branchStock) {

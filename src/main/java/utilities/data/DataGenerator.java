@@ -213,6 +213,18 @@ public class DataGenerator {
         return variationList;
     }
 
+    public List<String> getVariationList(Map<String, List<String>> variationMap) {
+        List<List<String>> varValue = new ArrayList<>(variationMap.values());
+        List<String> variationList = new ArrayList<>(varValue.get(0));
+        if (varValue.size() > 1) {
+            for (int valueIndex = 1; valueIndex < varValue.size(); valueIndex++) {
+                variationList = new DataGenerator()
+                        .mixVariationValue(variationList, varValue.get(valueIndex));
+            }
+        }
+        return variationList;
+    }
+
     /**
      * Generates a Vietnamese phone number based on Epoch time
      * @return a {@code String} representing the randomly generated phone number

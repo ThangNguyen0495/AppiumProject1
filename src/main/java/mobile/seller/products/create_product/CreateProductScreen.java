@@ -1,5 +1,7 @@
 package mobile.seller.products.create_product;
 
+import api.Seller.products.all_products.APIAllProducts;
+import api.Seller.products.all_products.APIProductDetail;
 import api.Seller.setting.BranchManagement;
 import api.Seller.setting.StoreInformation;
 import lombok.SneakyThrows;
@@ -9,17 +11,24 @@ import mobile.seller.products.child_screen.edit_multiple.EditMultipleScreen;
 import mobile.seller.products.child_screen.inventory.InventoryScreen;
 import mobile.seller.products.child_screen.product_description.ProductDescriptionScreen;
 import mobile.seller.products.child_screen.select_image_popup.SelectImagePopup;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonMobile;
 import utilities.data.DataGenerator;
+import utilities.model.dashboard.products.productInfomation.ProductInfo;
 import utilities.model.dashboard.setting.branchInformation.BranchInfo;
+import utilities.model.dashboard.setting.storeInformation.StoreInfo;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
@@ -33,6 +42,8 @@ public class CreateProductScreen extends CreateProductElement {
     Logger logger = LogManager.getLogger();
     private static String defaultLanguage;
     private static BranchInfo branchInfo;
+    private static ProductInfo productInfo;
+    private static StoreInfo storeInfo;
 
     public CreateProductScreen(WebDriver driver) {
         // Get driver
@@ -44,13 +55,17 @@ public class CreateProductScreen extends CreateProductElement {
         // Init commons class
         commonMobile = new UICommonMobile(driver);
 
+        // Get store information
+        storeInfo = new StoreInformation(LoginScreen.getLoginInformation()).getInfo();
+
         // Get store default language
-        defaultLanguage = new StoreInformation(LoginScreen.getLoginInformation())
-                .getInfo()
-                .getDefaultLanguage();
+        defaultLanguage = storeInfo.getDefaultLanguage();
 
         // Get branch information
         branchInfo = new BranchManagement(LoginScreen.getLoginInformation()).getInfo();
+
+        // Init product information model
+        productInfo = new ProductInfo();
     }
 
     private boolean hideRemainingStock = false;
@@ -150,6 +165,11 @@ public class CreateProductScreen extends CreateProductElement {
         String name = "[%s][%s] Product name %s".formatted(defaultLanguage, manageByIMEI ? "IMEI" : "NORMAL", getCurrentEpoch());
         commonMobile.sendKeys(rsId_txtProductName, name);
 
+        // Get product name
+        Map<String, String> mainNameMap = new HashMap<>();
+        storeInfo.getStoreLanguageList().forEach(language -> mainNameMap.put(language, name));
+        productInfo.setMainProductNameMap(mainNameMap);
+
         // Log
         logger.info("Input product name: {}", name);
     }
@@ -161,6 +181,11 @@ public class CreateProductScreen extends CreateProductElement {
         // Input product description
         String description = "[%s] Product description %s".formatted(defaultLanguage, getCurrentEpoch());
         new ProductDescriptionScreen(driver).inputDescription(description);
+
+        // Get product description
+        Map<String, String> mainDescriptionMap = new HashMap<>();
+        storeInfo.getStoreLanguageList().forEach(language -> mainDescriptionMap.put(language, description));
+        productInfo.setMainProductDescriptionMap(mainDescriptionMap);
 
         // Log
         logger.info("Input product description: {}", description);
@@ -182,6 +207,11 @@ public class CreateProductScreen extends CreateProductElement {
         long costPrice = hasCostPrice ? nextLong(Math.max(sellingPrice, 1)) : 0;
         commonMobile.sendKeys(rsId_sctPrice, loc_txtWithoutVariationCostPrice, String.valueOf(costPrice));
         logger.info("Input without variation cost price: %,d".formatted(costPrice));
+
+        // Get product price
+        productInfo.setProductListingPrice(List.of(listingPrice));
+        productInfo.setProductSellingPrice(List.of(sellingPrice));
+        productInfo.setProductCostPrice(List.of(costPrice));
     }
 
     void inputWithoutVariationSKU() {
@@ -200,6 +230,9 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Log
         logger.info("Input without variation barcode: {}", barcode);
+
+        // Get product barcode
+        productInfo.setBarcodeList(List.of(barcode));
     }
 
     @SneakyThrows
@@ -212,6 +245,9 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Log
         logger.info("Hide remaining stock on online store config: {}", hideRemainingStock);
+
+        // Get hide remaining stock config
+        productInfo.setHideStock(hideRemainingStock);
     }
 
     @SneakyThrows
@@ -224,6 +260,9 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Log
         logger.info("Display out of stock config: {}", showOutOfStock);
+
+        // Get show out of stock config
+        productInfo.setShowOutOfStock(showOutOfStock);
     }
 
     void selectManageInventory() {
@@ -235,6 +274,9 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Log
         logger.info("Manage inventory by: {}", manageByIMEI ? "IMEI/Serial number" : "Product");
+
+        // Get manage inventory type
+        productInfo.setManageInventoryByIMEI(manageByIMEI);
     }
 
     void manageProductByLot() {
@@ -248,6 +290,9 @@ public class CreateProductScreen extends CreateProductElement {
             // Log
             logger.info("Manage product by lot date: {}", manageByLot);
         } else logger.info("Lot only support for the product has inventory managed by product");
+
+        // Get lot available
+        productInfo.setLotAvailable(manageByLot && !manageByIMEI);
     }
 
     void addWithoutVariationStock(int... branchStock) {
@@ -259,6 +304,15 @@ public class CreateProductScreen extends CreateProductElement {
             // Add without variation stock
             new InventoryScreen(driver).addStock(manageByIMEI, branchInfo, "", branchStock);
         } else logger.info("Product is managed by lot, requiring stock updates in the lot screen.");
+
+        // Get stock quantity
+        List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
+                .mapToObj(branchIndex ->
+                        (!manageByLot || manageByIMEI)
+                                ? ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex])
+                                : 0)
+                .toList();
+        productInfo.setProductStockQuantityMap(Map.of(String.valueOf(productInfo.getProductId()), stockQuantity));
     }
 
     void modifyShippingInformation() {
@@ -328,6 +382,12 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Log
         logger.info("In goSOCIAL configure: {}", showInGoSocial);
+
+        // Get platform config
+        productInfo.setOnApp(showOnApp);
+        productInfo.setOnWeb(showOnWeb);
+        productInfo.setInGoSocial(showInGoSocial);
+        productInfo.setInStore(showInStore);
     }
 
     void modifyPriority() {
@@ -355,6 +415,32 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Add/Edit variation
         new CRUDVariationScreen(driver).addVariation(defaultLanguage);
+
+        // Get variation map
+        Map<String, List<String>> variationMap = CRUDVariationScreen.getVariationMap();
+        String variationGroupName = variationMap.keySet().toString().replaceAll("[\\[\\]\\s]", "").replaceAll(",", "|");
+        List<String> variationValueList = new DataGenerator().getVariationList(variationMap);
+
+        // Get store information
+        StoreInfo storeInfo = new StoreInformation(LoginScreen.getLoginInformation()).getInfo();
+
+        // Init variation group map
+        Map<String, String> groupMap = new HashMap<>();
+
+        // Init variation value map
+        Map<String, List<String>> valueMap = new HashMap<>();
+
+        // Get variation group/value
+        storeInfo.getStoreLanguageList()
+                .parallelStream()
+                .forEach(languageKey -> {
+                    groupMap.put(languageKey, variationGroupName);
+                    valueMap.put(languageKey, variationValueList);
+                });
+
+        // Get variation information
+        productInfo.setVariationGroupNameMap(groupMap);
+        productInfo.setVariationValuesMap(valueMap);
     }
 
     void bulkUpdateVariations(int increaseNum, int... branchStock) {
@@ -369,12 +455,24 @@ public class CreateProductScreen extends CreateProductElement {
             EditMultipleScreen editMultipleScreen = new EditMultipleScreen(driver);
 
             // Bulk update price
-            editMultipleScreen.bulkUpdatePrice(hasDiscount);
+            long listingPrice = nextLong(MAX_PRICE);
+            long sellingPrice = hasDiscount ? nextLong(Math.max(listingPrice, 1)) : listingPrice;
+            editMultipleScreen.bulkUpdatePrice(listingPrice, sellingPrice);
+
+            // Get product price
+            productInfo.setProductListingPrice(IntStream.range(0, totalVariations).mapToLong(varIndex -> listingPrice).boxed().toList());
+            productInfo.setProductSellingPrice(IntStream.range(0, totalVariations).mapToLong(varIndex -> sellingPrice).boxed().toList());
+            productInfo.setProductCostPrice(IntStream.range(0, totalVariations).mapToLong(varIndex -> 0).boxed().toList());
 
             // Bulk update stock
             editMultipleScreen.bulkUpdateStock(manageByIMEI, manageByLot, branchInfo, increaseNum, branchStock);
 
-            // Save changes
+            // Get stock quantity
+            List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
+                    .mapToObj(branchIndex -> ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]) + branchIndex * increaseNum)
+                    .toList();
+            Map<String, List<Integer>> stockMap = IntStream.range(0, totalVariations).boxed().collect(Collectors.toMap(String::valueOf, variationIndex -> stockQuantity, (a, b) -> b));
+            productInfo.setProductStockQuantityMap(stockMap);
 
         } else {
             // When total variations = 1, Edit multiple button is hidden
@@ -389,11 +487,67 @@ public class CreateProductScreen extends CreateProductElement {
 
         // Wait product management screen loaded
         commonMobile.waitInvisible(rsId_prgLoading);
+        commonMobile.waitUntilScreenLoaded(goSELLERProductManagementActivity);
 
-        // Verify that product management screen is shown
-        assertCustomize.assertEquals(commonMobile.getCurrentActivity(),
-                goSELLERProductManagementActivity,
-                "Can not create product");
+        // If product are updated, check information after updating
+        // Get product ID
+        int productId = new APIAllProducts(LoginScreen.getLoginInformation()).searchProductIdByName(productInfo.getMainProductNameMap().get(defaultLanguage));
+
+        // Get current product information
+        ProductInfo currentInfo = new APIProductDetail(LoginScreen.getLoginInformation()).getInfo(productId);
+
+        // Check main product name
+        assertCustomize.assertEquals(productInfo.getMainProductNameMap(), currentInfo.getMainProductNameMap(),
+                "Main product name must be %s, but found %s".formatted(productInfo.getMainProductNameMap(), currentInfo.getMainProductNameMap()));
+
+        // Check main product description
+        assertCustomize.assertEquals(productInfo.getMainProductDescriptionMap(), currentInfo.getMainProductDescriptionMap(),
+                "Main product description must be %s, but found %s".formatted(productInfo.getMainProductDescriptionMap(), currentInfo.getMainProductDescriptionMap()));
+
+        // Check product listing price
+        assertCustomize.assertEquals(productInfo.getProductListingPrice(), currentInfo.getProductListingPrice(),
+                "Product listing price must be %s, but found %s".formatted(productInfo.getProductListingPrice(), currentInfo.getProductListingPrice()));
+
+        // Check product selling price
+        assertCustomize.assertEquals(productInfo.getProductSellingPrice(), currentInfo.getProductSellingPrice(),
+                "Product selling price must be %s, but found %s".formatted(productInfo.getProductSellingPrice(), currentInfo.getProductSellingPrice()));
+
+        // Check product cost price
+        assertCustomize.assertEquals(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice(),
+                "Product cost price must be %s, but found %s".formatted(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice()));
+
+        // Check product barcode
+        if (!productInfo.isHasModel()) {
+            assertCustomize.assertEquals(productInfo.getBarcodeList(), currentInfo.getBarcodeList(),
+                    "Product barcode must be %s, but found %s".formatted(productInfo.getBarcodeList(), currentInfo.getBarcodeList()));
+        }
+
+        // Check online store config
+        assertCustomize.assertEquals(productInfo.getShowOutOfStock(), currentInfo.getShowOutOfStock(),
+                "Show when out of stock config must be %s, but found %s".formatted(productInfo.getShowOutOfStock(), currentInfo.getShowOutOfStock()));
+        assertCustomize.assertEquals(productInfo.isHideStock(), currentInfo.isHideStock(),
+                "Hide remaining stock config must be %s, but found %s".formatted(productInfo.isHideStock(), currentInfo.isHideStock()));
+
+        // Check inventory
+        assertCustomize.assertEquals(productInfo.getManageInventoryByIMEI(), currentInfo.getManageInventoryByIMEI(),
+                "Manage inventory type must be %s, but found %s".formatted(productInfo.getManageInventoryByIMEI(), currentInfo.getManageInventoryByIMEI()));
+
+        assertCustomize.assertEquals(productInfo.getLotAvailable(), currentInfo.getLotAvailable(),
+                "Manage by lot must be %s, but found %s".formatted(productInfo.getLotAvailable(), currentInfo.getLotAvailable()));
+
+        // Check stock quantity
+        assertCustomize.assertTrue(CollectionUtils.isEqualCollection(productInfo.getProductStockQuantityMap().values(), currentInfo.getProductStockQuantityMap().values()),
+                "Product stock quantity must be %s, but found %s".formatted(productInfo.getProductStockQuantityMap().values(), currentInfo.getProductStockQuantityMap().values()));
+
+        // Check selling platform
+        assertCustomize.assertEquals(productInfo.getOnWeb(), currentInfo.getOnWeb(),
+                "Web config must be %s, but found %s".formatted(productInfo.getOnWeb(), currentInfo.getOnWeb()));
+        assertCustomize.assertEquals(productInfo.getOnApp(), currentInfo.getOnApp(),
+                "App config must be %s, but found %s".formatted(productInfo.getOnApp(), currentInfo.getOnApp()));
+        assertCustomize.assertEquals(productInfo.getInStore(), currentInfo.getInStore(),
+                "In-store config must be %s, but found %s".formatted(productInfo.getInStore(), currentInfo.getInStore()));
+        assertCustomize.assertEquals(productInfo.getInGoSocial(), currentInfo.getInGoSocial(),
+                "In GoSOCIAL config must be %s, but found %s".formatted(productInfo.getInGoSocial(), currentInfo.getInGoSocial()));
 
         // Assert
         AssertCustomize.verifyTest();

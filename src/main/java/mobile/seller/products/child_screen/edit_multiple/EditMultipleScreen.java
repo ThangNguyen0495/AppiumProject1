@@ -10,9 +10,6 @@ import utilities.model.dashboard.setting.branchInformation.BranchInfo;
 
 import java.util.stream.IntStream;
 
-import static org.apache.commons.lang.math.JVMRandom.nextLong;
-import static utilities.character_limit.CharacterLimit.MAX_PRICE;
-
 public class EditMultipleScreen extends EditMultipleElement {
     WebDriver driver;
     AssertCustomize assertCustomize;
@@ -25,7 +22,7 @@ public class EditMultipleScreen extends EditMultipleElement {
         commonMobile = new UICommonMobile(driver);
     }
 
-    public void bulkUpdatePrice(boolean hasDiscount) {
+    public void bulkUpdatePrice(long listingPrice, long sellingPrice) {
         // Open list actions
         commonMobile.click(loc_lblActions);
 
@@ -33,12 +30,10 @@ public class EditMultipleScreen extends EditMultipleElement {
         commonMobile.click(loc_lblUpdatePriceActions);
 
         // Input listing price
-        long listingPrice = nextLong(MAX_PRICE);
         commonMobile.sendKeys(loc_dlgUpdatePrice_txtListingPrice, String.valueOf(listingPrice));
         logger.info("Bulk listing price: %,d".formatted(listingPrice));
 
         // Input selling price
-        long sellingPrice = hasDiscount ? nextLong(Math.max(listingPrice, 1)) : listingPrice;
         commonMobile.sendKeys(loc_dlgUpdatePrice_txtSellingPrice, String.valueOf(sellingPrice));
         logger.info("Bulk selling price: %,d".formatted(sellingPrice));
 

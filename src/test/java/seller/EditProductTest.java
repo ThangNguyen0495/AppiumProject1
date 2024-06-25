@@ -345,7 +345,7 @@ public class EditProductTest extends BaseTest {
     @Test
     void UP_PRODUCT_G3_15_UpdateProductInformationByEachVariation() {
         // Get product ID for new test
-        productId = apiCreateProduct.createVariationProduct(false, 0).getProductID();
+        productId = 1287373;//apiCreateProduct.createVariationProduct(false, 0).getProductID();
 
         // Update each variation
         editProductScreen.navigateToProductDetailScreen(productId)

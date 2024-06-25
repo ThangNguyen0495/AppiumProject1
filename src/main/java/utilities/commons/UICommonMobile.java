@@ -25,7 +25,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfAllElementsLocatedBy;
 
@@ -170,7 +169,7 @@ public class UICommonMobile {
 
     public void click(String resourceId) {
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(getElement(resourceId))).click();
+            getElement(resourceId).click();
         } catch (StaleElementReferenceException ex) {
             getElement(resourceId).click();
         }
@@ -178,7 +177,7 @@ public class UICommonMobile {
 
     public void click(String parentResourceId, By locator) {
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(getElement(parentResourceId, locator))).click();
+            getElement(parentResourceId, locator).click();
         } catch (StaleElementReferenceException ex) {
             getElement(parentResourceId, locator).click();
         }
@@ -186,7 +185,7 @@ public class UICommonMobile {
 
     public void click(By locator, int index) {
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(getElement(locator, index))).click();
+           getElement(locator, index).click();
         } catch (StaleElementReferenceException ex) {
             getElement(locator, index).click();
         }
@@ -194,7 +193,7 @@ public class UICommonMobile {
 
     public void click(String parentResourceId, By locator, int index) {
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(getElement(parentResourceId, locator, index))).click();
+            getElement(parentResourceId, locator, index).click();
         } catch (StaleElementReferenceException ex) {
             getElement(parentResourceId, locator, index).click();
         }
@@ -321,7 +320,7 @@ public class UICommonMobile {
     }
 
     public void waitUntilScreenLoaded(String screenActivity) {
-        wait.until((ExpectedCondition<Boolean>) driver -> {
+        customWait(30000).until((ExpectedCondition<Boolean>) driver -> {
             AndroidDriver androidDriver = (AndroidDriver) driver;
             assert androidDriver != null;
             return Objects.requireNonNull(androidDriver.currentActivity()).equals(screenActivity);
@@ -329,16 +328,6 @@ public class UICommonMobile {
     }
 
     public String getCurrentActivity() {
-        String currentActivity = ((AndroidDriver) driver).currentActivity();
-        try {
-            customWait(3000).until((ExpectedCondition<Boolean>) driver -> {
-                AndroidDriver androidDriver = (AndroidDriver) driver;
-                assert androidDriver != null;
-                String activity = Optional.ofNullable(androidDriver.currentActivity()).orElse("");
-                return !(activity.isEmpty() ||  activity.equals(currentActivity));
-            });
-        } catch (TimeoutException ignored) {
-        }
         return ((AndroidDriver) driver).currentActivity();
     }
 
