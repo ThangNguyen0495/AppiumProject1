@@ -29,7 +29,7 @@ public class ProductManagementScreen extends ProductManagementElement {
 
     public ProductManagementScreen navigateToProductManagementScreen() {
         // Navigate to product management screen
-        commonMobile.navigateToScreen(goSELLERBundleId, goSELLERProductManagementActivity);
+        commonMobile.navigateToScreenUsingScreenActivity(goSELLERBundleId, goSELLERProductManagementActivity);
 
         // Log
         logger.info("Navigate to product management screen.");

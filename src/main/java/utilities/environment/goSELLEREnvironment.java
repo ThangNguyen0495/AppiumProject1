@@ -9,4 +9,5 @@ public class goSELLEREnvironment {
     public final static String goSELLERCreateProductActivity = "com.mediastep.gosellseller.modules.upload_product.CreateProductActivity";
     public final static String goSELLERProductManagementActivity = "com.mediastep.gosellseller.modules.product_management.ProductManagementActivity";
     public final static String goSELLERProductDetailActivity = "com.mediastep.gosellseller.modules.upload_product.CreateProductActivity";
+    public final static String goSELLERProductBranchInventoryActivity = "com.mediastep.gosellseller.modules.upload_product.inventory";
    }

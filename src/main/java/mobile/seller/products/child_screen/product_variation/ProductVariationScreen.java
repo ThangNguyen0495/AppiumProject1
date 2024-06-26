@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextBoolean;
 import static utilities.character_limit.CharacterLimit.MAX_PRICE;
+import static utilities.environment.goSELLEREnvironment.goSELLERProductBranchInventoryActivity;
 import static utilities.environment.goSELLEREnvironment.goSELLERProductDetailActivity;
 
 public class ProductVariationScreen extends ProductVariationElement {
@@ -49,7 +50,7 @@ public class ProductVariationScreen extends ProductVariationElement {
 
     @Data
     public static class VariationInfo {
-        private String modelCode;
+        private String variation;
         private String name;
         private String description;
         private String barcode;
@@ -57,7 +58,7 @@ public class ProductVariationScreen extends ProductVariationElement {
         private long sellingPrice;
         private long costPrice;
         private List<Integer> stockQuantity;
-        private String status;
+        private String status = "ACTIVE";
     }
 
     private static long getCurrentEpoch() {
@@ -66,6 +67,7 @@ public class ProductVariationScreen extends ProductVariationElement {
 
     @Getter
     public static VariationInfo variationInfo;
+
     public ProductVariationScreen getVariationInformation(String defaultLanguage, BranchInfo branchInfo, boolean hasDiscount, boolean hasCostPrice, int variationIndex, ProductInfo productInfo) {
         // Get default language
         this.defaultLanguage = defaultLanguage;
@@ -95,7 +97,7 @@ public class ProductVariationScreen extends ProductVariationElement {
         variationInfo = new VariationInfo();
 
         // Get variation model code
-        variationInfo.setModelCode(productInfo.getVariationModelList().get(variationIndex));
+        variationInfo.setVariation(variationValue);
 
         return this;
     }
@@ -205,6 +207,23 @@ public class ProductVariationScreen extends ProductVariationElement {
         variationInfo.setBarcode(barcode);
     }
 
+    void addVariationStock(int... branchStock) {
+        // Check product is managed by lot or not
+        if (!productInfo.getLotAvailable() || productInfo.getManageInventoryByIMEI()) {
+            // Navigate to inventory screen
+            commonMobile.navigateToScreenUsingWebElement(rsId_btnInventory, goSELLERProductBranchInventoryActivity);
+
+            // Add variation stock
+            new InventoryScreen(driver).addStock(productInfo.getManageInventoryByIMEI(), branchInfo, variationValue, branchStock);
+        } else logger.info("Product is managed by lot, requiring add stocks in the lot screen.");
+
+        // Get new stock quantity
+        List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
+                .mapToObj(branchIndex -> productInfo.getLotAvailable() ? 0 : (branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex])
+                .toList();
+        variationInfo.setStockQuantity(stockQuantity);
+    }
+
     void updateVariationStock(int... branchStock) {
         // Check product is managed by lot or not
         if (!productInfo.getLotAvailable() || productInfo.getManageInventoryByIMEI()) {
@@ -213,32 +232,34 @@ public class ProductVariationScreen extends ProductVariationElement {
 
             // Add variation stock
             new InventoryScreen(driver).updateStock(productInfo.getManageInventoryByIMEI(), branchInfo, variationValue, branchStock);
-
-            // Get new stock quantity
-            List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
-                    .mapToObj(branchIndex -> (branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex])
-                    .toList();
-            variationInfo.setStockQuantity(stockQuantity);
         } else logger.info("Product is managed by lot, requiring stock updates in the lot screen.");
+
+        // Get new stock quantity
+        List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
+                .mapToObj(branchIndex -> productInfo.getLotAvailable() ? 0 : ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]))
+                .toList();
+        variationInfo.setStockQuantity(stockQuantity);
     }
 
     void updateVariationStatus() {
-        // Get new variation status
-        String newStatus = nextBoolean() ? "ACTIVE" : "DEACTIVE";
+        if (commonMobile.isShown(rsId_btnDeactivate)) {
+            // Get new variation status
+            String newStatus = nextBoolean() ? "ACTIVE" : "DEACTIVE";
 
-        // Get current variation status
-        String currentStatus = productInfo.getVariationStatus().get(variationIndex);
+            // Get current variation status
+            String currentStatus = productInfo.getVariationStatus().get(variationIndex);
 
-        // Update variation status
-        if (!currentStatus.equals(newStatus)) {
-            commonMobile.click(rsId_btnDeactivate);
+            // Update variation status
+            if (!currentStatus.equals(newStatus)) {
+                commonMobile.click(rsId_btnDeactivate);
+            }
+
+            // Get variation status
+            variationInfo.setStatus(newStatus);
+
+            // Log
+            logger.info("New variation's status: {}", newStatus);
         }
-
-        // Get variation status
-        variationInfo.setStatus(newStatus);
-
-        // Log
-        logger.info("New variation's status: {}", newStatus);
     }
 
     void completeUpdateVariation() {
@@ -248,6 +269,17 @@ public class ProductVariationScreen extends ProductVariationElement {
         // Wait product detail screen loaded
         commonMobile.waitInvisible(rsId_prgLoading);
         commonMobile.waitUntilScreenLoaded(goSELLERProductDetailActivity);
+    }
+
+    public void addVariationInformation(int... branchStock) {
+        selectVariationImages();
+        updateVariationName();
+        updateVariationDescription();
+        updateVariationPrice();
+//        updateVariationSKU();
+        updateVariationBarcode();
+        addVariationStock(branchStock);
+        completeUpdateVariation();
     }
 
     public void updateVariationInformation(int... branchStock) {

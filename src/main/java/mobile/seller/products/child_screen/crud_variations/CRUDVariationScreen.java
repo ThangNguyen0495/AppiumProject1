@@ -32,7 +32,6 @@ public class CRUDVariationScreen extends CRUDVariationElement {
             commonMobile.click(rsId_btnRemoveVariationGroup2);
         if (commonMobile.isShown(rsId_btnRemoveVariationGroup1))
             commonMobile.click(rsId_btnRemoveVariationGroup1);
-        logger.info("Remove old variations");
 
         return this;
     }

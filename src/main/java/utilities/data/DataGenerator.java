@@ -2,7 +2,6 @@ package utilities.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import utilities.utils.jsonFileUtility;
 
@@ -19,6 +18,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.apache.commons.lang.math.RandomUtils.nextInt;
 import static utilities.character_limit.CharacterLimit.*;
 
 public class DataGenerator {
@@ -155,23 +155,23 @@ public class DataGenerator {
         return IntStream.range(0, size).mapToObj(i -> "%s_var%s_%s".formatted(defaultLanguage, index, i + 1)).toList();
     }
 
+    public List<Integer> getNumOfValuesOnEachGroup(int numberOfVariations, int numberOfGroups) {
+        if (numberOfGroups == 1) return List.of(numberOfVariations);
+        int factor = IntStream.range(2, numberOfVariations).filter(i -> numberOfVariations % i == 0).findFirst().orElse(1);
+        return List.of(factor, numberOfVariations / factor);
+    }
     /**
      * generate variation maps (variation name : get variation value)
      */
     public Map<String, List<String>> randomVariationMap(String defaultLanguage) {
-        // generate number of variation
-        int variationNum = RandomUtils.nextInt(MAX_VARIATION_QUANTITY) + 1;
+        // generate number of variation groups
+        int numberOfGroups = nextInt(MAX_VARIATION_QUANTITY) + 1;
 
-        // init get number of each variation
-        List<Integer> numberOfVariationValue = new ArrayList<>();
+        // init number of variation values
+        int numberOfVariations = 1;//nextInt((numberOfGroups == 1) ? MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION : MAX_VARIATION_QUANTITY_FOR_ALL_VARIATIONS) + 1;
 
-        // generate number variation value of first variation
-        numberOfVariationValue.add(RandomUtils.nextInt(MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION) + 1);
-
-        // get number variation value of other variation
-        IntStream.range(1, variationNum)
-                .map(groupIndex -> IntStream.range(0, groupIndex).map(numberOfVariationValue::get).reduce(1, (a, b) -> a * b))
-                .forEach(prevMulti -> numberOfVariationValue.add(RandomUtils.nextInt(Math.min((MAX_VARIATION_QUANTITY_FOR_ALL_VARIATIONS / prevMulti), MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION)) + 1));
+        // get number of value of each group variation
+        List<Integer> numberOfVariationValue = getNumOfValuesOnEachGroup(numberOfVariations, numberOfGroups);
 
         // generate random data for variation map
         return new TreeMap<>(IntStream.range(0, numberOfVariationValue.size())

@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static mobile.seller.products.child_screen.product_variation.ProductVariationScreen.VariationInfo;
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 import static utilities.character_limit.CharacterLimit.MAX_PRICE;
@@ -520,8 +519,9 @@ public class EditProductScreen extends EditProductElement {
             productInfo.setProductStockQuantityMap(stockMap);
 
         } else {
-            // When total variations = 1, Edit multiple button is hidden
-            logger.info("Can not bulk actions when total of variations is 1.");
+            // Can not bulk actions when total of variations is 1
+            // So we must be updated variation information at that's detail screen
+            updateVariationInformation(branchStock);
         }
 
     }
@@ -598,11 +598,15 @@ public class EditProductScreen extends EditProductElement {
 
         // Check variation information
         if (updateVariationInformation) {
-            assertCustomize.assertEquals(productInfo.getVersionNameMap(), currentInfo.getVersionNameMap(),
-                    "Variation version name must be %s, but found %s".formatted(productInfo.getVersionNameMap(), currentInfo.getVersionNameMap()));
+            List<String> actualVersionNames = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            List<String> expectedVersionNames = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionNames, expectedVersionNames),
+                    "Variation version name must be %s, but found %s".formatted(expectedVersionNames, actualVersionNames));
 
-            assertCustomize.assertEquals(productInfo.getVersionDescriptionMap(), currentInfo.getVersionDescriptionMap(),
-                    "Variation version description must be %s, but found %s".formatted(productInfo.getVersionDescriptionMap(), currentInfo.getVersionDescriptionMap()));
+            List<String> actualVersionDescriptions = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            List<String> expectedVersionDescriptions = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionDescriptions, expectedVersionDescriptions),
+                    "Variation version description must be %s, but found %s".formatted(expectedVersionDescriptions, actualVersionDescriptions));
 
             assertCustomize.assertEquals(productInfo.getVariationStatus(), currentInfo.getVariationStatus(),
                     "Variation status must be %s, but found %s".formatted(productInfo.getVariationStatus(), currentInfo.getVariationStatus()));
@@ -613,6 +617,7 @@ public class EditProductScreen extends EditProductElement {
     }
 
     public void updateProductWithoutVariation(int... branchStock) {
+
         removeOldVariations();
         selectProductImages();
         inputProductName();
@@ -646,9 +651,17 @@ public class EditProductScreen extends EditProductElement {
         completeUpdateProduct();
     }
 
+    public void updateEachVariationInformation(int... branchStock) {
+        // Update variation information
+        updateVariationInformation(branchStock);
+
+        // Save changes
+        completeUpdateProduct();
+    }
+
     boolean updateVariationInformation = false;
 
-    public void updateEachVariationInformation(int... branchStock) {
+    void updateVariationInformation(int... branchStock) {
         // Set update variation information flag
         updateVariationInformation = true;
 
@@ -656,10 +669,10 @@ public class EditProductScreen extends EditProductElement {
         ProductVariationScreen productVariationScreen = new ProductVariationScreen(driver);
 
         // Init variation information model
-        List<VariationInfo> variationInfo = new ArrayList<>();
+        List<ProductVariationScreen.VariationInfo> variationInfo = new ArrayList<>();
 
         // Update variation information
-        IntStream.range(0, productInfo.getVariationModelList().size()).forEach(variationIndex -> {
+        IntStream.range(0, productInfo.getVariationValuesMap().get(defaultLanguage).size()).forEach(variationIndex -> {
             // Navigate to variation detail screen
             commonMobile.click(rsId_lblVariation, loc_imgVariation, variationIndex);
 
@@ -671,8 +684,8 @@ public class EditProductScreen extends EditProductElement {
         });
 
         // Init variation information
-        Map<String, Map<String, String>> versionNameMap = new HashMap<>(productInfo.getVersionNameMap());
-        Map<String, Map<String, String>> versionDescriptionMap = new HashMap<>(productInfo.getVersionDescriptionMap());
+        Map<String, Map<String, String>> versionNameMap = new HashMap<>();
+        Map<String, Map<String, String>> versionDescriptionMap = new HashMap<>();
         Map<String, List<Integer>> stockQuantityMap = new HashMap<>();
         List<Long> listingPrices = new ArrayList<>();
         List<Long> sellingPrices = new ArrayList<>();
@@ -681,10 +694,10 @@ public class EditProductScreen extends EditProductElement {
         List<String> status = new ArrayList<>();
 
         // Get new variation information
-        for (VariationInfo info : variationInfo) {
-            versionNameMap.put(info.getModelCode(), Map.of(defaultLanguage, info.getName()));
-            versionDescriptionMap.put(info.getModelCode(), Map.of(defaultLanguage, info.getDescription()));
-            stockQuantityMap.put(info.getModelCode(), info.getStockQuantity());
+        for (ProductVariationScreen.VariationInfo info : variationInfo) {
+            versionNameMap.put(info.getVariation(), Map.of(defaultLanguage, info.getName()));
+            versionDescriptionMap.put(info.getVariation(), Map.of(defaultLanguage, info.getDescription()));
+            stockQuantityMap.put(info.getVariation(), info.getStockQuantity());
             listingPrices.add(info.getListingPrice());
             sellingPrices.add(info.getSellingPrice());
             costPrices.add(info.getCostPrice());
@@ -693,14 +706,11 @@ public class EditProductScreen extends EditProductElement {
         }
         productInfo.setVersionNameMap(versionNameMap);
         productInfo.setVersionDescriptionMap(versionDescriptionMap);
-        if (!productInfo.getLotAvailable()) productInfo.setProductStockQuantityMap(stockQuantityMap);
+        if (!hasLot) productInfo.setProductStockQuantityMap(stockQuantityMap);
         productInfo.setProductListingPrice(listingPrices);
         productInfo.setProductSellingPrice(sellingPrices);
         productInfo.setProductCostPrice(costPrices);
         productInfo.setBarcodeList(barcodes);
         productInfo.setVariationStatus(status);
-
-        // Save changes
-        completeUpdateProduct();
     }
 }

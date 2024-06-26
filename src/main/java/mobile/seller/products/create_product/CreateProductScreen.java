@@ -10,6 +10,7 @@ import mobile.seller.products.child_screen.crud_variations.CRUDVariationScreen;
 import mobile.seller.products.child_screen.edit_multiple.EditMultipleScreen;
 import mobile.seller.products.child_screen.inventory.InventoryScreen;
 import mobile.seller.products.child_screen.product_description.ProductDescriptionScreen;
+import mobile.seller.products.child_screen.product_variation.ProductVariationScreen;
 import mobile.seller.products.child_screen.select_image_popup.SelectImagePopup;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +31,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static mobile.seller.products.child_screen.product_variation.ProductVariationScreen.VariationInfo;
 import static org.apache.commons.lang.math.JVMRandom.nextLong;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 import static utilities.character_limit.CharacterLimit.MAX_PRICE;
@@ -135,7 +137,7 @@ public class CreateProductScreen extends CreateProductElement {
 
     public CreateProductScreen navigateToCreateProductScreen() {
         // Navigate to create product screen
-        commonMobile.navigateToScreen(goSELLERBundleId, goSELLERCreateProductActivity);
+        commonMobile.navigateToScreenUsingScreenActivity(goSELLERBundleId, goSELLERCreateProductActivity);
 
         // Log
         logger.info("Navigate to create product screen.");
@@ -443,12 +445,38 @@ public class CreateProductScreen extends CreateProductElement {
         productInfo.setVariationValuesMap(valueMap);
     }
 
+    boolean updateEachVariationInformation = false;
+
     void bulkUpdateVariations(int increaseNum, int... branchStock) {
         // Get total variations
         int totalVariations = CRUDVariationScreen.getVariationMap().values().stream().mapToInt(List::size).reduce(1, (a, b) -> a * b);
 
-        // Navigate to edit multiple screen
-        if (totalVariations > 1) {
+        // Set update variation information flag
+        updateEachVariationInformation = (totalVariations == 1);
+
+        // Update variation information at product variation screen
+        if (updateEachVariationInformation) {
+            // Init variation POM
+            ProductVariationScreen productVariationScreen = new ProductVariationScreen(driver);
+
+            // Navigate to variation detail screen to update variation information
+            commonMobile.click(rsId_lblVariation, loc_imgVariation, 0);
+
+            // Update variation information
+            productVariationScreen.getVariationInformation(defaultLanguage, branchInfo, hasDiscount, hasCostPrice, 0, productInfo)
+                    .addVariationInformation(branchStock);
+
+            // Get new variation information
+            VariationInfo info = ProductVariationScreen.getVariationInfo();
+            productInfo.setVersionNameMap(Map.of(info.getVariation(), Map.of(defaultLanguage, info.getName())));
+            productInfo.setVersionDescriptionMap(Map.of(info.getVariation(), Map.of(defaultLanguage, info.getDescription())));
+            productInfo.setProductStockQuantityMap(Map.of(info.getVariation(), info.getStockQuantity()));
+            productInfo.setProductListingPrice(List.of(info.getListingPrice()));
+            productInfo.setProductSellingPrice(List.of(info.getSellingPrice()));
+            productInfo.setProductCostPrice(List.of(info.getCostPrice()));
+            productInfo.setBarcodeList(List.of(info.getBarcode()));
+        } else { // Update variation information at edit multiple screen
+            // Navigate to edit multiple screen
             commonMobile.click(rsId_btnEditMultiple);
 
             // Init edit multiple model
@@ -469,16 +497,11 @@ public class CreateProductScreen extends CreateProductElement {
 
             // Get stock quantity
             List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
-                    .mapToObj(branchIndex -> ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]) + branchIndex * increaseNum)
+                    .mapToObj(branchIndex -> (manageByIMEI || manageByLot) ? 0 : (((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]) + (branchIndex * increaseNum)))
                     .toList();
             Map<String, List<Integer>> stockMap = IntStream.range(0, totalVariations).boxed().collect(Collectors.toMap(String::valueOf, variationIndex -> stockQuantity, (a, b) -> b));
             productInfo.setProductStockQuantityMap(stockMap);
-
-        } else {
-            // When total variations = 1, Edit multiple button is hidden
-            logger.info("Can not bulk actions when total of variations is 1.");
         }
-
     }
 
     void completeCreateProduct() {
@@ -517,9 +540,19 @@ public class CreateProductScreen extends CreateProductElement {
                 "Product cost price must be %s, but found %s".formatted(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice()));
 
         // Check product barcode
-        if (!productInfo.isHasModel()) {
+        if (!currentInfo.isHasModel() || updateEachVariationInformation) {
             assertCustomize.assertEquals(productInfo.getBarcodeList(), currentInfo.getBarcodeList(),
                     "Product barcode must be %s, but found %s".formatted(productInfo.getBarcodeList(), currentInfo.getBarcodeList()));
+
+            List<String> actualVersionNames = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            List<String> expectedVersionNames = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionNames, expectedVersionNames),
+                    "Variation version name must be %s, but found %s".formatted(expectedVersionNames, actualVersionNames));
+
+            List<String> actualVersionDescriptions = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            List<String> expectedVersionDescriptions = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionDescriptions, expectedVersionDescriptions),
+                    "Variation version description must be %s, but found %s".formatted(expectedVersionDescriptions, actualVersionDescriptions));
         }
 
         // Check online store config

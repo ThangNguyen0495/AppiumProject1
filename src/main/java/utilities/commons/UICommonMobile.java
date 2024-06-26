@@ -169,7 +169,7 @@ public class UICommonMobile {
 
     public void click(String resourceId) {
         try {
-            getElement(resourceId).click();
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(resourceId))).click();
         } catch (StaleElementReferenceException ex) {
             getElement(resourceId).click();
         }
@@ -177,7 +177,7 @@ public class UICommonMobile {
 
     public void click(String parentResourceId, By locator) {
         try {
-            getElement(parentResourceId, locator).click();
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(parentResourceId, locator))).click();
         } catch (StaleElementReferenceException ex) {
             getElement(parentResourceId, locator).click();
         }
@@ -185,7 +185,7 @@ public class UICommonMobile {
 
     public void click(By locator, int index) {
         try {
-           getElement(locator, index).click();
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(locator, index))).click();
         } catch (StaleElementReferenceException ex) {
             getElement(locator, index).click();
         }
@@ -193,7 +193,7 @@ public class UICommonMobile {
 
     public void click(String parentResourceId, By locator, int index) {
         try {
-            getElement(parentResourceId, locator, index).click();
+            wait.until(ExpectedConditions.elementToBeClickable(getElement(parentResourceId, locator, index))).click();
         } catch (StaleElementReferenceException ex) {
             getElement(parentResourceId, locator, index).click();
         }
@@ -388,7 +388,7 @@ public class UICommonMobile {
         ((StartsActivity) driver).startActivity(activity);
     }
 
-    public void navigateToScreen(String appPackage, String activity) {
+    public void navigateToScreenUsingScreenActivity(String appPackage, String activity) {
         // Navigate to screen by activity
         if (!((AndroidDriver) driver).currentActivity().equals(activity)) {
             relaunchApp(appPackage, activity);
@@ -440,4 +440,31 @@ public class UICommonMobile {
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id(resourceId)));
     }
 
+    public void navigateToScreenUsingWebElement(String resourceId, String screenActivity) {
+        click(resourceId);
+        if (((AndroidDriver) driver).currentActivity().equals(screenActivity)) {
+            navigateToScreenUsingWebElement(resourceId, screenActivity);
+        }
+    }
+
+    public void navigateToScreenUsingWebElement(String parentResourceId, By locator, String screenActivity) {
+        click(parentResourceId, locator);
+        if (((AndroidDriver) driver).currentActivity().equals(screenActivity)) {
+            navigateToScreenUsingWebElement(parentResourceId, locator, screenActivity);
+        }
+    }
+
+    public void navigateToScreenUsingWebElement(By locator, int index, String screenActivity) {
+        click(locator, index);
+        if (((AndroidDriver) driver).currentActivity().equals(screenActivity)) {
+            navigateToScreenUsingWebElement(locator, index, screenActivity);
+        }
+    }
+
+    public void navigateToScreenUsingWebElement(String parentResourceId, By locator, int index, String screenActivity) {
+        click(parentResourceId, locator, index);
+        if (((AndroidDriver) driver).currentActivity().equals(screenActivity)) {
+            navigateToScreenUsingWebElement(parentResourceId, locator, index, screenActivity);
+        }
+    }
 }
