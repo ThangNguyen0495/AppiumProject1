@@ -540,19 +540,9 @@ public class CreateProductScreen extends CreateProductElement {
                 "Product cost price must be %s, but found %s".formatted(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice()));
 
         // Check product barcode
-        if (!currentInfo.isHasModel() || updateEachVariationInformation) {
+        if (!currentInfo.isHasModel()) {
             assertCustomize.assertEquals(productInfo.getBarcodeList(), currentInfo.getBarcodeList(),
                     "Product barcode must be %s, but found %s".formatted(productInfo.getBarcodeList(), currentInfo.getBarcodeList()));
-
-            List<String> actualVersionNames = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            List<String> expectedVersionNames = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionNames, expectedVersionNames),
-                    "Variation version name must be %s, but found %s".formatted(expectedVersionNames, actualVersionNames));
-
-            List<String> actualVersionDescriptions = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            List<String> expectedVersionDescriptions = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionDescriptions, expectedVersionDescriptions),
-                    "Variation version description must be %s, but found %s".formatted(expectedVersionDescriptions, actualVersionDescriptions));
         }
 
         // Check online store config
@@ -582,6 +572,18 @@ public class CreateProductScreen extends CreateProductElement {
         assertCustomize.assertEquals(productInfo.getInGoSocial(), currentInfo.getInGoSocial(),
                 "In GoSOCIAL config must be %s, but found %s".formatted(productInfo.getInGoSocial(), currentInfo.getInGoSocial()));
 
+        // Check variation information
+        if (updateEachVariationInformation) {
+            List<String> actualVersionNames = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            List<String> expectedVersionNames = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionNames, expectedVersionNames),
+                    "Variation version name must be %s, but found %s".formatted(expectedVersionNames, actualVersionNames));
+
+            List<String> actualVersionDescriptions = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            List<String> expectedVersionDescriptions = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionDescriptions, expectedVersionDescriptions),
+                    "Variation version description must be %s, but found %s".formatted(expectedVersionDescriptions, actualVersionDescriptions));
+        }
         // Assert
         AssertCustomize.verifyTest();
     }
