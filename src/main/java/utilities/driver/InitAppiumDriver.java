@@ -4,7 +4,11 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import utilities.cmd.CommandWindows;
+import utilities.get_port.FreePort;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,6 +19,7 @@ import static utilities.environment.goSELLEREnvironment.goSELLERLoginActivity;
 
 
 public class InitAppiumDriver {
+	Logger logger = LogManager.getLogger();
 	private final static String url = "http://127.0.0.1:4723/wd/hub";
 
 	/**
@@ -40,6 +45,29 @@ public class InitAppiumDriver {
 		capabilities.setCapability("resetOnSessionStartOnly", "true");
 		capabilities.setCapability("autoGrantPermissions","true");
 		capabilities.setCapability("automationName", "UIAutomator2");
+		if (udid.contains(":")) {
+			// Get system port
+			int systemPort = FreePort.get();
+
+			// Add systemPort config
+			capabilities.setCapability("systemPort", systemPort);
+
+			// Log
+			logger.info("Appium system port: {}", systemPort);
+
+			// Get adb port
+			int adbPort = FreePort.get();
+			if (adbPort == systemPort) adbPort = FreePort.get();
+
+			// Forward devices to new adb port
+			CommandWindows.execute("adb -P %s connect %s".formatted(adbPort, udid));
+
+			// Add adbPort config
+			capabilities.setCapability("adbPort", adbPort);
+
+			// Log
+			logger.info("Appium adbPort: {}", adbPort);
+		}
 		// Fix startActivity issue
 		capabilities.setCapability("appWaitActivity","*");
         return getAppiumDriver(capabilities, url);
