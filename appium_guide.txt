@@ -39,6 +39,7 @@
     - adb uninstall io.appium.uiautomator2.server.test
     - adb uninstall io.appium.unlock
     - adb uninstall io.appium.settings
+    ADB documentation: https://android.googlesource.com/platform/packages/modules/adb/+/refs/heads/master/docs/user/adb.1.md
 
 4. Get package activity
     - cd \Sdk\build-tools\<sdk_version>
