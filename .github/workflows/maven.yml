@@ -34,7 +34,7 @@ jobs:
 
     - name: Set up Android Emulator
       run: |
-        echo y | "%ANDROID_HOME%\tools\bin\sdkmanager" "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
+        echo y | "%ANDROID_HOME%\tools\bin\sdkmanager" --sdk_root="%ANDROID_HOME%" "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
