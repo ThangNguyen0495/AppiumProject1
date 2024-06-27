@@ -1,0 +1,47 @@
+name: Android Tests on Windows
+
+on:
+  push:
+    branches:
+      - Dev
+  pull_request:
+    branches:
+      - Dev
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    
+    - name: Download and install Genymotion
+      run: |
+        curl -LO https://dl.genymotion.com/releases/genymotion-3.2.1/genymotion-3.2.1-vbox.exe
+        Start-Process -Wait -FilePath .\genymotion-3.2.1-vbox.exe -ArgumentList '/S'
+    
+    - name: Start Genymotion Emulator
+      run: |
+        "C:\Program Files\Genymobile\Genymotion\player" --vm-name "emulator" &
+
+    - name: Install Android SDK
+      run: |
+        choco install android-sdk
+        choco install android-sdk-tools
+        choco install android-ndk
+
+    - name: Install Android dependencies
+      run: |
+        sdkmanager --install "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+
+    - name: Build and test
+      run: |
+        mvn clean install
+        mvn test
