@@ -27,43 +27,47 @@ jobs:
 
     - name: Set up Android SDK
       run: |
-        setx ANDROID_HOME "C:\path\to\your\android-sdk" /M
+        choco install -y android-sdk
+        echo y | "%ANDROID_HOME%\tools\bin\sdkmanager" "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
+        setx ANDROID_HOME "%ANDROID_HOME%" /M
         refreshenv
-        sdkmanager "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-      shell: cmd
+        ANDROID_HOME: "C:\path\to\your\android-sdk"
+      shell: powershell
 
     - name: Create AVD
       run: |
-        avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "Nexus 6"
+        echo no | "%ANDROID_HOME%\tools\bin\avdmanager" create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "Nexus 6"
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-      shell: cmd
+        ANDROID_HOME: "C:\path\to\your\android-sdk"
+      shell: powershell
 
     - name: Start emulator
       run: |
         start /B emulator -avd test -no-window -no-snapshot -no-boot-anim -no-audio
         adb wait-for-device
         adb shell input keyevent 82
-      shell: cmd
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+        ANDROID_HOME: "C:\path\to\your\android-sdk"
+      shell: powershell
 
     - name: Install dependencies
       run: mvn clean install -DskipTests
-      shell: cmd
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+      shell: powershell
 
     - name: Start Appium server
       run: npx appium --relaxed-security &
-      shell: cmd
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+      shell: powershell
 
     - name: Run tests
       run: mvn test
-      shell: cmd
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+      shell: powershell
