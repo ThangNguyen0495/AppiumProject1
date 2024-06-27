@@ -28,15 +28,13 @@ jobs:
     - name: Set up Android SDK
       run: |
         choco install -y android-sdk
-        $env:ChocolateyInstall\helpers\chocolateyProfile.psm1  # Load Chocolatey profile script
-      shell: powershell
+        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
     - name: Set up Android Emulator
       run: |
         echo y | "%ANDROID_HOME%\tools\bin\sdkmanager" "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
-      shell: powershell
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
@@ -44,7 +42,6 @@ jobs:
     - name: Create AVD
       run: |
         "%ANDROID_HOME%\tools\bin\avdmanager" create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "Nexus 6"
-      shell: powershell
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
@@ -54,7 +51,6 @@ jobs:
         start /B emulator -avd test -no-window -no-snapshot -no-boot-anim -no-audio
         adb wait-for-device
         adb shell input keyevent 82
-      shell: powershell
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
