@@ -1,4 +1,4 @@
-name: Android Tests on Windows
+name: Android Emulator Test on Windows
 
 on:
   push:
@@ -9,79 +9,57 @@ on:
       - Dev
 
 jobs:
-  test:
+  build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'
+          distribution: 'adopt'
           java-version: '11'
 
-      - name: Install VirtualBox
-        run: |
-          echo "Installing VirtualBox..."
-          choco install virtualbox -y
-          echo "VirtualBox installation completed."
+      - name: Set JAVA_HOME
+        run: echo "JAVA_HOME=${{ steps.setup-java.outputs.path }}" >> $GITHUB_ENV
 
-      - name: Download Genymotion
-        run: |
-          echo "Downloading Genymotion..."
-          curl -LO https://dl.genymotion.com/releases/genymotion-3.2.1/genymotion-3.2.1-vbox.exe
-          echo "Genymotion download completed."
+      - name: Set up Android SDK
+        run: choco install -y android-sdk
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
-      - name: Install Genymotion
-        run: |
-          echo "Installing Genymotion..."
-          Start-Process -FilePath .\genymotion-3.2.1-vbox.exe -ArgumentList '/S' -Wait -PassThru -NoNewWindow | Out-File -FilePath genymotion-install-log.txt
-          if ($LASTEXITCODE -ne 0) {
-            echo "Genymotion installation failed."
-            cat genymotion-install-log.txt
-            exit 1
-          }
-          echo "Genymotion installation completed."
+      - name: Set up Android Emulator
+        run: echo y | sdkmanager "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
-      - name: Verify Genymotion Installation
-        run: |
-          if (Test-Path "C:\Program Files\Genymobile\Genymotion\genymotion.exe") {
-            echo "Genymotion installed successfully."
-          } else {
-            echo "Genymotion installation failed."
-            exit 1
-          }
+      - name: Create AVD
+        run: avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "Nexus 6"
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
-      - name: Start Genymotion Emulator
+      - name: Start emulator
         run: |
-          echo "Starting Genymotion emulator..."
-          Start-Process -FilePath "C:\Program Files\Genymobile\Genymotion\player" -ArgumentList '--vm-name "Your_Emulator_Name"' -Wait -PassThru -NoNewWindow | Out-File -FilePath genymotion-emulator-log.txt
-          if ($LASTEXITCODE -ne 0) {
-            echo "Failed to start Genymotion emulator."
-            cat genymotion-emulator-log.txt
-            exit 1
-          }
-          echo "Genymotion emulator started."
+          echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64"
+          emulator -avd test -no-window -no-snapshot -no-boot-anim -no-audio &
+          adb wait-for-device
+          adb shell input keyevent 82
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
-      - name: Install Android SDK
-        run: |
-          echo "Installing Android SDK..."
-          choco install -y android-sdk
-          choco install -y android-sdk-tools
-          choco install -y android-ndk
-          echo "Android SDK installation completed."
+      - name: Install dependencies
+        run: mvn clean install -DskipTests
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
-      - name: Install Android dependencies
-        run: |
-          echo "Installing Android dependencies..."
-          sdkmanager --install "platform-tools" "platforms;android-30" "build-tools;30.0.3"
-          echo "Android dependencies installation completed."
+      - name: Start Appium server
+        run: npx appium --relaxed-security &
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
-      - name: Build and test
-        run: |
-          echo "Building and testing the project..."
-          mvn clean install
-          mvn test
-          echo "Build and tests completed."
+      - name: Run tests
+        run: mvn test
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
