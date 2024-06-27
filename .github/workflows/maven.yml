@@ -33,7 +33,7 @@ jobs:
         refreshenv
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-        ANDROID_HOME: "C:\path\to\your\android-sdk"
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
       shell: powershell
 
     - name: Create AVD
@@ -41,7 +41,7 @@ jobs:
         echo no | "%ANDROID_HOME%\tools\bin\avdmanager" create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "Nexus 6"
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-        ANDROID_HOME: "C:\path\to\your\android-sdk"
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
       shell: powershell
 
     - name: Start emulator
@@ -51,7 +51,7 @@ jobs:
         adb shell input keyevent 82
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-        ANDROID_HOME: "C:\path\to\your\android-sdk"
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
       shell: powershell
 
     - name: Install dependencies
