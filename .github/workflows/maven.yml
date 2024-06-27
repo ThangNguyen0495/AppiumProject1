@@ -28,7 +28,7 @@ jobs:
     - name: Set up Android SDK
       run: |
         choco install -y android-sdk
-        refreshenv
+        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
 
