@@ -228,7 +228,7 @@ public class ProductVariationScreen extends ProductVariationElement {
         // Check product is managed by lot or not
         if (!productInfo.getLotAvailable() || productInfo.getManageInventoryByIMEI()) {
             // Navigate to inventory screen
-            commonMobile.click(rsId_btnInventory);
+            commonMobile.navigateToScreenUsingWebElement(rsId_btnInventory, goSELLERProductBranchInventoryActivity);
 
             // Add variation stock
             new InventoryScreen(driver).updateStock(productInfo.getManageInventoryByIMEI(), branchInfo, variationValue, branchStock);

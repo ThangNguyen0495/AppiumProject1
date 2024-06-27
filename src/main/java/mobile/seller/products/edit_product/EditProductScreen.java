@@ -323,13 +323,13 @@ public class EditProductScreen extends EditProductElement {
 
             // Add without variation stock
             new InventoryScreen(driver).updateStock(manageByIMEI, branchInfo, "", branchStock);
-
-            // Get new stock quantity
-            List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
-                    .mapToObj(branchIndex -> (branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex])
-                    .toList();
-            productInfo.setProductStockQuantityMap(Map.of(String.valueOf(productInfo.getProductId()), stockQuantity));
         } else logger.info("Product is managed by lot, requiring stock updates in the lot screen.");
+
+        // Get new stock quantity
+        List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
+                .mapToObj(branchIndex -> productInfo.getLotAvailable() ? 0 : ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]))
+                .toList();
+        productInfo.setProductStockQuantityMap(Map.of(String.valueOf(productInfo.getProductId()), stockQuantity));
     }
 
     void modifyShippingInformation() {
