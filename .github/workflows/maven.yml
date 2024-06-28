@@ -1,45 +1,92 @@
-name: Android Tests on Windows
+name: Android Setup
 
 on:
   push:
     branches:
-      - Dev
+      - dev
   pull_request:
     branches:
-      - Dev
+      - dev
 
 jobs:
-  test:
+  setup-android:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up JDK 11
+    - name: Set up Java
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: '11'
-    
-    - name: Download and install Genymotion
-      run: |
-        curl -LO https://dl.genymotion.com/releases/genymotion-3.2.1/genymotion-3.2.1-vbox.exe
-        Start-Process -Wait -FilePath .\genymotion-3.2.1-vbox.exe -ArgumentList '/S'
-    
-    - name: Start Genymotion Emulator
-      run: |
-        "C:\Program Files\Genymobile\Genymotion\player" --vm-name "emulator" &
+        java-version: '18'
 
-    - name: Install Android SDK
+    - name: Download Android Studio
       run: |
-        choco install android-sdk
-        choco install android-sdk-tools
-        choco install android-ndk
+        echo "Downloading Android Studio..."
+        $androidStudioUrl = "https://r1---sn-a5mekney.gvt1.com/edgedl/android/studio/ide-zips/2023.1.1.22/android-studio-2023.1.1.22-windows.zip"
+        $installerPath = "$env:GITHUB_WORKSPACE\android-studio.zip"
+        Invoke-WebRequest -Uri $androidStudioUrl -OutFile $installerPath
+        echo "Android Studio downloaded to $installerPath"
+      shell: pwsh
 
-    - name: Install Android dependencies
+    - name: Extract Android Studio
       run: |
-        sdkmanager --install "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+        echo "Extracting Android Studio..."
+        Expand-Archive -Path "$env:GITHUB_WORKSPACE\android-studio.zip" -DestinationPath "$env:GITHUB_WORKSPACE\android-studio"
+        echo "Android Studio extracted to $env:GITHUB_WORKSPACE\android-studio"
+      shell: pwsh
+
+    - name: Install Android Studio
+      run: |
+        echo "Installing Android Studio..."
+        Start-Process -FilePath "$env:GITHUB_WORKSPACE\android-studio\android-studio-2023.1.1.22-windows.exe" -ArgumentList "/S" -Wait -NoNewWindow
+        echo "Android Studio installation completed."
+      shell: pwsh
+
+    - name: Set ANDROID_HOME
+      run: |
+        echo "Setting ANDROID_HOME environment variable..."
+        $androidSdkPath = "$env:USERPROFILE\AppData\Local\Android\Sdk"
+        [Environment]::SetEnvironmentVariable("ANDROID_HOME", $androidSdkPath, [EnvironmentVariableTarget]::Machine)
+        $env:ANDROID_HOME = $androidSdkPath
+        echo "ANDROID_HOME set to $androidSdkPath"
+      shell: pwsh
+
+    - name: Update PATH
+      run: |
+        echo "Updating PATH environment variable..."
+        $path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+        $newPath = "$path;$env:ANDROID_HOME\tools\bin;$env:ANDROID_HOME\platform-tools"
+        [System.Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::Machine)
+        $env:Path = $newPath
+        echo "PATH updated with Android SDK paths."
+      shell: pwsh
+
+    - name: Install SDK Packages
+      run: |
+        echo "Installing SDK packages..."
+        cd "$env:ANDROID_HOME\tools\bin"
+        .\sdkmanager.bat "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86_64"
+        echo "SDK packages installed."
+      shell: pwsh
+
+    - name: Create AVD
+      run: |
+        echo "Creating AVD..."
+        cd "$env:ANDROID_HOME\tools\bin"
+        .\avdmanager.bat create avd -n MyAVD -k "system-images;android-30;google_apis;x86_64" --device "pixel"
+        echo "AVD MyAVD created."
+      shell: pwsh
+
+    - name: Start AVD
+      run: |
+        echo "Starting AVD..."
+        cd "$env:ANDROID_HOME\emulator"
+        .\emulator -avd MyAVD -no-snapshot-load -no-window -no-boot-anim
+        echo "AVD MyAVD started."
+      shell: pwsh
 
     - name: Build and test
       run: |
