@@ -10,9 +10,12 @@ public class AppiumServer {
     private static final Logger logger = LogManager.getLogger();
 
     @Getter
-    private final static int appiumServerPort = FreePort.get();
+    private static int appiumServerPort;
 
     public static void startServer() {
+        // Get appium server port
+        appiumServerPort = FreePort.get();
+
         // Start appium server
         CommandWindows.execute("appium -a 0.0.0.0 -p %s -pa /wd/hub --allow-cors".formatted(appiumServerPort));
 

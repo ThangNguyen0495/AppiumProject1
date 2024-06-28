@@ -47,18 +47,9 @@ public class InitAppiumDriver {
 		capabilities.setCapability("autoGrantPermissions","true");
 		capabilities.setCapability("automationName", "UIAutomator2");
 		if (udid.contains(":")) {
-			// Get system port
-			int systemPort = FreePort.get();
-
-			// Add systemPort config
-			capabilities.setCapability("systemPort", systemPort);
-
-			// Log
-			logger.info("Appium system port: {}", systemPort);
-
 			// Get adb port
 			int adbPort = FreePort.get();
-			if (adbPort == systemPort) adbPort = FreePort.get();
+			if (adbPort == AppiumServer.getAppiumServerPort()) adbPort = FreePort.get();
 
 			// Forward devices to new adb port
 			CommandWindows.execute("adb -P %s connect %s".formatted(adbPort, udid));
