@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import utilities.appium_server.AppiumServer;
 import utilities.cmd.CommandWindows;
 import utilities.get_port.FreePort;
 
@@ -20,7 +21,7 @@ import static utilities.environment.goSELLEREnvironment.goSELLERLoginActivity;
 
 public class InitAppiumDriver {
 	Logger logger = LogManager.getLogger();
-	private final static String url = "http://127.0.0.1:4723/wd/hub";
+	private final static String url = "http://127.0.0.1:%s/wd/hub".formatted(AppiumServer.getAppiumServerPort());
 
 	/**
 	 * This method returns an instance of the AppiumDriver class. It takes in the following parameters:
@@ -84,10 +85,14 @@ public class InitAppiumDriver {
     	}
     }
 
-	@SneakyThrows
+
 	public AppiumDriver getSellerDriver(String udid) {
-		return getAppiumDriver(udid, "ANDROID", goSELLERBundleId, goSELLERLoginActivity, url);
-	}
+        try {
+            return getAppiumDriver(udid, "ANDROID", goSELLERBundleId, goSELLERLoginActivity, url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	@SneakyThrows
 	public AppiumDriver getBuyerDriver(String udid, String goBuyerBundleId) {
