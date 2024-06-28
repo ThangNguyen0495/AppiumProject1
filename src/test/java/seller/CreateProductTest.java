@@ -1,6 +1,5 @@
 package seller;
 
-import mobile.seller.home.HomeScreen;
 import mobile.seller.login.LoginScreen;
 import mobile.seller.products.create_product.CreateProductScreen;
 import org.testng.annotations.BeforeClass;
@@ -9,7 +8,6 @@ import utilities.driver.InitAppiumDriver;
 import utilities.model.sellerApp.login.LoginInformation;
 import utilities.utils.PropertiesUtil;
 
-import static mobile.seller.home.HomeElement.QuickActions.addProduct;
 import static org.apache.commons.lang.math.RandomUtils.nextBoolean;
 import static utilities.account.AccountTest.ADMIN_ACCOUNT_THANG;
 import static utilities.account.AccountTest.ADMIN_PASSWORD_THANG;
@@ -29,7 +27,6 @@ public class CreateProductTest extends BaseTest {
 
         // login to dashboard with login information
         new LoginScreen(driver).performLogin(loginInformation);
-        new HomeScreen(driver).navigate(addProduct);
 
         // init product page POM
         createProductScreen = new CreateProductScreen(driver);

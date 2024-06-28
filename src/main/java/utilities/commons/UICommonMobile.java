@@ -44,7 +44,11 @@ public class UICommonMobile {
     }
 
     public void scrollToTopOfScreen() {
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollBackward().scrollToBeginning(10)"));
+        try {
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollBackward().scrollToBeginning(1000)"));
+        } catch (WebDriverException ex) {
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollBackward().scrollToBeginning(1000)"));
+        }
     }
 
     public void scrollUp() {
@@ -52,7 +56,11 @@ public class UICommonMobile {
     }
 
     public void scrollToEndOfScreen() {
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward().scrollToEnd(10)"));
+        try {
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward().scrollToEnd(1000)"));
+        } catch (WebDriverException ex) {
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward().scrollToEnd(1000)"));
+        }
     }
 
     public void scrollDown() {
@@ -467,4 +475,25 @@ public class UICommonMobile {
             navigateToScreenUsingWebElement(parentResourceId, locator, index, screenActivity);
         }
     }
+
+    public List<String> getListElementTextOnFirstScreen(By locator) {
+        // Scroll to top of screen
+        scrollToTopOfScreen();
+
+        // Get all elements in this screen
+        List<WebElement> elements = new ArrayList<>(getListElement(locator));
+
+        return new ArrayList<>(elements.stream().map(WebElement::getText).toList());
+    }
+
+    public List<String> getListElementTextOnLastScreen(By locator) {
+        // Scroll to end of screen
+        scrollToEndOfScreen();
+
+        // Get all elements in this screen
+        List<WebElement> elements = new ArrayList<>(getListElement(locator));
+
+        return new ArrayList<>(elements.stream().map(WebElement::getText).toList());
+    }
+
 }
