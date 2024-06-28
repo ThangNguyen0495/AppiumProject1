@@ -1,4 +1,4 @@
-name: Android Emulator Test on Windows
+name: Android Setup
 
 on:
   push:
@@ -9,65 +9,86 @@ on:
       - dev
 
 jobs:
-  build:
+  setup-android:
     runs-on: windows-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
+    - name: Set up Java
+      uses: actions/setup-java@v3
       with:
-        distribution: 'adopt'
-        java-version: '11'
+        distribution: 'temurin'
+        java-version: '18'
 
-    - name: Set JAVA_HOME
-      run: echo "JAVA_HOME=${{ steps.setup-java.outputs.path }}" >> $GITHUB_ENV
-
-    - name: Set up Android SDK
+    - name: Download Android Studio
       run: |
-        choco install -y android-sdk
-        echo y | "%ANDROID_HOME%\tools\bin\sdkmanager" "platform-tools" "platforms;android-30" "emulator" "system-images;android-30;google_apis;x86_64"
-        setx ANDROID_HOME "%ANDROID_HOME%" /M
-        refreshenv
-      env:
-        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
-      shell: powershell
+        echo "Downloading Android Studio..."
+        $androidStudioUrl = "https://r1---sn-a5mekney.gvt1.com/edgedl/android/studio/ide-zips/2023.1.1.22/android-studio-2023.1.1.22-windows.zip"
+        $installerPath = "$env:GITHUB_WORKSPACE\android-studio.zip"
+        Invoke-WebRequest -Uri $androidStudioUrl -OutFile $installerPath
+        echo "Android Studio downloaded to $installerPath"
+      shell: pwsh
+
+    - name: Extract Android Studio
+      run: |
+        echo "Extracting Android Studio..."
+        Expand-Archive -Path "$env:GITHUB_WORKSPACE\android-studio.zip" -DestinationPath "$env:GITHUB_WORKSPACE\android-studio"
+        echo "Android Studio extracted to $env:GITHUB_WORKSPACE\android-studio"
+      shell: pwsh
+
+    - name: Install Android Studio
+      run: |
+        echo "Installing Android Studio..."
+        Start-Process -FilePath "$env:GITHUB_WORKSPACE\android-studio\android-studio-2023.1.1.22-windows.exe" -ArgumentList "/S" -Wait -NoNewWindow
+        echo "Android Studio installation completed."
+      shell: pwsh
+
+    - name: Set ANDROID_HOME
+      run: |
+        echo "Setting ANDROID_HOME environment variable..."
+        $androidSdkPath = "$env:USERPROFILE\AppData\Local\Android\Sdk"
+        [Environment]::SetEnvironmentVariable("ANDROID_HOME", $androidSdkPath, [EnvironmentVariableTarget]::Machine)
+        $env:ANDROID_HOME = $androidSdkPath
+        echo "ANDROID_HOME set to $androidSdkPath"
+      shell: pwsh
+
+    - name: Update PATH
+      run: |
+        echo "Updating PATH environment variable..."
+        $path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+        $newPath = "$path;$env:ANDROID_HOME\tools\bin;$env:ANDROID_HOME\platform-tools"
+        [System.Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::Machine)
+        $env:Path = $newPath
+        echo "PATH updated with Android SDK paths."
+      shell: pwsh
+
+    - name: Install SDK Packages
+      run: |
+        echo "Installing SDK packages..."
+        cd "$env:ANDROID_HOME\tools\bin"
+        .\sdkmanager.bat "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86_64"
+        echo "SDK packages installed."
+      shell: pwsh
 
     - name: Create AVD
       run: |
-        echo no | "%ANDROID_HOME%\tools\bin\avdmanager" create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "Nexus 6"
-      env:
-        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
-      shell: powershell
+        echo "Creating AVD..."
+        cd "$env:ANDROID_HOME\tools\bin"
+        .\avdmanager.bat create avd -n MyAVD -k "system-images;android-30;google_apis;x86_64" --device "pixel"
+        echo "AVD MyAVD created."
+      shell: pwsh
 
-    - name: Start emulator
+    - name: Start AVD
       run: |
-        start /B emulator -avd test -no-window -no-snapshot -no-boot-anim -no-audio
-        adb wait-for-device
-        adb shell input keyevent 82
-      env:
-        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
-      shell: powershell
+        echo "Starting AVD..."
+        cd "$env:ANDROID_HOME\emulator"
+        .\emulator -avd MyAVD -no-snapshot-load -no-window -no-boot-anim
+        echo "AVD MyAVD started."
+      shell: pwsh
 
-    - name: Install dependencies
-      run: mvn clean install -DskipTests
-      env:
-        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-      shell: powershell
-
-    - name: Start Appium server
-      run: npx appium --relaxed-security &
-      env:
-        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-      shell: powershell
-
-    - name: Run tests
-      run: mvn test
-      env:
-        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-      shell: powershell
+    - name: Build and test
+      run: |
+        mvn clean install
+        mvn test
