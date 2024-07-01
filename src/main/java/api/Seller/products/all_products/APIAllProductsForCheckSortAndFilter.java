@@ -22,20 +22,18 @@ public class APIAllProductsForCheckSortAndFilter {
         loginInfo = new Login().getInfo(loginInformation);
     }
 
-    //&sort=lastModifiedDate,desc
-    String allProductListPath = "/itemservice/api/store/dashboard/%s/items-v2?page=%s&size=100&bhStatus=&itemType=BUSINESS_PRODUCT&sort=%s&branchIds=%s";
+    String allProductListPath = "/itemservice/api/store/dashboard/%s/items-v2?page=%s&size=100&itemType=BUSINESS_PRODUCT";
 
-    Response getAllProductsResponse(String sortOption,int pageIndex, int... branchIds) {
-        String branchId = branchIds.length == 0 ? "" : String.valueOf(branchIds[0]);
-        String currentPath = allProductListPath.formatted(loginInfo.getStoreID(), pageIndex, sortOption, branchId) + (List.of("priority,desc", "priority,asc").contains(sortOption) ? "&sort=lastModifiedDate,desc" : "");
-        return api.get(currentPath, loginInfo.getAccessToken())
+    Response getAllProductsResponse(String getAllProductPath, int pageIndex) {
+
+        return api.get(getAllProductPath.formatted(loginInfo.getStoreID(), pageIndex), loginInfo.getAccessToken())
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
     }
 
-    public ProductManagementInfo getAllProductInformation(String sortOption, int... branchIds) {
+    public ProductManagementInfo getAllProductInformation(String getAllProductPath) {
         // Init product management info
         ProductManagementInfo info = new ProductManagementInfo();
         // get page 0 data
@@ -46,7 +44,7 @@ public class APIAllProductsForCheckSortAndFilter {
         List<Integer> priority = new ArrayList<>();
 
         // get total products
-        int totalOfProducts = Integer.parseInt(getAllProductsResponse(sortOption, 0, branchIds).getHeader("X-Total-Count"));
+        int totalOfProducts = Integer.parseInt(getAllProductsResponse(getAllProductPath, 0).getHeader("X-Total-Count"));
 
         // get number of pages
         int numberOfPages = totalOfProducts / 50;
@@ -54,7 +52,7 @@ public class APIAllProductsForCheckSortAndFilter {
         // get other page data
         List<JsonPath> jsonPaths = IntStream.rangeClosed(0, numberOfPages)
                 .parallel()
-                .mapToObj(pageIndex -> getAllProductsResponse(sortOption, pageIndex, branchIds).jsonPath())
+                .mapToObj(pageIndex -> getAllProductsResponse(getAllProductPath, pageIndex).jsonPath())
                 .toList();
         jsonPaths.forEach(jsonPath -> {
             variationNumber.addAll(jsonPath.getList("variationNumber"));
@@ -73,22 +71,52 @@ public class APIAllProductsForCheckSortAndFilter {
     }
 
     public List<String> getListProductNameAfterSortByRecentUpdated() {
-        return getAllProductInformation("lastModifiedDate,desc").getProductNames();
+        String getAllProductPath = allProductListPath + "&sort=lastModifiedDate,desc";
+        return getAllProductInformation(getAllProductPath).getProductNames();
     }
 
     public List<String> getListProductNameAfterSortByStockHighToLow() {
-        return getAllProductInformation("stock,desc").getProductNames();
+        String getAllProductPath = allProductListPath + "&sort=stock,desc";
+        return getAllProductInformation(getAllProductPath).getProductNames();
     }
 
     public List<String> getListProductNameAfterSortByStockLowToHigh() {
-        return getAllProductInformation("stock,asc").getProductNames();
+        String getAllProductPath = allProductListPath + "&sort=stock,asc";
+        return getAllProductInformation(getAllProductPath).getProductNames();
     }
 
     public List<String> getListProductNameAfterSortByPriorityHighToLow() {
-        return getAllProductInformation("priority,desc").getProductNames();
+        String getAllProductPath = allProductListPath + "&sort=priority,desc&sort=lastModifiedDate,desc";
+        return getAllProductInformation(getAllProductPath).getProductNames();
     }
 
     public List<String> getListProductNameAfterSortByPriorityLowToHigh() {
-        return getAllProductInformation("priority,asc").getProductNames();
+        String getAllProductPath = allProductListPath + "&sort=priority,asc&sort=lastModifiedDate,desc";
+        return getAllProductInformation(getAllProductPath).getProductNames();
+    }
+
+    public List<String> getListProductAfterFilterByStatus(String status) {
+        String getAllProductPath = allProductListPath + "&sort=lastModifiedDate,desc&bhStatus=%s".formatted(status);
+        return getAllProductInformation(getAllProductPath).getProductNames();
+    }
+
+    public List<String> getListProductAfterFilterByChannel(String channel) {
+        String getAllProductPath = allProductListPath + "&sort=lastModifiedDate,desc&saleChannel=%s".formatted(channel);
+        return getAllProductInformation(getAllProductPath).getProductNames();
+    }
+
+    public List<String> getListProductAfterFilterByPlatform(String platform) {
+        String getAllProductPath = allProductListPath + "&sort=lastModifiedDate,desc&platform=%s".formatted(platform);
+        return getAllProductInformation(getAllProductPath).getProductNames();
+    }
+
+    public List<String> getListProductAfterFilterByBranch(int branchId) {
+        String getAllProductPath = allProductListPath + "&sort=lastModifiedDate,desc&branchIds=%s".formatted(branchId);
+        return getAllProductInformation(getAllProductPath).getProductNames();
+    }
+
+    public List<String> getListProductAfterFilterByCollection(String collectionId) {
+        String getAllProductPath = allProductListPath + "&sort=lastModifiedDate,desc&collectionId=%s".formatted(collectionId);
+        return getAllProductInformation(getAllProductPath).getProductNames();
     }
 }

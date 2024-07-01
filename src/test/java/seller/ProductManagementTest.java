@@ -1,13 +1,12 @@
 package seller;
 
-import mobile.seller.home.HomeElement;
-import mobile.seller.home.HomeScreen;
 import mobile.seller.login.LoginScreen;
 import mobile.seller.products.product_management.ProductManagementScreen;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import utilities.driver.InitAppiumDriver;
 import utilities.model.sellerApp.login.LoginInformation;
+import utilities.utils.PropertiesUtil;
 
 import static utilities.account.AccountTest.ADMIN_ACCOUNT_THANG;
 import static utilities.account.AccountTest.ADMIN_PASSWORD_THANG;
@@ -19,7 +18,7 @@ public class ProductManagementTest extends BaseTest {
     @BeforeClass
     void setup() {
         // init WebDriver
-        String uuid = "192.168.168.103:5555";//PropertiesUtil.getEnvironmentData("uuidAndroidThang");
+        String uuid = PropertiesUtil.getEnvironmentData("uuidAndroidThang");
         driver = new InitAppiumDriver().getSellerDriver(uuid);
 
         // init login information
@@ -27,7 +26,6 @@ public class ProductManagementTest extends BaseTest {
 
         // login to dashboard with login information
         new LoginScreen(driver).performLogin(loginInformation);
-        new HomeScreen(driver).navigate(HomeElement.ManagementActions.products);
 
         // init product page POM
         productManagementScreen = new ProductManagementScreen(driver);
@@ -61,5 +59,71 @@ public class ProductManagementTest extends BaseTest {
     void MN_PRODUCT_05_SortProductByPriorityLowToHigh() {
         productManagementScreen.navigateToProductManagementScreen()
                 .checkSortByPriorityLowToHigh();
+    }
+
+    @Test
+    void MN_PRODUCT_06_FilterProductByActiveStatus() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByActiveStatus();
+    }
+
+    @Test
+    void MN_PRODUCT_07_FilterProductByActiveStatus() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByInactiveStatus();
+    }
+
+    @Test
+    void MN_PRODUCT_08_FilterProductByErrorStatus() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByErrorStatus();
+    }
+
+    @Test
+    void MN_PRODUCT_09_FilterProductByLazadaChannel() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByLazadaChannel();
+    }
+
+    @Test
+    void MN_PRODUCT_10_FilterProductByShopeeChannel() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByShopeeChannel();
+    }
+
+    @Test
+    void MN_PRODUCT_11_FilterProductByWebPlatform() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByWebPlatform();
+    }
+
+    @Test
+    void MN_PRODUCT_12_FilterProductByAppPlatform() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByAppPlatform();
+    }
+
+    @Test
+    void MN_PRODUCT_13_FilterProductByInStorePlatform() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByPOSPlatform();
+    }
+
+    @Test
+    void MN_PRODUCT_14_FilterProductByNonePlatform() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByNonePlatform();
+    }
+
+    @Test
+    void MN_PRODUCT_15_FilterProductByBranch() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByBranch();
+    }
+
+    @Test
+    void MN_PRODUCT_16_FilterProductByCollections() {
+        productManagementScreen.navigateToProductManagementScreen()
+                .checkFilterByCollections();
     }
 }

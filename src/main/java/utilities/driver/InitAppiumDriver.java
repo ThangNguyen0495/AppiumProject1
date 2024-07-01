@@ -51,8 +51,15 @@ public class InitAppiumDriver {
 			int adbPort = FreePort.get();
 			if (adbPort == AppiumServer.getAppiumServerPort()) adbPort = FreePort.get();
 
+			// Restart ADB server
+			CommandWindows.execute("adb -P %s kill-server".formatted(adbPort));
+			CommandWindows.execute("adb -P %s start-server".formatted(adbPort));
+
 			// Forward devices to new adb port
 			CommandWindows.execute("adb -P %s connect %s".formatted(adbPort, udid));
+
+			// Close command windows
+			CommandWindows.execute("taskkill /F /IM cmd.exe");
 
 			// Add adbPort config
 			capabilities.setCapability("adbPort", adbPort);

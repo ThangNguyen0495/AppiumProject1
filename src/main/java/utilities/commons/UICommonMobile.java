@@ -46,25 +46,33 @@ public class UICommonMobile {
     public void scrollToTopOfScreen() {
         try {
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollBackward().scrollToBeginning(1000)"));
-        } catch (WebDriverException ex) {
-            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollBackward().scrollToBeginning(1000)"));
+            logger.info("Scroll to top of screen");
+        } catch (NoSuchElementException ignored) {
         }
     }
 
     public void scrollUp() {
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollBackward()"));
+        try {
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollBackward()"));
+            logger.info("Scroll up");
+        } catch (NoSuchElementException ignored) {
+        }
     }
 
     public void scrollToEndOfScreen() {
         try {
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward().scrollToEnd(1000)"));
-        } catch (WebDriverException ex) {
-            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward().scrollToEnd(1000)"));
+            logger.info("Scroll to end of screen");
+        } catch (NoSuchElementException ignored) {
         }
     }
 
     public void scrollDown() {
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward()"));
+        try {
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollForward()"));
+            logger.info("Scroll down");
+        } catch (NoSuchElementException ignored) {
+        }
     }
 
     public List<WebElement> getListElement(By locator) {
@@ -481,9 +489,9 @@ public class UICommonMobile {
         scrollToTopOfScreen();
 
         // Get all elements in this screen
-        List<WebElement> elements = new ArrayList<>(getListElement(locator));
+        List<WebElement> elements = getListElement(locator);
 
-        return new ArrayList<>(elements.stream().map(WebElement::getText).toList());
+        return elements.isEmpty() ? List.of() : new ArrayList<>(elements.stream().map(WebElement::getText).toList());
     }
 
     public List<String> getListElementTextOnLastScreen(By locator) {
