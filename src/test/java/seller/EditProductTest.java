@@ -1,8 +1,8 @@
 package seller;
 
 import api.Seller.products.all_products.CreateProduct;
-import mobile.seller.login.LoginScreen;
-import mobile.seller.products.edit_product.EditProductScreen;
+import mobile.seller.android.login.LoginScreen;
+import mobile.seller.android.products.edit_product.EditProductScreen;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;

@@ -1,7 +1,7 @@
 package seller;
 
-import mobile.seller.login.LoginScreen;
-import mobile.seller.products.product_management.ProductManagementScreen;
+import mobile.seller.android.login.LoginScreen;
+import mobile.seller.android.products.product_management.ProductManagementScreen;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import utilities.driver.InitAppiumDriver;
