@@ -6,7 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 
 import java.time.Duration;
 
@@ -15,12 +15,12 @@ public class SellerGeneral {
 
     WebDriver driver;
     WebDriverWait wait;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
 
     public SellerGeneral (WebDriver driver) {
         this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
     }
     By HEADER_PAGE_TITLE = By.xpath("//*[ends-with(@resource-id,'tvActionBarTitle')]");
     By HEADER_RIGHT_ICON = By.xpath("//*[ends-with(@resource-id,'ivActionBarIconRight')]");

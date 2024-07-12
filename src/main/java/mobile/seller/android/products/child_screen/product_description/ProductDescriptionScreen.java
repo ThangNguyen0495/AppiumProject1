@@ -2,17 +2,17 @@ package mobile.seller.android.products.child_screen.product_description;
 
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 
 public class ProductDescriptionScreen extends ProductDescriptionElement {
     WebDriver driver;
     AssertCustomize assertCustomize;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
 
     public ProductDescriptionScreen(WebDriver driver) {
         this.driver = driver;
         assertCustomize = new AssertCustomize(driver);
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
     }
 
     public void inputDescription(String description) {

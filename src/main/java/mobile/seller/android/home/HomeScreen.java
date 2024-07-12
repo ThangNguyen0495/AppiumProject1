@@ -4,18 +4,18 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 
 public class HomeScreen extends HomeElement {
 
     final static Logger logger = LogManager.getLogger(HomeScreen.class);
 
     WebDriver driver;
-    UICommonMobile commonAction;
+    UICommonAndroid commonAction;
 
     public HomeScreen(WebDriver driver) {
         this.driver = driver;
-        commonAction = new UICommonMobile(driver);
+        commonAction = new UICommonAndroid(driver);
     }
 
 

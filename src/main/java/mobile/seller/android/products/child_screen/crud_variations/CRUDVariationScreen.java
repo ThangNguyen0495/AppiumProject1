@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 import utilities.data.DataGenerator;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 public class CRUDVariationScreen extends CRUDVariationElement {
     WebDriver driver;
     AssertCustomize assertCustomize;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
     Logger logger = LogManager.getLogger();
     @Getter
     private static Map<String, List<String>> variationMap;
@@ -23,7 +23,7 @@ public class CRUDVariationScreen extends CRUDVariationElement {
     public CRUDVariationScreen(WebDriver driver) {
         this.driver = driver;
         assertCustomize = new AssertCustomize(driver);
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
     }
 
     public CRUDVariationScreen removeOldVariation() {

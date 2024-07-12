@@ -28,13 +28,13 @@ import java.util.Objects;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfAllElementsLocatedBy;
 
-public class UICommonMobile {
+public class UICommonAndroid {
 
-    private final static Logger logger = LogManager.getLogger(UICommonMobile.class);
+    private final static Logger logger = LogManager.getLogger(UICommonAndroid.class);
     WebDriver driver;
     WebDriverWait wait;
 
-    public UICommonMobile(WebDriver driver) {
+    public UICommonAndroid(WebDriver driver) {
         this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }

@@ -5,12 +5,12 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 
 public class BranchScreen extends BranchElement{
     WebDriver driver;
     AssertCustomize assertCustomize;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
     Logger logger = LogManager.getLogger();
     public BranchScreen(WebDriver driver) {
         // Get driver
@@ -20,7 +20,7 @@ public class BranchScreen extends BranchElement{
         assertCustomize = new AssertCustomize(driver);
 
         // Init commons class
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
     }
 
     public void selectBranch(String branchName) {

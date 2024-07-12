@@ -4,14 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 
 import java.util.stream.IntStream;
 
 public class AddIMEIScreen extends AddIMEIElement {
     WebDriver driver;
     AssertCustomize assertCustomize;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
     Logger logger = LogManager.getLogger();
     public AddIMEIScreen(WebDriver driver) {
         // Get driver
@@ -21,7 +21,7 @@ public class AddIMEIScreen extends AddIMEIElement {
         assertCustomize = new AssertCustomize(driver);
 
         // Init commons class
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
     }
 
     public void addIMEI(int quantity, String branchName, String variation) {

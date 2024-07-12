@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 import utilities.data.DataGenerator;
 import utilities.model.sellerApp.login.LoginInformation;
 
@@ -21,14 +21,14 @@ public class LoginScreen {
 
     WebDriver driver;
     WebDriverWait wait;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
     @Getter
     private static LoginInformation loginInformation = new LoginInformation();
 
     public LoginScreen(WebDriver driver) {
         this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
     }
 
     By loc_tabAdmin = By.xpath("//android.widget.LinearLayout[@content-desc='Quản trị viên' or @content-desc='Admin']/android.widget.TextView");

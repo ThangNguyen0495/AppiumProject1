@@ -12,7 +12,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 import utilities.model.dashboard.setting.branchInformation.BranchInfo;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import static utilities.environment.goSELLEREnvironment.*;
 public class ProductManagementScreen extends ProductManagementElement {
     WebDriver driver;
     AssertCustomize assertCustomize;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
     Logger logger = LogManager.getLogger();
 
     public ProductManagementScreen(WebDriver driver) {
@@ -34,7 +34,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         assertCustomize = new AssertCustomize(driver);
 
         // Init commons class
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
     }
 
     public ProductManagementScreen navigateToProductManagementScreen() {

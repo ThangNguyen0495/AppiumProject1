@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
-import utilities.commons.UICommonMobile;
+import utilities.commons.UICommonAndroid;
 import utilities.data.DataGenerator;
 import utilities.model.dashboard.products.productInfomation.ProductInfo;
 import utilities.model.dashboard.setting.branchInformation.BranchInfo;
@@ -40,7 +40,7 @@ import static utilities.environment.goSELLEREnvironment.*;
 public class CreateProductScreen extends CreateProductElement {
     WebDriver driver;
     AssertCustomize assertCustomize;
-    UICommonMobile commonMobile;
+    UICommonAndroid commonMobile;
     Logger logger = LogManager.getLogger();
     private static String defaultLanguage;
     private static BranchInfo branchInfo;
@@ -55,7 +55,7 @@ public class CreateProductScreen extends CreateProductElement {
         assertCustomize = new AssertCustomize(driver);
 
         // Init commons class
-        commonMobile = new UICommonMobile(driver);
+        commonMobile = new UICommonAndroid(driver);
 
         // Get store information
         storeInfo = new StoreInformation(LoginScreen.getLoginInformation()).getInfo();
