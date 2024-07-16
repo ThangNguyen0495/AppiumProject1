@@ -3,6 +3,7 @@ package mobile.seller.iOS.login;
 import mobile.seller.iOS.home.HomeScreen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonIOS;
@@ -23,6 +24,16 @@ public class LoginScreen extends LoginElement {
 
         // Init commons class
         commonIOS = new UICommonIOS(driver);
+    }
+
+    void allowNotificationPermission() {
+        try {
+            // Switch to notification permission and accept
+            commonIOS.allowPermission("Allow");
+
+            // Log
+            logger.info("Accept notification permission");
+        } catch (Exception ignored) {}
     }
 
     void inputUsername(String username) {
@@ -62,6 +73,7 @@ public class LoginScreen extends LoginElement {
         new HomeScreen(driver).logout();
 
         // Login with new account
+        allowNotificationPermission();
         inputUsername(loginInformation.getEmail());
         inputPassword(loginInformation.getPassword());
         agreeTermOfUse();

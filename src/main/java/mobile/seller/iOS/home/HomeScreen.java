@@ -32,4 +32,12 @@ public class HomeScreen extends HomeElement{
             new AccountScreen(driver).logout();
         }
     }
+
+    public void navigateToCreateProductScreen() {
+        // Click create product icon
+        commonIOS.tap(loc_icnCreateProduct);
+
+        // Log
+        logger.info("Navigate create product screen");
+    }
 }

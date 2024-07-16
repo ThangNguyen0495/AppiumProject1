@@ -1,12 +1,13 @@
 package utilities.driver;
 
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import utilities.commons.UICommonIOS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,31 +18,45 @@ public class InitIOSDriver {
     Logger logger = LogManager.getLogger();
     private final static String url = "http://127.0.0.1:4723/wd/hub";
 
-    public AppiumDriver getAppiumDriver(String udid, String appPackage, String url) throws MalformedURLException {
+    public IOSDriver getIOSDriver(String udid) throws MalformedURLException {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("udid", udid);
         capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("bundleId", appPackage);
         capabilities.setCapability("newCommandTimeout", 300000);
         capabilities.setCapability("automationName", "XCUITest");
-        return getAppiumDriver(capabilities, url);
-    }
-
-    public AppiumDriver getAppiumDriver(DesiredCapabilities capabilities, String url) throws MalformedURLException {
-        String platformNameFromCapacity = capabilities.getCapability("platformName").toString();
-        if (platformNameFromCapacity.equalsIgnoreCase("android")) {
-            return new AndroidDriver(new URL(url), capabilities);
-        } else if(platformNameFromCapacity.equalsIgnoreCase("ios")) {
-            return new IOSDriver(new URL(url), capabilities);
-        } else {
-            throw new IllegalArgumentException("Unknown platform: " + platformNameFromCapacity);
-        }
+        return new IOSDriver(new URL(url), capabilities);
     }
 
 
     public AppiumDriver getSellerDriver(String udid) {
         try {
-            return getAppiumDriver(udid, goSELLERBundleId, url);
+            // Init driver
+            IOSDriver driver = getIOSDriver(udid);
+
+            // Uninstall app
+            if (driver.isAppInstalled(goSELLERBundleId)) driver.removeApp(goSELLERBundleId);
+
+            // Open TestFlight
+            driver.activateApp("com.apple.TestFlight");
+
+            // Init iOS commons
+            UICommonIOS commonIOS = new UICommonIOS(driver);
+
+            // Get Install button locator
+            By loc_btnInstall = By.xpath("//*[contains(@name, \"Seller\") and contains(@name, \"STG\")]/parent::*/following-sibling::*[1]/*");
+
+            // Start download
+            commonIOS.tap(loc_btnInstall);
+
+            // Wait app downloaded
+            logger.info("Wait GoSELLER app installed");
+            while (true) if (commonIOS.getText(loc_btnInstall).equals("OPEN")) break;
+
+            // Open GoSeller app
+            commonIOS.tap(loc_btnInstall);
+
+            // Return driver
+            return driver;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -49,6 +64,12 @@ public class InitIOSDriver {
 
     @SneakyThrows
     public AppiumDriver getBuyerDriver(String udid, String goBuyerBundleId) {
-        return getAppiumDriver(udid, goBuyerBundleId, url);
+        try {
+            IOSDriver driver = getIOSDriver(udid);
+            driver.activateApp(goBuyerBundleId);
+            return driver;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

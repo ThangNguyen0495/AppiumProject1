@@ -2,7 +2,6 @@ package utilities.commons;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.remote.HideKeyboardStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
@@ -12,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 
 public class UICommonIOS {
@@ -24,6 +24,16 @@ public class UICommonIOS {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
+    public void allowPermission(String optionText) {
+        try {
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("action", "accept");
+            args.put("buttonLabel", optionText);
+            ((IOSDriver)driver).executeScript("mobile: alert", args);
+        } catch (NoAlertPresentException ignored) {
+        }
+    }
+
     void hidKeyboard() {
         // Check if keyboard shows, hid this
         if (((IOSDriver) driver).isKeyboardShown()) {
@@ -31,6 +41,7 @@ public class UICommonIOS {
             tap(By.xpath("//XCUIElementTypeButton[@name=\"Done\"]"));
         }
     }
+
     public WebDriverWait customWait(int milSeconds) {
         return new WebDriverWait(driver, Duration.ofMillis(milSeconds));
     }
@@ -38,7 +49,8 @@ public class UICommonIOS {
     public List<WebElement> getListElements(By locator) {
         try {
             customWait(3000).until(ExpectedConditions.presenceOfElementLocated(locator));
-        } catch (TimeoutException ignored) {}
+        } catch (TimeoutException ignored) {
+        }
 
         return driver.findElements(locator).isEmpty()
                 ? List.of()
@@ -105,4 +117,13 @@ public class UICommonIOS {
         getElement(locator, index).sendKeys(content);
         hidKeyboard();
     }
+
+    public String getText(By locator) {
+        return getElement(locator).getText();
+    }
+
+    public String getText(By locator, int index) {
+        return getElement(locator, index).getText();
+    }
+
 }

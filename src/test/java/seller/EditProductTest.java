@@ -6,7 +6,7 @@ import mobile.seller.android.products.edit_product.EditProductScreen;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
-import utilities.driver.InitAppiumDriver;
+import utilities.driver.InitAndroidDriver;
 import utilities.model.sellerApp.login.LoginInformation;
 import utilities.utils.PropertiesUtil;
 
@@ -24,7 +24,7 @@ public class EditProductTest extends BaseTest {
     void setup() {
         // init WebDriver
         String uuid = PropertiesUtil.getEnvironmentData("uuidAndroidThang");
-        driver = new InitAppiumDriver().getSellerDriver(uuid);
+        driver = new InitAndroidDriver().getSellerDriver(uuid);
 
         // init login information
         loginInformation = new LoginInformation(ADMIN_ACCOUNT_THANG, ADMIN_PASSWORD_THANG);
