@@ -1,4 +1,4 @@
-package seller;
+package seller.iOS;
 
 import api.Seller.products.all_products.CreateProduct;
 import mobile.seller.android.login.LoginScreen;
@@ -23,7 +23,7 @@ public class EditProductTest extends BaseTest {
     @BeforeClass
     void setup() {
         // init WebDriver
-        String uuid = PropertiesUtil.getEnvironmentData("uuidAndroidThang");
+        String uuid = PropertiesUtil.getEnvironmentData("udidAndroidThang");
         driver = new InitAndroidDriver().getSellerDriver(uuid);
 
         // init login information

@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import utilities.commons.UICommonIOS;
 
@@ -28,32 +29,40 @@ public class InitIOSDriver {
     }
 
 
-    public AppiumDriver getSellerDriver(String udid) {
+    public IOSDriver getSellerDriver(String udid) {
         try {
             // Init driver
             IOSDriver driver = getIOSDriver(udid);
 
-            // Uninstall app
-            if (driver.isAppInstalled(goSELLERBundleId)) driver.removeApp(goSELLERBundleId);
-
-            // Open TestFlight
-            driver.activateApp("com.apple.TestFlight");
-
-            // Init iOS commons
-            UICommonIOS commonIOS = new UICommonIOS(driver);
-
-            // Get Install button locator
-            By loc_btnInstall = By.xpath("//*[contains(@name, \"Seller\") and contains(@name, \"STG\")]/parent::*/following-sibling::*[1]/*");
-
-            // Start download
-            commonIOS.tap(loc_btnInstall);
-
-            // Wait app downloaded
-            logger.info("Wait GoSELLER app installed");
-            while (true) if (commonIOS.getText(loc_btnInstall).equals("OPEN")) break;
+//            // Uninstall app
+//            if (driver.isAppInstalled(goSELLERBundleId)) driver.removeApp(goSELLERBundleId);
+//
+//            // Open TestFlight
+//            driver.activateApp("com.apple.TestFlight");
+//
+//            // Init iOS commons
+//            UICommonIOS commonIOS = new UICommonIOS(driver);
+//
+//            // Get Install button locator
+//            By loc_btnInstall = By.xpath("//*[contains(@name, \"Seller\") and contains(@name, \"STG\")]/parent::*/following-sibling::*[1]/*");
+//
+//            // Start download
+//            commonIOS.tap(loc_btnInstall);
+//
+//            // Wait app downloaded
+//            logger.info("Wait GoSELLER app installed");
+//
+//            while (true) try {
+//                if (commonIOS.getText(loc_btnInstall).equals("OPEN")) break;
+//            } catch (StaleElementReferenceException ignored) {
+//            }
+//
+//            // Quit TestFlight app
+//            driver.terminateApp("com.apple.TestFlight");
 
             // Open GoSeller app
-            commonIOS.tap(loc_btnInstall);
+            driver.terminateApp(goSELLERBundleId);
+            driver.activateApp(goSELLERBundleId);
 
             // Return driver
             return driver;
@@ -63,7 +72,7 @@ public class InitIOSDriver {
     }
 
     @SneakyThrows
-    public AppiumDriver getBuyerDriver(String udid, String goBuyerBundleId) {
+    public IOSDriver getBuyerDriver(String udid, String goBuyerBundleId) {
         try {
             IOSDriver driver = getIOSDriver(udid);
             driver.activateApp(goBuyerBundleId);

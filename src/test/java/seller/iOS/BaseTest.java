@@ -1,11 +1,9 @@
-package seller;
+package seller.iOS;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
-import utilities.appium_server.AppiumServer;
 import utilities.assert_customize.AssertCustomize;
-import utilities.recording.ScreenRecording;
 import utilities.utils.PropertiesUtil;
 
 public class BaseTest {
@@ -21,32 +19,17 @@ public class BaseTest {
         PropertiesUtil.setEnvironment(environment);
         PropertiesUtil.setDBLanguage(language);
         PropertiesUtil.setSFLanguage(language);
-
-        // Start server
-        AppiumServer.startServer();
-    }
-
-    @BeforeMethod
-    void startTest() {
-        // Start recording
-        ScreenRecording.startRecording(driver);
     }
 
     @AfterMethod
-    public void writeResult(ITestResult result) {
+    public void clear(ITestResult result) {
         // Clear assert count false
         AssertCustomize.setCountFalse(0);
-
-        // Stop recording
-        ScreenRecording.stopRecording(driver, result);
     }
 
     @AfterSuite
     void tearDown() {
         // Clear driver
         if (driver != null) driver.quit();
-
-        // Start server
-        AppiumServer.stopServer();
     }
 }

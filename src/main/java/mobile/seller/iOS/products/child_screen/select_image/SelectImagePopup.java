@@ -1,18 +1,19 @@
-package mobile.seller.iOS.product.create_product;
+package mobile.seller.iOS.products.child_screen.select_image;
 
-import mobile.seller.iOS.product.child_screen.select_image.SelectImagePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonIOS;
 
-public class CreateProductScreen extends CreateProductElement {
+import java.util.stream.IntStream;
+
+public class SelectImagePopup extends SelectImageElement{
     WebDriver driver;
     AssertCustomize assertCustomize;
     UICommonIOS commonIOS;
     Logger logger = LogManager.getLogger();
-    public CreateProductScreen(WebDriver driver) {
+    public SelectImagePopup(WebDriver driver) {
         // Get driver
         this.driver = driver;
 
@@ -24,13 +25,10 @@ public class CreateProductScreen extends CreateProductElement {
     }
 
     public void selectImages() {
-        // Open select image popup
-        commonIOS.tap(loc_icnProductImage);
-
-        // Allow access all photo library
-        commonIOS.allowPermission("Allow Full Access");
-
         // Select images
-        new SelectImagePopup(driver).selectImages();
+       commonIOS.tap(loc_lstImages, 0);
+
+        // Save changes
+        commonIOS.tap(loc_btnSave);
     }
 }

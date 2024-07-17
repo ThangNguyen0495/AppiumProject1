@@ -1,4 +1,4 @@
-package mobile.seller.iOS.product.child_screen.select_image;
+package mobile.seller.iOS.products.child_screen.select_image;
 
 import org.openqa.selenium.By;
 
