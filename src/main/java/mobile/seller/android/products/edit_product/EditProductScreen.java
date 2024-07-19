@@ -513,7 +513,7 @@ public class EditProductScreen extends EditProductElement {
 
             // Get new stock quantity
             List<Integer> stockQuantity = IntStream.range(0, branchInfo.getBranchID().size())
-                    .mapToObj(branchIndex -> ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]) + branchIndex * increaseNum)
+                    .mapToObj(branchIndex -> (manageByIMEI || productInfo.getLotAvailable()) ? 0 : ((branchIndex >= branchStock.length) ? 0 : branchStock[branchIndex]) + branchIndex * increaseNum)
                     .toList();
             Map<String, List<Integer>> stockMap = IntStream.range(0, totalVariations).boxed().collect(Collectors.toMap(String::valueOf, variationIndex -> stockQuantity, (a, b) -> b));
             productInfo.setProductStockQuantityMap(stockMap);

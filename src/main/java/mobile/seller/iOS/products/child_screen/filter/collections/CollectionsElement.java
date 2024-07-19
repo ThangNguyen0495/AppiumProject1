@@ -5,6 +5,8 @@ import org.openqa.selenium.By;
 import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class CollectionsElement {
-    By loc_btnAllCollections = By.xpath("(//*[@* = '%s:id/htvFullCollections'] // *[@* = '%s:id/tag_container'])[1]".formatted(goSELLERBundleId, goSELLERBundleId));
-    String str_btnCollection = "//*[@text = '%s']";
+    By loc_btnAllCollections = By.xpath("//XCUIElementTypeStaticText[@name=\"All collections\"]");
+    By loc_btnCollection(String collectionName) {
+        return By.xpath("//XCUIElementTypeStaticText[@name=\"%s\"]".formatted(collectionName));
+    }
 }

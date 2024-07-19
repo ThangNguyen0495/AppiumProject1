@@ -4,26 +4,29 @@ import api.Seller.products.all_products.APIAllProductsForCheckSortAndFilter;
 import api.Seller.products.product_collections.APIProductCollection;
 import api.Seller.products.product_collections.APIProductCollection.CollectionInfo;
 import api.Seller.setting.BranchManagement;
-import mobile.seller.android.login.LoginScreen;
-import mobile.seller.android.products.child_screen.filter.FilterScreen;
+import io.appium.java_client.ios.IOSDriver;
+import mobile.seller.iOS.login.LoginScreen;
+import mobile.seller.iOS.products.child_screen.filter.FilterScreen;
+import mobile.seller.iOS.home.HomeScreen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
-import utilities.commons.UICommonAndroid;
+import utilities.commons.UICommonIOS;
 import utilities.model.dashboard.setting.branchInformation.BranchInfo;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
+import static mobile.seller.iOS.products.edit_product.EditProductElement.loc_chkDisplayIfOutOfStock;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
-import static utilities.environment.goSELLEREnvironment.*;
+import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class ProductManagementScreen extends ProductManagementElement {
     WebDriver driver;
     AssertCustomize assertCustomize;
-    UICommonAndroid commonMobile;
+    UICommonIOS commonIOS;
     Logger logger = LogManager.getLogger();
 
     public ProductManagementScreen(WebDriver driver) {
@@ -34,53 +37,60 @@ public class ProductManagementScreen extends ProductManagementElement {
         assertCustomize = new AssertCustomize(driver);
 
         // Init commons class
-        commonMobile = new UICommonAndroid(driver);
+        commonIOS = new UICommonIOS(driver);
     }
 
     public ProductManagementScreen navigateToProductManagementScreen() {
-        // Navigate to product management screen
-        commonMobile.navigateToScreenUsingScreenActivity(goSELLERBundleId, goSELLERProductManagementActivity);
+        // Terminate app
+        ((IOSDriver) driver).terminateApp(goSELLERBundleId);
 
-        // Log
-        logger.info("Navigate to product management screen.");
+        // Reopen app
+        ((IOSDriver) driver).activateApp(goSELLERBundleId);
+
+        // Navigate to product management screen
+        new HomeScreen(driver).navigateToProductManagementScreen();
 
         return this;
     }
 
     public void navigateToProductDetailScreen(String productName) {
         // Search product by name
-        commonMobile.sendKeys(loc_txtSearchBox, productName);
+        commonIOS.sendKeys(loc_txtSearchBox, productName);
 
         // Log
         logger.info("Search product by name: {}", productName);
 
         // Navigate to product detail screen
-        By resultXpath = By.xpath(str_lblProductName.formatted(productName));
-        if (commonMobile.isShown(resultXpath)) {
+        if (!commonIOS.getListElements(loc_lblProductName(productName)).isEmpty()) {
             // Click into first result
-            commonMobile.click(resultXpath);
+            commonIOS.click(loc_lblProductName(productName));
 
-            // Wait screen loaded
-            commonMobile.waitUntilScreenLoaded(goSELLERProductDetailActivity);
-
+            // Wait product detail screen loaded
+            commonIOS.getElement(loc_chkDisplayIfOutOfStock);
         } else throw new NoSuchElementException("No result with keyword: %s".formatted(productName));
     }
 
     void sortListProduct(String sortOption) {
         // Open list of sort options
-        commonMobile.click(rsId_btnSort);
+        commonIOS.tap(loc_btnSort);
 
         // Sort product
         switch (sortOption) {
-            case "Stock high to low" -> commonMobile.click(loc_lstSortOptions, 1);
-            case "Stock low to high" -> commonMobile.click(loc_lstSortOptions, 2);
-            case "Priority high to low" -> commonMobile.click(loc_lstSortOptions, 3);
-            case "Priority low to high" -> commonMobile.click(loc_lstSortOptions, 4);
-            default ->  commonMobile.click(loc_lstSortOptions, 0);
+            case "Stock high to low" -> commonIOS.tap(loc_ddvStockHighToLow);
+            case "Stock low to high" -> commonIOS.tap(loc_ddvStockLowToHigh);
+            case "Priority high to low" -> commonIOS.tap(loc_ddvPriorityHighToLow);
+            case "Priority low to high" -> commonIOS.tap(loc_ddvPriorityLowToHigh);
+            default ->  commonIOS.tap(loc_ddvRecentlyUpdated);
         }
 
         // Log
         logger.info("Sort list product by {}", sortOption);
+    }
+    
+    private List<String> getListProductOnFirstScreen() {
+        // Get all products on first screen after sort/filter
+        return IntStream.range(0, commonIOS.getListElements(loc_lblProductName).size())
+                .mapToObj(index -> commonIOS.getText(loc_lblProductName, index)).toList();
     }
 
     public void checkSortByRecentUpdated() {
@@ -88,7 +98,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Get list product name after sort
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductNameAfterSortByRecentUpdated();
@@ -106,7 +116,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Stock high to low");
 
         // Get list product name after sort
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductNameAfterSortByStockHighToLow();
@@ -124,7 +134,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Stock low to high");
 
         // Get list product name after sort
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductNameAfterSortByStockLowToHigh();
@@ -142,7 +152,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Priority high to low");
 
         // Get list product name after sort
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductNameAfterSortByPriorityHighToLow();
@@ -160,7 +170,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Priority low to high");
 
         // Get list product name after sort
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductNameAfterSortByPriorityLowToHigh();
@@ -178,13 +188,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by Activate status
         new FilterScreen(driver).filterByStatus("ACTIVE");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByStatus("ACTIVE");
@@ -202,13 +212,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by Inactive status
         new FilterScreen(driver).filterByStatus("INACTIVE");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByStatus("INACTIVE");
@@ -226,13 +236,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by Error status
         new FilterScreen(driver).filterByStatus("ERROR");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByStatus("ERROR");
@@ -251,13 +261,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by Lazada channel
         new FilterScreen(driver).filterByChannel("LAZADA");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByChannel("LAZADA");
@@ -275,13 +285,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by Shopee channel
         new FilterScreen(driver).filterByChannel("SHOPEE");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByChannel("SHOPEE");
@@ -299,13 +309,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by Web platform
         new FilterScreen(driver).filterByPlatform("WEB");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByPlatform("WEB");
@@ -323,13 +333,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by App platform
         new FilterScreen(driver).filterByPlatform("APP");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByPlatform("APP");
@@ -348,13 +358,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by in-store platform
         new FilterScreen(driver).filterByPlatform("IN_STORE");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByPlatform("IN_STORE");
@@ -372,13 +382,13 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Filter list product by in-store platform
         new FilterScreen(driver).filterByPlatform("NONE");
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByPlatform("NONE");
@@ -396,7 +406,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Get branch info
         BranchInfo branchInfo = new BranchManagement(LoginScreen.getLoginInformation()).getInfo();
@@ -407,7 +417,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         new FilterScreen(driver).filterByBranch(branchName);
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByBranch(branchId);
@@ -425,7 +435,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         sortListProduct("Recent updated");
 
         // Navigate to Filter screen
-        commonMobile.click(rsId_btnFilter);
+        commonIOS.tap(loc_btnFilter);
 
         // Get collection info
         CollectionInfo collectionInfo= new APIProductCollection(LoginScreen.getLoginInformation()).getManualCollection();
@@ -436,7 +446,7 @@ public class ProductManagementScreen extends ProductManagementElement {
         new FilterScreen(driver).filterByCollections(collectionName);
 
         // Get list product name after filter
-        List<String> firstScreenProductNames = commonMobile.getListElementTextOnFirstScreen(loc_lblProductName);
+        List<String> firstScreenProductNames = getListProductOnFirstScreen();
 
         // Get list product nam by API
         List<String> expectedProductNames = new APIAllProductsForCheckSortAndFilter(LoginScreen.getLoginInformation()).getListProductAfterFilterByCollection(collectionId);

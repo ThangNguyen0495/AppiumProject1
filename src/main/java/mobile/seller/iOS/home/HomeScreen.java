@@ -40,4 +40,12 @@ public class HomeScreen extends HomeElement{
         // Log
         logger.info("Navigate create product screen");
     }
+
+    public void navigateToProductManagementScreen() {
+        // Click product management icon
+        commonIOS.tap(loc_icnProductManagement);
+
+        // Log
+        logger.info("Navigate product management screen");
+    }
 }

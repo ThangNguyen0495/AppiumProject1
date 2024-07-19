@@ -382,7 +382,7 @@ public class CreateProductTest extends BaseTest {
     }
 
     @Test
-    void CR_PRODUCT_G4_01_CreateProductWithDiscountPrice() {
+    void CR_PRODUCT_G4_05_CreateProductWithDiscountPrice() {
         createProductScreen.getManageByIMEI(true)
                 .getHasDiscount(true)
                 .navigateToCreateProductScreen()

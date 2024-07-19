@@ -12,7 +12,7 @@ public class EditMultipleElement {
         return By.xpath("(//XCUIElementTypeStaticText[@name=\"%s\"])[1]".formatted(branchName));
     }
 
-    By loc_icnActions = By.xpath("name == \"icon_tree_dots\"");
+    By loc_icnActions = By.xpath("//XCUIElementTypeImage[@name=\"icon_tree_dots\"]");
     By loc_ddvUpdatePriceActions = By.xpath("//XCUIElementTypeStaticText[@name=\"Update price\"]");
     By loc_ddvUpdateStockActions = By.xpath("//XCUIElementTypeStaticText[@name=\"Update stock\"]");
 
@@ -21,6 +21,6 @@ public class EditMultipleElement {
     By loc_dlgUpdatePrice_btnOK = By.xpath("//XCUIElementTypeButton[@name=\"OK\"]");
 
     By loc_dlgUpdateStock_tabChange = By.xpath("//XCUIElementTypeButton[@name=\"CHANGE\"]");
-    By loc_dlgUpdateStock_txtQuantity = By.xpath("//XCUIElementTypeImage[@name=\"icon_minus_stock\"]//parent::XCUIElementTypeOther//following-sibling::XCUIElementTypeTextField");
+    By loc_dlgUpdateStock_txtQuantity = By.xpath("//XCUIElementTypeStaticText[@name=\"Input quantity\"]/preceding-sibling::*/XCUIElementTypeTextField");
     By loc_dlgUpdateStock_btnOK = By.xpath("//XCUIElementTypeButton[@name=\"OK\"]");
 }

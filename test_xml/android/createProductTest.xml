@@ -58,7 +58,7 @@
                     <include name="CR_PRODUCT_G4_08_CreateProductWithCostPrice"/>
                     <include name="CR_PRODUCT_G4_09_CreateProductWithNonePlatform"/>
                     <include name="CR_PRODUCT_G4_10_CreateProductWithAnyPlatform"/>
-                    <include name="CR_PRODUCT_G4_10_CreateProductWithPriority"/>
+                    <include name="CR_PRODUCT_G4_11_CreateProductWithPriority"/>
                     <include name="CR_PRODUCT_G4_12_CreateProductWithoutPriority"/>
                 </methods>
             </class> <!-- CreateProductTest -->

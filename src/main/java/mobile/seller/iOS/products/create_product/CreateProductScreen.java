@@ -188,7 +188,7 @@ public class CreateProductScreen extends CreateProductElement {
 
     void inputProductDescription() {
         // Open description popup
-        commonIOS.tap(loc_txtProductDescription);
+        commonIOS.tap(loc_btnProductDescription);
 
         // Input product description
         String description = "[%s] Product description %s".formatted(defaultLanguage, getCurrentEpoch());
@@ -334,7 +334,7 @@ public class CreateProductScreen extends CreateProductElement {
         boolean status = commonIOS.isChecked(commonIOS.getElement(loc_swShipping));
 
         // Update shipping status
-        if (!Objects.equals(hasDimension, status)) commonIOS.tap(loc_swShipping);
+        if (!Objects.equals(hasDimension, status)) commonIOS.click(loc_swShipping);
 
         // If product has dimension, add shipping configuration
         // Add product weight
@@ -362,7 +362,7 @@ public class CreateProductScreen extends CreateProductElement {
         boolean webStatus = commonIOS.isChecked(commonIOS.getElement(loc_swWeb));
 
         // Modify show on web config
-        if (!Objects.equals(showOnWeb, webStatus)) commonIOS.tap(loc_swWeb);
+        if (!Objects.equals(showOnWeb, webStatus)) commonIOS.click(loc_swWeb);
 
         // Log
         logger.info("On web configure: {}", showOnWeb);
@@ -372,7 +372,7 @@ public class CreateProductScreen extends CreateProductElement {
         boolean appStatus = commonIOS.isChecked(commonIOS.getElement(loc_swApp));
 
         // Modify show on app config
-        if (!Objects.equals(showOnApp, appStatus)) commonIOS.tap(loc_swApp);
+        if (!Objects.equals(showOnApp, appStatus)) commonIOS.click(loc_swApp);
 
         // Log
         logger.info("On app configure: {}", showOnApp);
@@ -382,7 +382,7 @@ public class CreateProductScreen extends CreateProductElement {
         boolean inStoreStatus = commonIOS.isChecked(commonIOS.getElement(loc_swInStore));
 
         // Modify show in-store config
-        if (!Objects.equals(showInStore, inStoreStatus)) commonIOS.tap(loc_swInStore);
+        if (!Objects.equals(showInStore, inStoreStatus)) commonIOS.click(loc_swInStore);
 
         // Log
         logger.info("In store configure: {}", showInStore);
@@ -392,7 +392,7 @@ public class CreateProductScreen extends CreateProductElement {
         boolean goSocialStatus = commonIOS.isChecked(commonIOS.getElement(loc_swGoSocial));
 
         // Modify show in goSocial config
-        if (!Objects.equals(showInGoSocial, goSocialStatus)) commonIOS.tap(loc_swGoSocial);
+        if (!Objects.equals(showInGoSocial, goSocialStatus)) commonIOS.click(loc_swGoSocial);
 
         // Log
         logger.info("In goSOCIAL configure: {}", showInGoSocial);
@@ -409,7 +409,7 @@ public class CreateProductScreen extends CreateProductElement {
         boolean status = commonIOS.isChecked(commonIOS.getElement(loc_swPriority));
 
         // Update priority config
-        if (!Objects.equals(hasPriority, status)) commonIOS.tap(loc_swPriority);
+        if (!Objects.equals(hasPriority, status)) commonIOS.click(loc_swPriority);
 
         // If product has priority, add priority
         if (hasPriority) {
@@ -472,7 +472,7 @@ public class CreateProductScreen extends CreateProductElement {
             ProductVariationScreen productVariationScreen = new ProductVariationScreen(driver);
 
             // Navigate to variation detail screen to update variation information
-            commonIOS.tap(loc_lstVariations, 0);
+            commonIOS.tap(loc_lstVariations);
 
             // Update variation information
             productVariationScreen.getVariationInformation(defaultLanguage, branchInfo, hasDiscount, hasCostPrice, 0, productInfo)
@@ -524,77 +524,80 @@ public class CreateProductScreen extends CreateProductElement {
         assertCustomize.assertFalse(commonIOS.getListElements(loc_txtSearchBox).isEmpty(), "Can not create product");
 
         // If product are updated, check information after updating
-        // Get product ID
-        int productId = new APIAllProducts(LoginScreen.getLoginInformation()).searchProductIdByName(productInfo.getMainProductNameMap().get(defaultLanguage));
+        if (!commonIOS.getListElements(loc_txtSearchBox).isEmpty()) {
+            // Get product ID
+            int productId = new APIAllProducts(LoginScreen.getLoginInformation()).searchProductIdByName(productInfo.getMainProductNameMap().get(defaultLanguage));
 
-        // Get current product information
-        ProductInfo currentInfo = new APIProductDetail(LoginScreen.getLoginInformation()).getInfo(productId);
+            // Get current product information
+            ProductInfo currentInfo = new APIProductDetail(LoginScreen.getLoginInformation()).getInfo(productId);
 
-        // Check main product name
-        assertCustomize.assertEquals(productInfo.getMainProductNameMap(), currentInfo.getMainProductNameMap(),
-                "Main product name must be %s, but found %s".formatted(productInfo.getMainProductNameMap(), currentInfo.getMainProductNameMap()));
+            // Check main product name
+            assertCustomize.assertEquals(productInfo.getMainProductNameMap(), currentInfo.getMainProductNameMap(),
+                    "Main product name must be %s, but found %s".formatted(productInfo.getMainProductNameMap(), currentInfo.getMainProductNameMap()));
 
-        // Check main product description
-        assertCustomize.assertEquals(productInfo.getMainProductDescriptionMap(), currentInfo.getMainProductDescriptionMap(),
-                "Main product description must be %s, but found %s".formatted(productInfo.getMainProductDescriptionMap(), currentInfo.getMainProductDescriptionMap()));
+            // Check main product description
+            assertCustomize.assertEquals(productInfo.getMainProductDescriptionMap(), currentInfo.getMainProductDescriptionMap(),
+                    "Main product description must be %s, but found %s".formatted(productInfo.getMainProductDescriptionMap(), currentInfo.getMainProductDescriptionMap()));
 
-        // Check product listing price
-        assertCustomize.assertEquals(productInfo.getProductListingPrice(), currentInfo.getProductListingPrice(),
-                "Product listing price must be %s, but found %s".formatted(productInfo.getProductListingPrice(), currentInfo.getProductListingPrice()));
+            // Check product listing price
+            assertCustomize.assertEquals(productInfo.getProductListingPrice(), currentInfo.getProductListingPrice(),
+                    "Product listing price must be %s, but found %s".formatted(productInfo.getProductListingPrice(), currentInfo.getProductListingPrice()));
 
-        // Check product selling price
-        assertCustomize.assertEquals(productInfo.getProductSellingPrice(), currentInfo.getProductSellingPrice(),
-                "Product selling price must be %s, but found %s".formatted(productInfo.getProductSellingPrice(), currentInfo.getProductSellingPrice()));
+            // Check product selling price
+            assertCustomize.assertEquals(productInfo.getProductSellingPrice(), currentInfo.getProductSellingPrice(),
+                    "Product selling price must be %s, but found %s".formatted(productInfo.getProductSellingPrice(), currentInfo.getProductSellingPrice()));
 
-        // Check product cost price
-        assertCustomize.assertEquals(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice(),
-                "Product cost price must be %s, but found %s".formatted(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice()));
+            // Check product cost price
+            assertCustomize.assertEquals(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice(),
+                    "Product cost price must be %s, but found %s".formatted(productInfo.getProductCostPrice(), currentInfo.getProductCostPrice()));
 
-        // Check product barcode
-        if (!currentInfo.isHasModel()) {
-            assertCustomize.assertEquals(productInfo.getBarcodeList(), currentInfo.getBarcodeList(),
-                    "Product barcode must be %s, but found %s".formatted(productInfo.getBarcodeList(), currentInfo.getBarcodeList()));
+            // Check product barcode
+            if (!currentInfo.isHasModel()) {
+                assertCustomize.assertEquals(productInfo.getBarcodeList(), currentInfo.getBarcodeList(),
+                        "Product barcode must be %s, but found %s".formatted(productInfo.getBarcodeList(), currentInfo.getBarcodeList()));
+            }
+
+            // Check online store config
+            assertCustomize.assertEquals(productInfo.getShowOutOfStock(), currentInfo.getShowOutOfStock(),
+                    "Show when out of stock config must be %s, but found %s".formatted(productInfo.getShowOutOfStock(), currentInfo.getShowOutOfStock()));
+            assertCustomize.assertEquals(productInfo.isHideStock(), currentInfo.isHideStock(),
+                    "Hide remaining stock config must be %s, but found %s".formatted(productInfo.isHideStock(), currentInfo.isHideStock()));
+
+            // Check inventory
+            assertCustomize.assertEquals(productInfo.getManageInventoryByIMEI(), currentInfo.getManageInventoryByIMEI(),
+                    "Manage inventory type must be %s, but found %s".formatted(productInfo.getManageInventoryByIMEI(), currentInfo.getManageInventoryByIMEI()));
+
+            assertCustomize.assertEquals(productInfo.getLotAvailable(), currentInfo.getLotAvailable(),
+                    "Manage by lot must be %s, but found %s".formatted(productInfo.getLotAvailable(), currentInfo.getLotAvailable()));
+
+            // Check stock quantity
+            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(productInfo.getProductStockQuantityMap().values(), currentInfo.getProductStockQuantityMap().values()),
+                    "Product stock quantity must be %s, but found %s".formatted(productInfo.getProductStockQuantityMap().values(), currentInfo.getProductStockQuantityMap().values()));
+
+            // Check selling platform
+            assertCustomize.assertEquals(productInfo.getOnWeb(), currentInfo.getOnWeb(),
+                    "Web config must be %s, but found %s".formatted(productInfo.getOnWeb(), currentInfo.getOnWeb()));
+            assertCustomize.assertEquals(productInfo.getOnApp(), currentInfo.getOnApp(),
+                    "App config must be %s, but found %s".formatted(productInfo.getOnApp(), currentInfo.getOnApp()));
+            assertCustomize.assertEquals(productInfo.getInStore(), currentInfo.getInStore(),
+                    "In-store config must be %s, but found %s".formatted(productInfo.getInStore(), currentInfo.getInStore()));
+            assertCustomize.assertEquals(productInfo.getInGoSocial(), currentInfo.getInGoSocial(),
+                    "In GoSOCIAL config must be %s, but found %s".formatted(productInfo.getInGoSocial(), currentInfo.getInGoSocial()));
+
+            // Check variation information
+            if (updateEachVariationInformation) {
+                List<String> actualVersionNames = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+                List<String> expectedVersionNames = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+                assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionNames, expectedVersionNames),
+                        "Variation version name must be %s, but found %s".formatted(expectedVersionNames, actualVersionNames));
+
+                List<String> actualVersionDescriptions = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+                List<String> expectedVersionDescriptions = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
+                assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionDescriptions, expectedVersionDescriptions),
+                        "Variation version description must be %s, but found %s".formatted(expectedVersionDescriptions, actualVersionDescriptions));
+            }
         }
 
-        // Check online store config
-        assertCustomize.assertEquals(productInfo.getShowOutOfStock(), currentInfo.getShowOutOfStock(),
-                "Show when out of stock config must be %s, but found %s".formatted(productInfo.getShowOutOfStock(), currentInfo.getShowOutOfStock()));
-        assertCustomize.assertEquals(productInfo.isHideStock(), currentInfo.isHideStock(),
-                "Hide remaining stock config must be %s, but found %s".formatted(productInfo.isHideStock(), currentInfo.isHideStock()));
-
-        // Check inventory
-        assertCustomize.assertEquals(productInfo.getManageInventoryByIMEI(), currentInfo.getManageInventoryByIMEI(),
-                "Manage inventory type must be %s, but found %s".formatted(productInfo.getManageInventoryByIMEI(), currentInfo.getManageInventoryByIMEI()));
-
-        assertCustomize.assertEquals(productInfo.getLotAvailable(), currentInfo.getLotAvailable(),
-                "Manage by lot must be %s, but found %s".formatted(productInfo.getLotAvailable(), currentInfo.getLotAvailable()));
-
-        // Check stock quantity
-        assertCustomize.assertTrue(CollectionUtils.isEqualCollection(productInfo.getProductStockQuantityMap().values(), currentInfo.getProductStockQuantityMap().values()),
-                "Product stock quantity must be %s, but found %s".formatted(productInfo.getProductStockQuantityMap().values(), currentInfo.getProductStockQuantityMap().values()));
-
-        // Check selling platform
-        assertCustomize.assertEquals(productInfo.getOnWeb(), currentInfo.getOnWeb(),
-                "Web config must be %s, but found %s".formatted(productInfo.getOnWeb(), currentInfo.getOnWeb()));
-        assertCustomize.assertEquals(productInfo.getOnApp(), currentInfo.getOnApp(),
-                "App config must be %s, but found %s".formatted(productInfo.getOnApp(), currentInfo.getOnApp()));
-        assertCustomize.assertEquals(productInfo.getInStore(), currentInfo.getInStore(),
-                "In-store config must be %s, but found %s".formatted(productInfo.getInStore(), currentInfo.getInStore()));
-        assertCustomize.assertEquals(productInfo.getInGoSocial(), currentInfo.getInGoSocial(),
-                "In GoSOCIAL config must be %s, but found %s".formatted(productInfo.getInGoSocial(), currentInfo.getInGoSocial()));
-
-        // Check variation information
-        if (updateEachVariationInformation) {
-            List<String> actualVersionNames = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            List<String> expectedVersionNames = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionNames, expectedVersionNames),
-                    "Variation version name must be %s, but found %s".formatted(expectedVersionNames, actualVersionNames));
-
-            List<String> actualVersionDescriptions = productInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            List<String> expectedVersionDescriptions = currentInfo.getVersionNameMap().values().stream().map(map -> map.get(defaultLanguage)).toList();
-            assertCustomize.assertTrue(CollectionUtils.isEqualCollection(actualVersionDescriptions, expectedVersionDescriptions),
-                    "Variation version description must be %s, but found %s".formatted(expectedVersionDescriptions, actualVersionDescriptions));
-        }
         // Assert
         AssertCustomize.verifyTest();
     }
@@ -624,11 +627,11 @@ public class CreateProductScreen extends CreateProductElement {
         displayIfOutOfStock();
         hideRemainingStockOnOnlineStore();
         selectManageInventory();
-        manageProductByLot();
         modifyShippingInformation();
         modifyProductSellingPlatform();
         modifyPriority();
         addVariations();
+        manageProductByLot();
         bulkUpdateVariations(increaseNum, branchStock);
         completeCreateProduct();
     }

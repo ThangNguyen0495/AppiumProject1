@@ -26,11 +26,13 @@ public class CRUDVariationScreen extends CRUDVariationElement {
         commonIOS = new UICommonIOS(driver);
     }
 
-    public void removeOldVariation() {
+    public CRUDVariationScreen removeOldVariation() {
         // Remove old variation
         if (!commonIOS.getListElements(loc_icnRemoveVariationGroup).isEmpty())
             IntStream.iterate(commonIOS.getListElements(loc_icnRemoveVariationGroup).size() - 1, removeIndex -> removeIndex >= 0, removeIndex -> removeIndex - 1)
                     .forEach(removeIndex -> commonIOS.tap(loc_icnRemoveVariationGroup, removeIndex));
+
+        return this;
     }
 
     public void addVariation(String defaultLanguage) {

@@ -5,13 +5,19 @@ import org.openqa.selenium.By;
 import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class ProductManagementElement {
-    String rsId_txtSearchBox = "%s:id/edtProductSearch".formatted(goSELLERBundleId);
-    String rsId_btnSort = "%s:id/ivSortType".formatted(goSELLERBundleId);
-    By loc_lstSortOptions = By.xpath("//*[@* ='%s:id/tvStatus']".formatted(goSELLERBundleId));
-    String rsId_btnFilter = "%s:id/btnFilterProduct".formatted(goSELLERBundleId);
-    String str_lblProductName = "//android.widget.TextView[@* = '%s']".formatted(goSELLERBundleId);
-    By loc_lblProductName = By.xpath("//*[@* ='%s:id/tvProductName']".formatted(goSELLERBundleId));
 
-    public static By loc_txtSearchBox = By.xpath("//XCUIElementTypeTextField[@value=\"Search by product name\"]");
+
+    public static By loc_txtSearchBox = By.xpath("//XCUIElementTypeImage[@name=\"icon_search\"]/preceding-sibling::XCUIElementTypeTextField");
+    By loc_lblProductName(String productName) {
+        return By.xpath("//XCUIElementTypeStaticText[@name=\"%s\"]".formatted(productName));
+    }
+    By loc_lblProductName = By.xpath("//XCUIElementTypeCell//XCUIElementTypeStaticText[last()]");
+    By loc_btnSort = By.xpath("//XCUIElementTypeButton[@name=\"icon sort priority\"]");
+    By loc_ddvRecentlyUpdated = By.xpath("//XCUIElementTypeStaticText[@name=\"Recently updated\"]");
+    By loc_ddvStockHighToLow = By.xpath("//XCUIElementTypeStaticText[@name=\"Stock: High to low\"]");
+    By loc_ddvStockLowToHigh = By.xpath("//XCUIElementTypeStaticText[@name=\"Stock: Low to high\"]");
+    By loc_ddvPriorityHighToLow = By.xpath("//XCUIElementTypeStaticText[@name=\"Priority: High to low\"]");
+    By loc_ddvPriorityLowToHigh = By.xpath("//XCUIElementTypeStaticText[@name=\"Priority: Low to high\"]");
+    By loc_btnFilter = By.xpath("(//XCUIElementTypeButton[@name=\"icon sort priority\"]/parent::*/following-sibling::*//XCUIElementTypeButton)[1]");
 
 }

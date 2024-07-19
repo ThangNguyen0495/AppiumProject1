@@ -6,6 +6,7 @@ import io.appium.java_client.ios.IOSDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
@@ -191,7 +192,11 @@ public class UICommonIOS {
     }
 
     public boolean isChecked(WebElement element) {
-        return !element.findElements(By.xpath("//XCUIElementTypeImage[@name=\"icon_checked_white\"]")).isEmpty();
+        if (element.getAttribute("type").equals("XCUIElementTypeOther")) {
+            element.click();
+            return !element.findElements(By.xpath("//XCUIElementTypeImage[@name=\"icon_checked_white\"]")).isEmpty();
+        }
+        return element.getAttribute("value").equals("1");
     }
 
 }

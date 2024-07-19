@@ -5,15 +5,18 @@ import org.openqa.selenium.By;
 import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class FilterElement {
-    String rsId_btnReset = "%s:id/btnReset".formatted(goSELLERBundleId);
-    String rsId_sctStatus = "%s:id/htvStatus".formatted(goSELLERBundleId);
-    By loc_btnFilterByStatus = By.xpath("//*[@* = '%s:id/htvStatus']//*[@* = '%s:id/tag_container']".formatted(goSELLERBundleId, goSELLERBundleId));
-    String rsId_sctChannel = "%s:id/htvChannel".formatted(goSELLERBundleId);
-    By loc_btnFilterByChannel = By.xpath("//*[@* = '%s:id/htvChannel']//*[@* = '%s:id/tag_container']".formatted(goSELLERBundleId, goSELLERBundleId));
-    String rsId_sctPlatform = "%s:id/htvPlatform".formatted(goSELLERBundleId);
-    By loc_btnFilterByPlatform = By.xpath("//*[@* = '%s:id/htvPlatform']//*[@* = '%s:id/tag_container']".formatted(goSELLERBundleId, goSELLERBundleId));
-    String rsId_btnSeeAllBranches = "%s:id/btnSeeAllBranches".formatted(goSELLERBundleId);
-    String rsId_btnSeeAllCollections = "%s:id/btnSeeAllCollections".formatted(goSELLERBundleId);
-    String rsId_btnApply = "%s:id/btnApply".formatted(goSELLERBundleId);
+    By loc_btnReset = By.xpath("//XCUIElementTypeButton[@name=\"Reset\"]");
+    By loc_btnActiveStatus = By.xpath("//XCUIElementTypeButton[@name=\"Active\"]");
+    By loc_btnInActiveStatus = By.xpath("//XCUIElementTypeButton[@name=\"Inactive\"]");
+    By loc_btnErrorStatus =By.xpath("//XCUIElementTypeButton[@name=\"Error\"]");
+    By loc_btnLazadaChannel =By.xpath("//XCUIElementTypeButton[@name=\"Lazada\"]");
+    By loc_btnShopeeChannel =By.xpath("//XCUIElementTypeButton[@name=\"Shopee\"]");
+    By loc_btnWebPlatform =By.xpath("//XCUIElementTypeButton[@name=\"Web\"]");
+    By loc_btnAppPlatform =By.xpath("//XCUIElementTypeButton[@name=\"App\"]");
+    By loc_btnInStorePlatform =By.xpath("//XCUIElementTypeButton[@name=\"In-store\"]");
+    By loc_btnNonePlatform =By.xpath("//XCUIElementTypeButton[@name=\"None Platform\"]");
+    By loc_btnSeeAllBranches =By.xpath("(//XCUIElementTypeButton[@name=\"See all\"])[1]");
+    By loc_btnSeeAllCollections =By.xpath("(//XCUIElementTypeButton[@name=\"See all\"])[2]");
+    By loc_btnApply = By.xpath("//XCUIElementTypeButton[@name=\"Apply\"]");
 
 }

@@ -168,7 +168,7 @@ public class DataGenerator {
         int numberOfGroups = nextInt(MAX_VARIATION_QUANTITY) + 1;
 
         // init number of variation values
-        int numberOfVariations = 1;//nextInt((numberOfGroups == 1) ? MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION : MAX_VARIATION_QUANTITY_FOR_ALL_VARIATIONS) + 1;
+        int numberOfVariations = nextInt((numberOfGroups == 1) ? MAX_VARIATION_QUANTITY_FOR_EACH_VARIATION : MAX_VARIATION_QUANTITY_FOR_ALL_VARIATIONS) + 1;
 
         // get number of value of each group variation
         List<Integer> numberOfVariationValue = getNumOfValuesOnEachGroup(numberOfVariations, numberOfGroups);

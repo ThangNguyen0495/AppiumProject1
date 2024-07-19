@@ -1,26 +1,24 @@
 package seller;
 
-import org.openqa.selenium.By;
+import io.appium.java_client.ios.IOSDriver;
+import mobile.seller.iOS.login.LoginScreen;
+import mobile.seller.iOS.products.create_product.CreateProductScreen;
 import org.testng.annotations.Test;
-import utilities.appium_server.AppiumServer;
-import utilities.driver.InitAppiumDriver;
+import utilities.driver.InitIOSDriver;
+import utilities.model.sellerApp.login.LoginInformation;
+
 
 public class AppiumTest {
 
-    String feature_id = "tm-product-service-default-layout";
-    By xpath = By.xpath("//android.view.View[@resource-id=\"tm-product-service-default-layout\"]/android.view.View");
+    String udid = "00008110-000A2928116A201E";
 
     @Test()
     void t() throws Exception {
-    }
+        IOSDriver driver = new InitIOSDriver().getSellerDriver(udid);
 
+        new LoginScreen(driver).performLogin(new LoginInformation("stgauto@nbobd.com", "Abc@12345"));
 
-    @Test
-    void v() {
-        AppiumServer.startServer();
-        new InitAppiumDriver().getSellerDriver("192.168.168.102:5555");
-        new InitAppiumDriver().getSellerDriver("192.168.168.103:5555");
-        AppiumServer.stopServer();
+        new CreateProductScreen(driver).navigateToCreateProductScreen().createProductWithoutVariation();
     }
 
 }

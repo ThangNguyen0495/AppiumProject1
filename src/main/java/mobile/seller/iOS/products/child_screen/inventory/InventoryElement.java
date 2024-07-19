@@ -11,6 +11,6 @@ public class InventoryElement {
     }
 
     By loc_dlgUpdateStock_tabChange = By.xpath("//XCUIElementTypeStaticText[@name=\"CHANGE\"]");
-    By loc_txtUpdateStock_txtQuantity = By.xpath("//XCUIElementTypeImage[@name=\"icon_minus_stock\"]//parent::XCUIElementTypeOther//following-sibling::XCUIElementTypeTextField");
+    By loc_txtUpdateStock_txtQuantity = By.xpath("//XCUIElementTypeStaticText[@name=\"Input quantity\"]/preceding-sibling::*/XCUIElementTypeTextField");
     By loc_dlgUpdateStock_btnOK = By.xpath("//XCUIElementTypeButton[@name=\"OK\"]");
 }

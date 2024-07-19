@@ -1,10 +1,10 @@
 package seller.iOS;
 
-import mobile.seller.android.login.LoginScreen;
-import mobile.seller.android.products.product_management.ProductManagementScreen;
+import mobile.seller.iOS.login.LoginScreen;
+import mobile.seller.iOS.products.product_management.ProductManagementScreen;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import utilities.driver.InitAndroidDriver;
+import utilities.driver.InitIOSDriver;
 import utilities.model.sellerApp.login.LoginInformation;
 import utilities.utils.PropertiesUtil;
 
@@ -17,113 +17,100 @@ public class ProductManagementTest extends BaseTest {
 
     @BeforeClass
     void setup() {
-        // init WebDriver
-        String uuid = PropertiesUtil.getEnvironmentData("udidAndroidThang");
-        driver = new InitAndroidDriver().getSellerDriver(uuid);
+        // Init driver
+        String uuid = PropertiesUtil.getEnvironmentData("udidIOSThang");
+        driver = new InitIOSDriver().getSellerDriver(uuid);
 
-        // init login information
+        // Init login information
         loginInformation = new LoginInformation(ADMIN_ACCOUNT_THANG, ADMIN_PASSWORD_THANG);
 
-        // login to dashboard with login information
+        // Login to dashboard with login information
         new LoginScreen(driver).performLogin(loginInformation);
 
-        // init product page POM
+        // Init product page POM
         productManagementScreen = new ProductManagementScreen(driver);
+        
+        // Navigate to product management screen
+        productManagementScreen.navigateToProductManagementScreen();
     }
 
     @Test
     void MN_PRODUCT_01_SortProductByRecentUpdated() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkSortByRecentUpdated();
+        productManagementScreen.checkSortByRecentUpdated();
     }
 
     @Test
     void MN_PRODUCT_02_SortProductByStockHighToLow() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkSortByStockHighToLow();
+        productManagementScreen.checkSortByStockHighToLow();
     }
 
     @Test
     void MN_PRODUCT_03_SortProductByStockLowToHigh() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkSortByStockLowToHigh();
+        productManagementScreen.checkSortByStockLowToHigh();
     }
 
     @Test
     void MN_PRODUCT_04_SortProductByPriorityHighToLow() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkSortByPriorityHighToLow();
+        productManagementScreen.checkSortByPriorityHighToLow();
     }
 
     @Test
     void MN_PRODUCT_05_SortProductByPriorityLowToHigh() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkSortByPriorityLowToHigh();
+        productManagementScreen.checkSortByPriorityLowToHigh();
     }
 
     @Test
     void MN_PRODUCT_06_FilterProductByActiveStatus() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByActiveStatus();
+        productManagementScreen.checkFilterByActiveStatus();
     }
 
     @Test
     void MN_PRODUCT_07_FilterProductByActiveStatus() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByInactiveStatus();
+        productManagementScreen.checkFilterByInactiveStatus();
     }
 
     @Test
     void MN_PRODUCT_08_FilterProductByErrorStatus() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByErrorStatus();
+        productManagementScreen.checkFilterByErrorStatus();
     }
 
     @Test
     void MN_PRODUCT_09_FilterProductByLazadaChannel() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByLazadaChannel();
+        productManagementScreen.checkFilterByLazadaChannel();
     }
 
     @Test
     void MN_PRODUCT_10_FilterProductByShopeeChannel() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByShopeeChannel();
+        productManagementScreen.checkFilterByShopeeChannel();
     }
 
     @Test
     void MN_PRODUCT_11_FilterProductByWebPlatform() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByWebPlatform();
+        productManagementScreen.checkFilterByWebPlatform();
     }
 
     @Test
     void MN_PRODUCT_12_FilterProductByAppPlatform() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByAppPlatform();
+        productManagementScreen.checkFilterByAppPlatform();
     }
 
     @Test
     void MN_PRODUCT_13_FilterProductByInStorePlatform() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByPOSPlatform();
+        productManagementScreen.checkFilterByPOSPlatform();
     }
 
     @Test
     void MN_PRODUCT_14_FilterProductByNonePlatform() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByNonePlatform();
+        productManagementScreen.checkFilterByNonePlatform();
     }
 
     @Test
     void MN_PRODUCT_15_FilterProductByBranch() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByBranch();
+        productManagementScreen.checkFilterByBranch();
     }
 
     @Test
     void MN_PRODUCT_16_FilterProductByCollections() {
-        productManagementScreen.navigateToProductManagementScreen()
-                .checkFilterByCollections();
+        productManagementScreen.checkFilterByCollections();
     }
 }

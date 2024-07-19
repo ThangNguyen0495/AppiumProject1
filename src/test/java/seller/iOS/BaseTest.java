@@ -4,6 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 import utilities.assert_customize.AssertCustomize;
+import utilities.recording.ScreenRecording;
 import utilities.utils.PropertiesUtil;
 
 public class BaseTest {
@@ -20,11 +21,19 @@ public class BaseTest {
         PropertiesUtil.setDBLanguage(language);
         PropertiesUtil.setSFLanguage(language);
     }
+    @BeforeMethod
+    void startTest() {
+        // Start recording
+        ScreenRecording.startRecording(driver);
+    }
 
     @AfterMethod
     public void clear(ITestResult result) {
         // Clear assert count false
         AssertCustomize.setCountFalse(0);
+
+        // Stop recording
+        ScreenRecording.stopRecording(driver, result);
     }
 
     @AfterSuite
