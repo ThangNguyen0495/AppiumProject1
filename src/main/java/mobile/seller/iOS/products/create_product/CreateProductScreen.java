@@ -6,13 +6,13 @@ import api.Seller.setting.BranchManagement;
 import api.Seller.setting.StoreInformation;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
+import mobile.seller.iOS.home.HomeScreen;
 import mobile.seller.iOS.login.LoginScreen;
 import mobile.seller.iOS.products.child_screen.crud_variations.CRUDVariationScreen;
 import mobile.seller.iOS.products.child_screen.edit_multiple.EditMultipleScreen;
 import mobile.seller.iOS.products.child_screen.inventory.InventoryScreen;
 import mobile.seller.iOS.products.child_screen.product_description.ProductDescriptionScreen;
 import mobile.seller.iOS.products.child_screen.product_variation.ProductVariationScreen;
-import mobile.seller.iOS.home.HomeScreen;
 import mobile.seller.iOS.products.child_screen.select_image.SelectImagePopup;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -489,7 +489,7 @@ public class CreateProductScreen extends CreateProductElement {
             productInfo.setBarcodeList(List.of(info.getBarcode()));
         } else { // Update variation information at edit multiple screen
             // Navigate to edit multiple screen
-            commonIOS.tap(loc_btnEditMultiple);
+            commonIOS.click(loc_btnEditMultiple);
 
             // Init edit multiple model
             EditMultipleScreen editMultipleScreen = new EditMultipleScreen(driver);

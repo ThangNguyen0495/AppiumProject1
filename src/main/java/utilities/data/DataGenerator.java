@@ -160,6 +160,7 @@ public class DataGenerator {
         int factor = IntStream.range(2, numberOfVariations).filter(i -> numberOfVariations % i == 0).findFirst().orElse(1);
         return List.of(factor, numberOfVariations / factor);
     }
+
     /**
      * generate variation maps (variation name : get variation value)
      */
@@ -280,19 +281,24 @@ public class DataGenerator {
     }
 
     @SneakyThrows
-    public String getFilePath(String fileName) {
+    public String getPathOfFileInResourcesRoot(String fileName) {
+        return getPathOfFile("resources", fileName);
+    }
+
+    @SneakyThrows
+    public String getPathOfFile(String rootFolder, String fileName) {
         File root = new File(System.getProperty("user.dir"));
         List<Path> paths = Files.walk(Paths.get(root.toString())).toList();
         Optional<Path> filePath = paths.stream()
                 .filter(path -> !Files.isDirectory(path))
-                .filter(path -> path.toString().contains("resources")
+                .filter(path -> path.toString().contains(rootFolder)
                                 && path.getFileName().toString().equals(fileName))
                 .findFirst();
         return filePath.map(Path::toString).orElse("");
     }
 
     @SneakyThrows
-    public String getFolderPath(String folderName) {
+    public String getPathOfFolder(String folderName) {
         File root = new File(System.getProperty("user.dir"));
         List<Path> paths = Files.walk(Paths.get(root.toString())).toList();
         Optional<Path> folderPath = paths.stream()
@@ -302,8 +308,24 @@ public class DataGenerator {
         return folderPath.map(Path::toString).orElse("");
     }
 
+    @SneakyThrows
+    public String getPathOfFolder(String rootFolder, String folderName) {
+        File root = new File(System.getProperty("user.dir"));
+        List<Path> paths = Files.walk(Paths.get(root.toString())).toList();
+        Optional<Path> folderPath = paths.stream()
+                .filter(Files::isDirectory)
+                .filter(path -> path.toString().contains(rootFolder)
+                                && path.getFileName().toString().equals(folderName))
+                .findFirst();
+        return folderPath.map(Path::toString).orElse("");
+    }
+
+    public String getPathOfFolderInResourceRoot(String folderName) {
+        return getPathOfFolder("resources", folderName);
+    }
+
     public List<String> getAllFileNamesInFolder(String folderName) {
-        File root = new File(getFolderPath(folderName));
+        File root = new File(getPathOfFolder(folderName));
         return Arrays.stream(Objects.requireNonNull(root.listFiles())).filter(File::isFile).map(File::getName).toList();
     }
 

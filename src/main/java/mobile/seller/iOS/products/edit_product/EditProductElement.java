@@ -2,8 +2,6 @@ package mobile.seller.iOS.products.edit_product;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
-
 public class EditProductElement {
     By loc_icnDeleteImages = By.xpath("//XCUIElementTypeImage[@name=\"icon_close_product_image_selected\"]");
     By loc_icnProductImage = By.xpath("//XCUIElementTypeImage[@name=\"icon_selected_image_default\"]");

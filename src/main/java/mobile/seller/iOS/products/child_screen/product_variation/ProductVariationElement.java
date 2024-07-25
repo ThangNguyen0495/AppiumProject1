@@ -2,8 +2,6 @@ package mobile.seller.iOS.products.child_screen.product_variation;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
-
 public class ProductVariationElement {
     By loc_btnSave = By.xpath("//XCUIElementTypeButton[@name=\"icon checked white\"]");
     By loc_icnVariationImage = By.xpath("//XCUIElementTypeImage[@name=\"icon_selected_image_default\"]");

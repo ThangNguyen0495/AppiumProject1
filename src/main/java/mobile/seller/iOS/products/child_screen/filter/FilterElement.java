@@ -2,8 +2,6 @@ package mobile.seller.iOS.products.child_screen.filter;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
-
 public class FilterElement {
     By loc_btnReset = By.xpath("//XCUIElementTypeButton[@name=\"Reset\"]");
     By loc_btnActiveStatus = By.xpath("//XCUIElementTypeButton[@name=\"Active\"]");
