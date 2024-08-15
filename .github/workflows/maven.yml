@@ -78,17 +78,18 @@ jobs:
         run: |
           adb devices
 
-      #      - name: Start Appium server
-      #        ##"-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
-      #        run: |
-      #          appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub
-
-      - name: Install and Run Appium Server
-        uses: moatazeldebsy/appium-server-gitHub-action@V1.0.4
-
-#
-#      - name: Capture logcat output
-#        run: nohup adb logcat > logcat.log &
+      - name: Start Appium server
+        ##"-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
+        run: |
+          appium driver doctor uiautomator2
+          nohup appium server \
+          --port=$APPIUM_TEST_SERVER_PORT \
+          --address=$APPIUM_TEST_SERVER_HOST \
+          --relaxed-security \
+          --log-no-colors \
+          --log-timestamp \
+          2>&1 > "$cwd/appium.log" &
+          popd
 
       - name: Cache Maven packages
         uses: actions/cache@v3
