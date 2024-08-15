@@ -1,4 +1,4 @@
-name: Android Test
+name: Android Jobs
 
 on:
   push:
@@ -76,6 +76,11 @@ jobs:
           disable-animations: true
           script: echo "Generated AVD snapshot for caching."
 
+      - name: List adb devices
+        run: |
+          adb devices
+        continue-on-error: true
+
       - name: Start Appium server
         run: |
           nohup appium server \
@@ -88,6 +93,13 @@ jobs:
 
       - name: Capture logcat output
         run: nohup adb logcat > logcat.log &
+
+      - name: Wait for Emulator to Boot
+        run: |
+          for i in {1..30}; do
+            adb shell getprop sys.boot_completed && break || sleep 10
+          done
+        continue-on-error: true
 
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
@@ -105,14 +117,14 @@ jobs:
 
       - name: Save logcat output
         if: ${{ always() }}
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v3
         with:
           name: logcat-api${{ matrix.apiLevel }}
           path: logcat.log
 
       - name: Save Appium server logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v3
         with:
           name: appium-api${{ matrix.apiLevel }}
           path: appium.log
