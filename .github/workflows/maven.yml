@@ -10,9 +10,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - apiLevel: 34  # The latest Android API level as of now
+          - apiLevel: 34
             emuTag: google_apis
-            arch: x86_64
+            arch: arm64-v8a  # ARM architecture for Apple Silicon Macs
 
     env:
       CI: true
@@ -113,24 +113,3 @@ jobs:
           script: |
             mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
           avd-name: ${{ env.ANDROID_AVD }}
-          force-avd-creation: false
-          api-level: ${{ matrix.apiLevel }}
-          disable-spellchecker: true
-          disable-animations: true
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          target: ${{ matrix.emuTag }}
-          arch: ${{ matrix.arch }}
-
-      - name: Save logcat output
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: logcat-api${{ matrix.apiLevel }}
-          path: logcat.log
-
-      - name: Save Appium server logs
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: appium-api${{ matrix.apiLevel }}
-          path: appium.log
