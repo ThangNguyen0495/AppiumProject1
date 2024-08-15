@@ -74,6 +74,11 @@ jobs:
           disable-animations: true
           script: echo "Generated AVD snapshot for caching."
 
+      - name: List adb devices before starting emulator
+        run: |
+          adb devices
+          continue-on-error: true
+
       - run: |
           nohup appium server \
             --port=$APPIUM_TEST_SERVER_PORT \
@@ -92,4 +97,11 @@ jobs:
           script: |
             mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
           avd-name: ${{ env.ANDROID_AVD }}
+          force-avd-creation: false
+          api-level: ${{ matrix.apiLevel }}
+          disable-spellchecker: true
+          target: ${{ matrix.emuTag }}
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          arch: ${{ matrix.arch }}
+          disable-animations: true
 
