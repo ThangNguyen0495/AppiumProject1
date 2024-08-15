@@ -1,5 +1,4 @@
-name: Android Jobs
-
+name: Android Test
 on:
   push:
     branches:
@@ -11,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - apiLevel: [ 29 ]
+          - apiLevel: 34  # The latest Android API level as of now
             emuTag: google_apis
             arch: x86_64
 
@@ -76,7 +75,21 @@ jobs:
           disable-animations: true
           script: echo "Generated AVD snapshot for caching."
 
-      - name: List adb devices
+      - name: List adb devices before starting emulator
+        run: |
+          adb devices
+        continue-on-error: true
+
+      - name: Start Emulator
+        run: |
+          /Users/runner/Library/Android/sdk/emulator/emulator -avd $ANDROID_AVD -no-snapshot-save -no-boot-anim -noaudio -gpu swiftshader_indirect -port 5554 &
+          echo "Waiting for emulator to boot..."
+          for i in {1..30}; do
+            adb -s emulator-5554 shell getprop sys.boot_completed && break || sleep 10
+          done
+        continue-on-error: true
+
+      - name: List adb devices after starting emulator
         run: |
           adb devices
         continue-on-error: true
@@ -93,13 +106,6 @@ jobs:
 
       - name: Capture logcat output
         run: nohup adb logcat > logcat.log &
-
-      - name: Wait for Emulator to Boot
-        run: |
-          for i in {1..30}; do
-            adb shell getprop sys.boot_completed && break || sleep 10
-          done
-        continue-on-error: true
 
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
