@@ -23,7 +23,7 @@ jobs:
       CI: true
       ANDROID_AVD: emulator
       APPIUM_TEST_SERVER_PORT: 4723
-      APPIUM_TEST_SERVER_HOST: 127.0.0.1
+      APPIUM_TEST_SERVER_HOST: 0.0.0.0
       _FORCE_LOGS: 1
       TEST_PASS_THRESHOLD: 10
     # No hardware acceleration is available for emulators on Ubuntu:
@@ -79,8 +79,9 @@ jobs:
           adb devices
 
       - name: Start Appium server
+        ##"-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
         run: |
-          appium -a 0.0.0.0 -p %s -pa /wd/hub --allow-cors
+          appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub
 
       - name: Capture logcat output
         run: nohup adb logcat > logcat.log &
@@ -100,7 +101,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           script: |
-            mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
+            mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml"
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
           api-level: ${{ matrix.apiLevel }}
