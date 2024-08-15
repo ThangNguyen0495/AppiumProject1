@@ -80,13 +80,7 @@ jobs:
 
       - name: Start Appium server
         run: |
-          nohup appium server \
-            --port=$APPIUM_TEST_SERVER_PORT \
-            --address=$APPIUM_TEST_SERVER_HOST \
-            --relaxed-security \
-            --log-no-colors \
-            --log-timestamp \
-            2>&1 > appium.log &
+          appium -a 0.0.0.0 -p %s -pa /wd/hub --allow-cors
 
       - name: Capture logcat output
         run: nohup adb logcat > logcat.log &
