@@ -62,19 +62,15 @@ jobs:
             ~/.android/adb*
           key: avd-${{ matrix.apiLevel }}
 
-      - name: Create AVD and generate snapshot for caching
+      - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          avd-name: ${{ env.ANDROID_AVD }}
-          force-avd-creation: false
-          api-level: ${{ matrix.apiLevel }}
-          disable-spellchecker: true
-          target: ${{ matrix.emuTag }}
-          emulator-options: -no-snapshot-save -no-boot-anim
-          arch: ${{ matrix.arch }}
-          disable-animations: true
-          script: echo "Generated AVD snapshot for caching."
+            api-level: ${{ matrix.api-level }}
+            force-avd-creation: false
+            emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+            disable-animations: false
+            script: echo "Generated AVD snapshot for caching."
 
       - name: List adb devices
         run: |
