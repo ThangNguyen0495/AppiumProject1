@@ -1,120 +1,3 @@
-#name: Android Test
-#on:
-#  push:
-#    branches:
-#      - master
-#
-#jobs:
-#  test:
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        include:
-#          - apiLevel: 34
-#            emuTag: google_apis
-#            arch: arm64-v8a  # ARM architecture for Apple Silicon Macs
-#
-#    env:
-#      CI: true
-#      ANDROID_AVD: emulator
-#      APPIUM_TEST_SERVER_PORT: 4723
-#      APPIUM_TEST_SERVER_HOST: 127.0.0.1
-#      _FORCE_LOGS: 1
-#      TEST_PASS_THRESHOLD: 10
-#
-#    runs-on: macos-latest
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: lts/*
-#          check-latest: true
-#
-#      - name: Install xq
-#        run: curl -sSL https://bit.ly/install-xq | sudo bash
-#
-#      - name: Install development dependencies
-#        run: |
-#          npm install mocha-multi-reporters --save-dev
-#          npm install -g appium
-#          npm install --no-save mjpeg-consumer
-#
-#      - name: Set up Java
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: '22'
-#
-#      - name: Setup Android SDK
-#        uses: android-actions/setup-android@v3
-#
-#      - name: Cache AVD
-#        uses: actions/cache@v3
-#        id: avd-cache
-#        with:
-#          path: |
-#            ~/.android/avd/*
-#            ~/.android/adb*
-#          key: avd-${{ matrix.apiLevel }}
-#
-#      - name: Create AVD and generate snapshot for caching
-#        if: steps.avd-cache.outputs.cache-hit != 'true'
-#        uses: reactivecircus/android-emulator-runner@v2
-#        with:
-#          avd-name: ${{ env.ANDROID_AVD }}
-#          force-avd-creation: false
-#          api-level: ${{ matrix.apiLevel }}
-#          disable-spellchecker: true
-#          target: ${{ matrix.emuTag }}
-#          emulator-options: -no-snapshot-save -no-boot-anim
-#          arch: ${{ matrix.arch }}
-#          disable-animations: true
-#          script: echo "Generated AVD snapshot for caching."
-#
-#      - name: List adb devices before starting emulator
-#        run: |
-#          adb devices
-#        continue-on-error: true
-#
-#      - name: Start Emulator
-#        run: |
-#          /Users/runner/Library/Android/sdk/emulator/emulator -avd $ANDROID_AVD -no-snapshot-save -no-boot-anim -noaudio -gpu swiftshader_indirect -port 5554 &
-#          echo "Waiting for emulator to boot..."
-#          for i in {1..30}; do
-#            adb -s emulator-5554 shell getprop sys.boot_completed && break || sleep 10
-#          done
-#        continue-on-error: true
-#
-#      - name: List adb devices after starting emulator
-#        run: |
-#          adb devices
-#        continue-on-error: true
-#
-#      - name: Start Appium server
-#        run: |
-#          nohup appium server \
-#            --port=$APPIUM_TEST_SERVER_PORT \
-#            --address=$APPIUM_TEST_SERVER_HOST \
-#            --relaxed-security \
-#            --log-no-colors \
-#            --log-timestamp \
-#            2>&1 > appium.log &
-#
-#      - name: Capture logcat output
-#        run: nohup adb logcat > logcat.log &
-#
-#      - name: Run Appium tests with Maven
-#        uses: reactivecircus/android-emulator-runner@v2
-#        with:
-#          script: |
-#            mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
-#          avd-name: ${{ env.ANDROID_AVD }}
-
-
 name: Functional Tests
 
 on:
@@ -132,27 +15,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - chromedriverVersion: "113.0.5672.63"
-            apiLevel: 32
+          - apiLevel: 32
             emuTag: google_apis
             arch: x86_64
-          - chromedriverVersion: "83.0.4103.39"
-            apiLevel: 30
-            emuTag: google_apis
-            arch: x86
-          - chromedriverVersion: "2.44"
-            apiLevel: 28
-            emuTag: default
-            arch: x86
-          - chromedriverVersion: "2.20"
-            apiLevel: 23
-            emuTag: default
-            arch: x86
 
     env:
       CI: true
       ANDROID_AVD: emulator
-      APPIUM_TEST_SERVER_PORT: 4567
+      APPIUM_TEST_SERVER_PORT: 4723
       APPIUM_TEST_SERVER_HOST: 127.0.0.1
       _FORCE_LOGS: 1
       TEST_PASS_THRESHOLD: 10
@@ -174,7 +44,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '22'
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -203,44 +73,23 @@ jobs:
           arch: ${{ matrix.arch }}
           disable-animations: true
           script: echo "Generated AVD snapshot for caching."
+
       - run: |
-          cwd=$(pwd)
-          pushd "$cwd"
-          cd ~
-          CHROMEDRIVER_VERSION="${{ matrix.chromedriverVersion }}" appium driver install --source=local "$cwd"
-          appium driver doctor uiautomator2
           nohup appium server \
             --port=$APPIUM_TEST_SERVER_PORT \
             --address=$APPIUM_TEST_SERVER_HOST \
             --relaxed-security \
             --log-no-colors \
             --log-timestamp \
-            2>&1 > "$cwd/appium.log" &
-          popd
+            2>&1 > appium.log &
         name: Start Appium server
-      - run: nohup adb logcat > logcat.log &
-        name: Capture logcat
-      - uses: reactivecircus/android-emulator-runner@v2
-        name: e2e_api${{ matrix.apiLevel }}
+      - name: Capture logcat output
+        run: nohup adb logcat > logcat.log &
+
+      - name: Run Appium tests with Maven
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          script: bash -xe scripts/run-functional-tests.sh
+          script: |
+            mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
           avd-name: ${{ env.ANDROID_AVD }}
-          force-avd-creation: false
-          api-level: ${{ matrix.apiLevel }}
-          disable-spellchecker: true
-          disable-animations: true
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          target: ${{ matrix.emuTag }}
-          arch: ${{ matrix.arch }}
-      - name: Save logcat output
-        if: ${{ always() }}
-        uses: actions/upload-artifact@master
-        with:
-          name: logcat-api${{ matrix.apiLevel }}
-          path: logcat.log
-      - name: Save server output
-        if: ${{ always() }}
-        uses: actions/upload-artifact@master
-        with:
-          name: appium-api${{ matrix.apiLevel }}
-          path: appium.log
+
