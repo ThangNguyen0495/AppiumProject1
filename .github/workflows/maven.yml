@@ -82,12 +82,9 @@ jobs:
       #        ##"-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
       #        run: |
       #          appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub
-      - name: Appium Test
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v2
-                    - name: Install and Run Appium Server
-                    uses: moatazeldebsy/appium-server-gitHub-action@V1.0.4
+
+      - name: Install and Run Appium Server
+        uses: moatazeldebsy/appium-server-gitHub-action@V1.0.4
 
 #
 #      - name: Capture logcat output
