@@ -2,8 +2,6 @@ package mobile.seller.iOS.products.child_screen.inventory;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
-
 public class InventoryElement {
     By loc_btnSave = By.xpath("//XCUIElementTypeButton[@name=\"icon checked white\"]");
     By loc_txtBranchStock(String branchName) {

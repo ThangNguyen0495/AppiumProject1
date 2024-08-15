@@ -6,8 +6,6 @@ import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonIOS;
 
-import java.util.stream.IntStream;
-
 public class SelectImagePopup extends SelectImageElement{
     WebDriver driver;
     AssertCustomize assertCustomize;

@@ -140,7 +140,7 @@ public class API {
                 .auth()
                 .oauth2(token)
                 .header("Staffpermissions-Token", staffPermissionToken)
-                .multiPart(new File(new DataGenerator().getFilePath(fileName)))
+                .multiPart(new File(new DataGenerator().getPathOfFolderInResourceRoot(fileName)))
                 .when()
                 .post(path);
     }

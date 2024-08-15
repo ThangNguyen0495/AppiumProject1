@@ -2,7 +2,6 @@ package mobile.seller.android.products.child_screen.filter.branch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import utilities.assert_customize.AssertCustomize;
 import utilities.commons.UICommonAndroid;
@@ -25,7 +24,7 @@ public class BranchScreen extends BranchElement{
 
     public void selectBranch(String branchName) {
         // Select branch
-        commonMobile.click(branchName.equals("ALL") ? loc_btnAllBranches : By.xpath(str_btnBranch.formatted(branchName)));
+        commonMobile.click(branchName.equals("ALL") ? loc_btnAllBranches : loc_btnBranch(branchName));
 
         // Log
         logger.info("Select branch: {}", branchName);

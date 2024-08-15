@@ -2,8 +2,6 @@ package mobile.seller.iOS.products.product_management;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
-
 public class ProductManagementElement {
 
 

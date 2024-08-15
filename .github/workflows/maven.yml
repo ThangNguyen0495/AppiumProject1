@@ -1,94 +1,118 @@
-name: Android Setup
+name: Functional Tests
 
 on:
   push:
     branches:
-      - dev
-  pull_request:
-    branches:
-      - dev
+      - master
 
 jobs:
-  setup-android:
-    runs-on: windows-latest
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - apiLevel: 34  # The latest Android API level as of now
+            emuTag: google_apis
+            arch: x86_64
+
+    env:
+      CI: true
+      ANDROID_AVD: emulator
+      APPIUM_TEST_SERVER_PORT: 4723
+      APPIUM_TEST_SERVER_HOST: 127.0.0.1
+      _FORCE_LOGS: 1
+      TEST_PASS_THRESHOLD: 10
+
+    runs-on: macos-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '18'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
 
-    - name: Download Android Studio
-      run: |
-        echo "Downloading Android Studio..."
-        $androidStudioUrl = "https://redirector.gvt1.com/edgedl/android/studio/install/2024.1.1.11/android-studio-2024.1.1.11-windows.exe"
-        $installerPath = "$env:GITHUB_WORKSPACE\android-studio.zip"
-        Invoke-WebRequest -Uri $androidStudioUrl -OutFile $installerPath
-        echo "Android Studio downloaded to $installerPath"
-      shell: pwsh
+      - name: Install xq
+        run: curl -sSL https://bit.ly/install-xq | sudo bash
 
-    - name: Extract Android Studio
-      run: |
-        echo "Extracting Android Studio..."
-        Expand-Archive -Path "$env:GITHUB_WORKSPACE\android-studio.zip" -DestinationPath "$env:GITHUB_WORKSPACE\android-studio"
-        echo "Android Studio extracted to $env:GITHUB_WORKSPACE\android-studio"
-      shell: pwsh
+      - name: Install development dependencies
+        run: |
+          npm install mocha-multi-reporters --save-dev
+          npm install -g appium
+          npm install --no-save mjpeg-consumer
 
-    - name: Install Android Studio
-      run: |
-        echo "Installing Android Studio..."
-        Start-Process -FilePath "$env:GITHUB_WORKSPACE\android-studio\android-studio-2024.1.1.11-windows.exe" -ArgumentList "/S" -Wait -NoNewWindow
-        echo "Android Studio installation completed."
-      shell: pwsh
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '22'
 
-    - name: Set ANDROID_HOME
-      run: |
-        echo "Setting ANDROID_HOME environment variable..."
-        $androidSdkPath = "$env:USERPROFILE\AppData\Local\Android\Sdk"
-        [Environment]::SetEnvironmentVariable("ANDROID_HOME", $androidSdkPath, [EnvironmentVariableTarget]::Machine)
-        $env:ANDROID_HOME = $androidSdkPath
-        echo "ANDROID_HOME set to $androidSdkPath"
-      shell: pwsh
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-    - name: Update PATH
-      run: |
-        echo "Updating PATH environment variable..."
-        $path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
-        $newPath = "$path;$env:ANDROID_HOME\tools\bin;$env:ANDROID_HOME\platform-tools"
-        [System.Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::Machine)
-        $env:Path = $newPath
-        echo "PATH updated with Android SDK paths."
-      shell: pwsh
+      - name: Cache AVD
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.apiLevel }}
 
-    - name: Install SDK Packages
-      run: |
-        echo "Installing SDK packages..."
-        cd "$env:ANDROID_HOME\tools\bin"
-        .\sdkmanager.bat "platform-tools" "platforms;android-30" "system-images;android-30;google_apis;x86_64"
-        echo "SDK packages installed."
-      shell: pwsh
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          avd-name: ${{ env.ANDROID_AVD }}
+          force-avd-creation: false
+          api-level: ${{ matrix.apiLevel }}
+          disable-spellchecker: true
+          target: ${{ matrix.emuTag }}
+          emulator-options: -no-snapshot-save -no-boot-anim
+          arch: ${{ matrix.arch }}
+          disable-animations: true
+          script: echo "Generated AVD snapshot for caching."
 
-    - name: Create AVD
-      run: |
-        echo "Creating AVD..."
-        cd "$env:ANDROID_HOME\tools\bin"
-        .\avdmanager.bat create avd -n MyAVD -k "system-images;android-30;google_apis;x86_64" --device "pixel"
-        echo "AVD MyAVD created."
-      shell: pwsh
+      - name: Start Appium server
+        run: |
+          nohup appium server \
+            --port=$APPIUM_TEST_SERVER_PORT \
+            --address=$APPIUM_TEST_SERVER_HOST \
+            --relaxed-security \
+            --log-no-colors \
+            --log-timestamp \
+            2>&1 > appium.log &
 
-    - name: Start AVD
-      run: |
-        echo "Starting AVD..."
-        cd "$env:ANDROID_HOME\emulator"
-        .\emulator -avd MyAVD -no-snapshot-load -no-window -no-boot-anim
-        echo "AVD MyAVD started."
-      shell: pwsh
+      - name: Capture logcat output
+        run: nohup adb logcat > logcat.log &
 
-    - name: Build and test
-      run: |
-        mvn clean install
-        mvn test
+      - name: Run Appium tests with Maven
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          script: |
+            mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
+          avd-name: ${{ env.ANDROID_AVD }}
+          force-avd-creation: false
+          api-level: ${{ matrix.apiLevel }}
+          disable-spellchecker: true
+          disable-animations: true
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          target: ${{ matrix.emuTag }}
+          arch: ${{ matrix.arch }}
+
+      - name: Save logcat output
+        if: ${{ always() }}
+        uses: actions/upload-artifact@master
+        with:
+          name: logcat-api${{ matrix.apiLevel }}
+          path: logcat.log
+
+      - name: Save Appium server logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@master
+        with:
+          name: appium-api${{ matrix.apiLevel }}
+          path: appium.log

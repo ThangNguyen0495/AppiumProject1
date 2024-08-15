@@ -2,8 +2,6 @@ package mobile.seller.iOS.products.child_screen.edit_multiple;
 
 import org.openqa.selenium.By;
 
-import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
-
 public class EditMultipleElement {
     By loc_btnSave = By.xpath("//XCUIElementTypeButton[@name=\"icon checked white\"]");
     By loc_icnStoreBranch = By.xpath("//XCUIElementTypeImage[@name=\"icon_store_branch\"]");
