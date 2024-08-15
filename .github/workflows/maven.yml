@@ -78,7 +78,8 @@ jobs:
         run: |
           adb devices
 
-      - run: |
+      - name: Start Appium server
+        run: |
           nohup appium server \
             --port=$APPIUM_TEST_SERVER_PORT \
             --address=$APPIUM_TEST_SERVER_HOST \
@@ -86,9 +87,20 @@ jobs:
             --log-no-colors \
             --log-timestamp \
             2>&1 > appium.log &
-        name: Start Appium server
+
       - name: Capture logcat output
         run: nohup adb logcat > logcat.log &
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Install dependencies
+        run: |
+          mvn install -DskipTests
 
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
