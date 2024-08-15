@@ -81,7 +81,7 @@ jobs:
       - name: Start Appium server
         ##"-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
         run: |
-          appium driver doctor uiautomator2
+          appium driver install uiautomator2
           nohup appium server \
           --port=$APPIUM_TEST_SERVER_PORT \
           --address=$APPIUM_TEST_SERVER_HOST \
