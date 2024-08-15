@@ -17,7 +17,7 @@ import static utilities.environment.goSELLEREnvironment.goSELLERLoginActivity;
 
 public class InitAndroidDriver {
 	Logger logger = LogManager.getLogger();
-	private final static String url = "http://127.0.0.1:4723/wd/hub";
+	private final static String url = "http://localhost:4723/wd/hub";
 
 	/**
 	 * This method returns an instance of the AppiumDriver class. It takes in the following parameters:
