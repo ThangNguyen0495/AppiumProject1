@@ -77,7 +77,6 @@ jobs:
       - name: List adb devices before starting emulator
         run: |
           adb devices
-          continue-on-error: true
 
       - run: |
           nohup appium server \
