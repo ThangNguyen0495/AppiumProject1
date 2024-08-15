@@ -87,9 +87,7 @@ jobs:
           --address=$APPIUM_TEST_SERVER_HOST \
           --relaxed-security \
           --log-no-colors \
-          --log-timestamp \
-          2>&1 > "$cwd/appium.log" &
-          popd
+          --log-timestamp
 
       - name: Cache Maven packages
         uses: actions/cache@v3
