@@ -86,6 +86,8 @@ jobs:
           cd ~
           appium driver install uiautomator2
           appium driver doctor uiautomator2
+          nohup appium -a 0.0.0.0 -p 4723 -pa /wd/hub > appium_log.txt 2>&1 &
+          tail -f appium_log.txt &
 #          nohup appium server \
 #          --port=$APPIUM_TEST_SERVER_PORT \
 #          --address=$APPIUM_TEST_SERVER_HOST \
@@ -94,8 +96,7 @@ jobs:
 #          --log-timestamp \
 #          2>&1 > "$cwd/appium.log" &
 #          popd
-          nohup appium -a 0.0.0.0 -p 4723 -pa /wd/hub > appium_log.txt 2>&1 &
-          tail -f appium_log.txt &
+
 
       - name: Cache Maven packages
         uses: actions/cache@v3
