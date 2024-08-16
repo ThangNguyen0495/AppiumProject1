@@ -26,8 +26,6 @@ jobs:
       APPIUM_TEST_SERVER_HOST: 0.0.0.0
       _FORCE_LOGS: 1
       TEST_PASS_THRESHOLD: 10
-    # No hardware acceleration is available for emulators on Ubuntu:
-    # https://github.com/marketplace/actions/android-emulator-runner#can-i-use-this-action-on-linux-vms
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -50,17 +48,37 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-      - name: AVD cache
+      - name: Cache Android SDK
         uses: actions/cache@v3
-        id: avd-cache
+        with:
+          path: |
+            $HOME/.android/cache
+            $HOME/Android/Sdk
+          key: android-sdk-${{ hashFiles('**/build.gradle') }}
+          restore-keys: |
+            android-sdk-
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Cache npm modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+      - name: Cache AVD
+        uses: actions/cache@v3
         with:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
           key: avd-${{ matrix.apiLevel }}
-      - name: create AVD and generate snapshot for caching
+      - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -73,11 +91,6 @@ jobs:
           arch: ${{ matrix.arch }}
           disable-animations: true
           script: echo "Generated AVD snapshot for caching."
-
-      - name: List adb devices before starting emulator
-        run: |
-          adb devices
-
       - name: Start Appium server
         run: |
           cwd=$(pwd)
@@ -88,18 +101,9 @@ jobs:
           nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
           tail -f appium_log.txt &
           popd
-
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
       - name: Install dependencies
         run: |
           mvn install -DskipTests
-
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -113,7 +117,6 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           arch: ${{ matrix.arch }}
           disable-animations: true
-
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v3
