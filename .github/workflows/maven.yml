@@ -89,6 +89,7 @@ jobs:
           --log-no-colors \
           --log-timestamp \
           > "$PWD/appium.log" 2>&1 &
+          tail -f appium.log
 
       - name: Cache Maven packages
         uses: actions/cache@v3
