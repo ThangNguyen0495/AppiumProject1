@@ -33,6 +33,7 @@ public class InitAndroidDriver {
 		capabilities.setCapability("newCommandTimeout", 300000);
 		capabilities.setCapability("noReset", "false");
 		capabilities.setCapability("fastReset", "true");
+		capabilities.setCapability("ignoreHiddenApiPolicyError" , true);
 		capabilities.setCapability("resetOnSessionStartOnly", "true");
 		capabilities.setCapability("autoGrantPermissions","true");
 		capabilities.setCapability("automationName", "UIAutomator2");

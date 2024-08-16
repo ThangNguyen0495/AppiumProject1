@@ -1,11 +1,17 @@
 package seller;
 
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import mobile.seller.iOS.login.LoginScreen;
 import mobile.seller.iOS.products.create_product.CreateProductScreen;
 import org.testng.annotations.Test;
+import utilities.driver.InitAndroidDriver;
 import utilities.driver.InitIOSDriver;
 import utilities.model.sellerApp.login.LoginInformation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class AppiumTest {
@@ -14,11 +20,20 @@ public class AppiumTest {
 
     @Test()
     void t() throws Exception {
-        IOSDriver driver = new InitIOSDriver().getSellerDriver(udid);
+        AndroidDriver driver = new InitAndroidDriver().getAndroidDriver("PVIVHIR47LOR6DRK");
+        Map map = (Map) driver.executeScript("mobile: getNotifications");
+        List<Map> notifications = ((List<Map>)map.get("statusBarNotifications")).stream().distinct().toList();
+        List<String> notiList = new ArrayList();
+        notifications.stream().map(notification -> (Map) notification.get("notification")).forEach(innerNotification -> {
+            if (innerNotification.get("bigText") != null) {
+                notiList.add(innerNotification.get("bigText").toString());
+            } else if (innerNotification.get("text") != null) {
+                notiList.add(innerNotification.get("text").toString());
+            }
+        });
+        System.out.println(notiList);
 
-        new LoginScreen(driver).performLogin(new LoginInformation("stgauto@nbobd.com", "Abc@12345"));
 
-        new CreateProductScreen(driver).navigateToCreateProductScreen().createProductWithoutVariation();
     }
 
 }
