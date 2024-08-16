@@ -120,38 +120,9 @@ jobs:
           arch: ${{ matrix.arch }}
           disable-animations: true
 
-#name: Appium CI
-#on:
-#  push:
-#    branches: [ master ]
-#  pull_request:
-#    branches: [ master ]
-#  workflow_dispatch:
-#
-#jobs:
-#  ui-tests:
-#    strategy:
-#      matrix:
-#        api-level: [28]
-#        target: [default]
-#    runs-on: macos-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: '22'
-#      - name: Install the Emulator
-#        run: |
-#          chmod +x ./scripts/RunAppiumServer.sh
-#          ./scripts/RunAppiumServer.sh
-#        shell: bash
-#      - name: Run Appium Tests
-#        uses: reactivecircus/android-emulator-runner@v2.27.0
-#        with:
-#          api-level: ${{ matrix.api-level }}
-#          target: ${{ matrix.target }}
-#          arch: x86_64
-#          profile: Nexus 6
-#          script: mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml"
-
+      - name: Upload Appium logs1
+        uses: actions/upload-artifact@v3
+        with:
+          name: appium-log
+          path: |
+            **/appium.log
