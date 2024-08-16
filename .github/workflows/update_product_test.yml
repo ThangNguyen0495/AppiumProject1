@@ -48,6 +48,20 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+
+      - name: Cache APT packages and lists
+        uses: actions/cache@v3
+        with:
+          path: |
+            /var/cache/apt
+            /var/lib/apt/lists
+          key: apt-cache-${{ runner.os }}-${{ hashFiles('**/build.gradle') }}
+          restore-keys: |
+            apt-cache-${{ runner.os }}-
+
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Cache Android SDK
         uses: actions/cache@v3
         with:
@@ -57,6 +71,7 @@ jobs:
           key: android-sdk-${{ hashFiles('**/build.gradle') }}
           restore-keys: |
             android-sdk-
+
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -64,6 +79,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
       - name: Cache npm modules
         uses: actions/cache@v3
         with:
@@ -71,6 +87,7 @@ jobs:
           key: npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             npm-
+
       - name: Cache AVD
         uses: actions/cache@v3
         with:
@@ -78,6 +95,7 @@ jobs:
             ~/.android/avd/*
             ~/.android/adb*
           key: avd-${{ matrix.apiLevel }}
+
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
@@ -91,6 +109,7 @@ jobs:
           arch: ${{ matrix.arch }}
           disable-animations: true
           script: echo "Generated AVD snapshot for caching."
+
       - name: Start Appium server
         run: |
           cwd=$(pwd)
@@ -101,9 +120,11 @@ jobs:
           nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
           tail -f appium_log.txt &
           popd
+
       - name: Install dependencies
         run: |
           mvn install -DskipTests
+
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -117,6 +138,14 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           arch: ${{ matrix.arch }}
           disable-animations: true
+
+      - name: Upload all recording .mp4 files
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: MP4 Files
+          path: '**/*.mp4'
+
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v3
