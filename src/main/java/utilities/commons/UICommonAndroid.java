@@ -6,6 +6,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
+import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,6 +50,13 @@ public class UICommonAndroid {
 
     public WebDriverWait customWait(int milSeconds) {
         return new WebDriverWait(driver, Duration.ofMillis(milSeconds));
+    }
+
+    public void allowPermission(String optionText) {
+        HashMap<String, Object> args = new HashMap<>();
+        args.put("action", "accept");
+        args.put("buttonLabel", optionText);
+        ((AndroidDriver) driver).executeScript("mobile: alert", args);
     }
 
     public void scrollToTopOfScreen() {

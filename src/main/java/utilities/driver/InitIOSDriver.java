@@ -34,32 +34,6 @@ public class InitIOSDriver {
             // Init driver
             IOSDriver driver = getIOSDriver(udid);
 
-//            // Uninstall app
-//            if (driver.isAppInstalled(goSELLERBundleId)) driver.removeApp(goSELLERBundleId);
-//
-//            // Open TestFlight
-//            driver.activateApp("com.apple.TestFlight");
-//
-//            // Init iOS commons
-//            UICommonIOS commonIOS = new UICommonIOS(driver);
-//
-//            // Get Install button locator
-//            By loc_btnInstall = By.xpath("//*[contains(@name, \"Seller\") and contains(@name, \"STG\")]/parent::*/following-sibling::*[1]/*");
-//
-//            // Start download
-//            commonIOS.tap(loc_btnInstall);
-//
-//            // Wait app downloaded
-//            logger.info("Wait GoSELLER app installed");
-//
-//            while (true) try {
-//                if (commonIOS.getText(loc_btnInstall).equals("OPEN")) break;
-//            } catch (StaleElementReferenceException ignored) {
-//            }
-//
-//            // Quit TestFlight app
-//            driver.terminateApp("com.apple.TestFlight");
-
             // Open GoSeller app
             driver.terminateApp(goSELLERBundleId);
             driver.activateApp(goSELLERBundleId);

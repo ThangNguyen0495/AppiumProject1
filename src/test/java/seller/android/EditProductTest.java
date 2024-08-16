@@ -10,6 +10,8 @@ import utilities.driver.InitAndroidDriver;
 import utilities.model.sellerApp.login.LoginInformation;
 import utilities.utils.PropertiesUtil;
 
+import java.net.MalformedURLException;
+
 import static org.apache.commons.lang.math.RandomUtils.nextBoolean;
 import static utilities.account.AccountTest.ADMIN_ACCOUNT_THANG;
 import static utilities.account.AccountTest.ADMIN_PASSWORD_THANG;
@@ -21,7 +23,7 @@ public class EditProductTest extends BaseTest {
     int productId;
 
     @BeforeClass
-    void setup() {
+    void setup() throws MalformedURLException {
         // init WebDriver
         String uuid = PropertiesUtil.getEnvironmentData("udidAndroidThang");
         driver = new InitAndroidDriver().getSellerDriver(uuid);
