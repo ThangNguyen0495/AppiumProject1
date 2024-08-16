@@ -1,83 +1,83 @@
-#name: Functional Tests
-#
-#on:
-#  push:
-#    branches:
-#      - master
-#
-#concurrency:
-#  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-#  cancel-in-progress: true
-#
-#jobs:
-#  test:
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        include:
-#          - apiLevel: 32
-#            emuTag: google_apis
-#            arch: x86_64
-#
-#    env:
-#      CI: true
-#      ANDROID_AVD: emulator
-#      APPIUM_TEST_SERVER_PORT: 4723
-#      APPIUM_TEST_SERVER_HOST: 0.0.0.0
-#      _FORCE_LOGS: 1
-#      TEST_PASS_THRESHOLD: 10
-#    # No hardware acceleration is available for emulators on Ubuntu:
-#    # https://github.com/marketplace/actions/android-emulator-runner#can-i-use-this-action-on-linux-vms
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: actions/setup-node@v3
-#        with:
-#          node-version: lts/*
-#          check-latest: true
-#      - run: curl -sSL https://bit.ly/install-xq | sudo bash
-#      - run: |
-#          npm install mocha-multi-reporters --save-dev
-#          npm install -g appium
-#          npm install --no-save mjpeg-consumer
-#        name: Install dev dependencies
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: '22'
-#      - name: Enable KVM group perms
-#        run: |
-#          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-#          sudo udevadm control --reload-rules
-#          sudo udevadm trigger --name-match=kvm
-#      - name: Setup Android SDK
-#        uses: android-actions/setup-android@v3
-#      - name: AVD cache
-#        uses: actions/cache@v3
-#        id: avd-cache
-#        with:
-#          path: |
-#            ~/.android/avd/*
-#            ~/.android/adb*
-#          key: avd-${{ matrix.apiLevel }}
-#      - name: create AVD and generate snapshot for caching
-#        if: steps.avd-cache.outputs.cache-hit != 'true'
-#        uses: reactivecircus/android-emulator-runner@v2
-#        with:
-#          avd-name: ${{ env.ANDROID_AVD }}
-#          force-avd-creation: false
-#          api-level: ${{ matrix.apiLevel }}
-#          disable-spellchecker: true
-#          target: ${{ matrix.emuTag }}
-#          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-#          arch: ${{ matrix.arch }}
-#          disable-animations: true
-#          script: echo "Generated AVD snapshot for caching."
-#
-#      - name: List adb devices before starting emulator
-#        run: |
-#          adb devices
-#
+name: Functional Tests
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - apiLevel: 32
+            emuTag: google_apis
+            arch: x86_64
+
+    env:
+      CI: true
+      ANDROID_AVD: emulator
+      APPIUM_TEST_SERVER_PORT: 4723
+      APPIUM_TEST_SERVER_HOST: 0.0.0.0
+      _FORCE_LOGS: 1
+      TEST_PASS_THRESHOLD: 10
+    # No hardware acceleration is available for emulators on Ubuntu:
+    # https://github.com/marketplace/actions/android-emulator-runner#can-i-use-this-action-on-linux-vms
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
+      - run: curl -sSL https://bit.ly/install-xq | sudo bash
+      - run: |
+          npm install mocha-multi-reporters --save-dev
+          npm install -g appium
+          npm install --no-save mjpeg-consumer
+        name: Install dev dependencies
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '22'
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.apiLevel }}
+      - name: create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          avd-name: ${{ env.ANDROID_AVD }}
+          force-avd-creation: false
+          api-level: ${{ matrix.apiLevel }}
+          disable-spellchecker: true
+          target: ${{ matrix.emuTag }}
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          arch: ${{ matrix.arch }}
+          disable-animations: true
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: List adb devices before starting emulator
+        run: |
+          adb devices
+
 #      - name: Start Appium server
 #        ##"-Dappium.server.port=$APPIUM_TEST_SERVER_PORT" "-Dappium.server.host=$APPIUM_TEST_SERVER_HOST"
 #        run: |
@@ -89,64 +89,69 @@
 #          --log-no-colors \
 #          --log-timestamp \
 #          > "$PWD/appium.log" 2>&1 &
-#
-#      - name: Cache Maven packages
-#        uses: actions/cache@v3
-#        with:
-#          path: ~/.m2/repository
-#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            ${{ runner.os }}-maven-
-#      - name: Install dependencies
-#        run: |
-#          mvn install -DskipTests
-#
-#      - name: Run Appium tests with Maven
-#        uses: reactivecircus/android-emulator-runner@v2
-#        with:
-#          script: |
-#            mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml"
-#          avd-name: ${{ env.ANDROID_AVD }}
-#          force-avd-creation: false
-#          api-level: ${{ matrix.apiLevel }}
-#          disable-spellchecker: true
-#          target: ${{ matrix.emuTag }}
-#          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-#          arch: ${{ matrix.arch }}
-#          disable-animations: true
-
-name: Appium CI
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-  workflow_dispatch:
-
-jobs:
-  ui-tests:
-    strategy:
-      matrix:
-        api-level: [28]
-        target: [default]
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '22'
       - name: Install the Emulator
         run: |
           chmod +x ./scripts/RunAppiumServer.sh
           ./scripts/RunAppiumServer.sh
         shell: bash
-      - name: Run Appium Tests
-        uses: reactivecircus/android-emulator-runner@v2.27.0
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
         with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: x86_64
-          profile: Nexus 6
-          script: mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml"
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Install dependencies
+        run: |
+          mvn install -DskipTests
+
+      - name: Run Appium tests with Maven
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          script: |
+            mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml"
+          avd-name: ${{ env.ANDROID_AVD }}
+          force-avd-creation: false
+          api-level: ${{ matrix.apiLevel }}
+          disable-spellchecker: true
+          target: ${{ matrix.emuTag }}
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          arch: ${{ matrix.arch }}
+          disable-animations: true
+
+#name: Appium CI
+#on:
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+#  workflow_dispatch:
+#
+#jobs:
+#  ui-tests:
+#    strategy:
+#      matrix:
+#        api-level: [28]
+#        target: [default]
+#    runs-on: macos-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '22'
+#      - name: Install the Emulator
+#        run: |
+#          chmod +x ./scripts/RunAppiumServer.sh
+#          ./scripts/RunAppiumServer.sh
+#        shell: bash
+#      - name: Run Appium Tests
+#        uses: reactivecircus/android-emulator-runner@v2.27.0
+#        with:
+#          api-level: ${{ matrix.api-level }}
+#          target: ${{ matrix.target }}
+#          arch: x86_64
+#          profile: Nexus 6
+#          script: mvn clean test "-DsuiteFile=test_xml/android/createProductTest.xml"
 
