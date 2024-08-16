@@ -14,7 +14,7 @@ public class ProductManagementElement {
         return androidUIAutomator(androidUIAutomatorResourcesIdInstanceString.formatted("%s:id/tvStatus".formatted(goSELLERBundleId), index));
     }
     By loc_btnFilter = androidUIAutomator(androidUIAutomatorResourcesIdString.formatted("%s:id/btnFilterProduct".formatted(goSELLERBundleId)));
-    String str_lblProductName = "//android.widget.TextView[@* = '%s']".formatted(goSELLERBundleId);
+    By loc_lblProductName(String productName) {return  By.xpath("//android.widget.TextView[@* = '%s']".formatted(productName));};
     By loc_lblProductName = By.xpath("//*[@* ='%s:id/tvProductName']".formatted(goSELLERBundleId));
 
 }

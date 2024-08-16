@@ -55,10 +55,9 @@ public class ProductManagementScreen extends ProductManagementElement {
         logger.info("Search product by name: {}", productName);
 
         // Navigate to product detail screen
-        By resultXpath = By.xpath(str_lblProductName.formatted(productName));
-        if (commonMobile.isShown(resultXpath)) {
+        if (commonMobile.isShown(loc_lblProductName(productName))) {
             // Click into first result
-            commonMobile.click(resultXpath);
+            commonMobile.click(loc_lblProductName(productName));
 
             // Wait screen loaded
             commonMobile.waitUntilScreenLoaded(goSELLERProductDetailActivity);
