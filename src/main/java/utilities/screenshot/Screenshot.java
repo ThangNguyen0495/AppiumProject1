@@ -2,7 +2,10 @@ package utilities.screenshot;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import utilities.data.DataGenerator;
 
 import javax.imageio.ImageIO;
@@ -43,10 +46,10 @@ public class Screenshot {
         BufferedImage img2 = ImageIO.read(new File(new DataGenerator().getPathOfFileInResourcesRoot("el_image.png")));
 
         // Compare pixel by pixel
-        int totalPixel = img1.getHeight() * img1.getWidth() / 4;
+        int totalPixel = Math.min(img1.getHeight(), img2.getHeight()) * Math.min(img1.getWidth(), img2.getWidth()) / 4;
         int matchPixel = 0;
-        for (int height = 0; height < img1.getHeight() / 2; height++) {
-            for (int width = 0; width < img1.getWidth() / 2; width++) {
+        for (int height = 0; height < Math.min(img1.getHeight(), img2.getHeight()) / 2; height++) {
+            for (int width = 0; width < Math.min(img1.getWidth(), img2.getWidth()) / 2; width++) {
                 if (img1.getRGB(width, height) == img2.getRGB(width, height)) {
                     matchPixel++;
                 }

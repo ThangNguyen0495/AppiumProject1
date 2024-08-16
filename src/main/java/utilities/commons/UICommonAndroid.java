@@ -6,7 +6,6 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
-import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -255,13 +254,7 @@ public class UICommonAndroid {
         WebElement element = getElement(locator);
         if (element.getAttribute("class").equals("android.widget.ImageView")) {
             // Get element screenshot then compare screenshot with checked sample image
-            try {
-                return new Screenshot().takeScreenShot(element).compareImages();
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                // In case, element is not shown full, swipe down and try again
-                swipeByCoordinatesInPercent(0.5, 0.8, 0.5, 0.6);
-                return new Screenshot().takeScreenShot(element).compareImages();
-            }
+            return new Screenshot().takeScreenShot(element).compareImages();
         }
         return element.getAttribute("checked").equals("true");
     }
