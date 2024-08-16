@@ -26,7 +26,7 @@ public class BaseTest {
     @BeforeMethod
     void startTest() {
         // Start recording
-//        ScreenRecording.startRecording(driver);
+        ScreenRecording.startRecording(driver);
     }
 
     @AfterMethod
@@ -35,7 +35,7 @@ public class BaseTest {
         AssertCustomize.setCountFalse(0);
 
         // Stop recording
-//        ScreenRecording.stopRecording(driver, result);
+        ScreenRecording.stopRecording(driver, result);
     }
 
     @AfterSuite
