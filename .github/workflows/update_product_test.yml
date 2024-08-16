@@ -1,4 +1,4 @@
-name: '[GoSELLER] Create product test'
+name: '[GoSELLER] Update product test'
 
 on:
   push:
