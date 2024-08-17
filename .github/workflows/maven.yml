@@ -1,0 +1,49 @@
+name: iOS Appium Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Appium
+        run: npm install -g appium
+
+      - name: Install Xcode command-line tools
+        run: xcode-select --install || true
+
+      - name: Install Carthage
+        run: brew install carthage
+
+      # Check available Xcode versions
+      - name: Check available Xcode versions
+        run: ls /Applications/
+
+      # Use the correct path or the default
+      - name: Set Xcode version
+        run: sudo xcode-select --switch /Applications/Xcode.app
+
+      - name: Start iOS Simulator
+        run: |
+          open -a Simulator --args -CurrentDeviceUDID $(xcrun simctl list | grep 'iPhone 13 ' | tail -1 | awk -F'[()]' '{print $2}')
+          sleep 30
+
+      - name: Start Appium Server
+        run: appium --relaxed-security &
+
+      - name: Run Tests
+        run: mvn test -Dsurefire.suiteXmlFiles=testng.xml
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test-Reports
+          path: test-output/

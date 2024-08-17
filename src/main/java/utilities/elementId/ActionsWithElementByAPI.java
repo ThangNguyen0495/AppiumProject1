@@ -5,7 +5,6 @@ import io.restassured.response.Response;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import utilities.api.API;
-import utilities.driver.InitAppiumDriver;
 
 import java.time.Instant;
 import java.util.List;

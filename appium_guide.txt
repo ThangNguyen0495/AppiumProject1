@@ -1,0 +1,48 @@
+***** SETUP APPIUM *****
+
+1. Install node.js: https://nodejs.org/en/download
+2. Install appium with node.js
+    - npm install -g appium
+3. Install appium doctor to check appium installation & dependencies:
+	- npm install appium-doctor -g
+	- appium-doctor --android
+4. Set JAVA_HOME environment variable
+	- set JAVA_HOME: Java path
+	- add Path: %JAVA_HOME%\bin
+5. Download SDK(.exe): https://developer.android.com/studio
+	- Install android studio
+	- Create new project
+	- Setting > Preferences > Appearance & Behavior > System Settings > Android SDK > SDK Tools
+	Install Android SDK Command-line Tools(lastest)
+	- Open cmd on path: C:\Users\Admin\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
+	And run: sdkmanager "platform-tools" "platforms;android-33"
+	- Set ANDROID_HOME: C:\Users\Admin\AppData\Local\Android\Sdk
+	- Set Path: %ANDROID_HOME%\platform-tools
+6. Develops setting:
+	- Enable USB debugging
+	- Enable Disable Permission Monitoring
+
+7. Install appium driver (Appium 2.0)
+    - appium driver install uiautomator2 (for Android)
+    - appium driver install xcuitest (for iOS)
+
+***** RUN TEST ******
+1. Start server
+    - For inspector web: appium --allow-cors
+    - For appium ver2.0: appium -a 0.0.0.0 -p 4723 -pa /wd/hub --allow-cors
+    Appium server documentation: https://appium.io/docs/en/2.4/cli/args/
+
+2. Inspector web: https://inspector.appiumpro.com/
+
+3. Clear session error:
+    - adb uninstall io.appium.uiautomator2.server
+    - adb uninstall io.appium.uiautomator2.server.test
+    - adb uninstall io.appium.unlock
+    - adb uninstall io.appium.settings
+    ADB documentation: https://android.googlesource.com/platform/packages/modules/adb/+/refs/heads/master/docs/user/adb.1.md
+
+4. Get package activity
+    - cd \Sdk\build-tools\<sdk_version>
+    - adb shell pm path <app_bundle_id>
+    - adb pull <app_path>, app_path get from prev step.
+    - aapt.exe dump xmltree base.apk AndroidManifest.xml | findstr "<a_part_of_activity>"

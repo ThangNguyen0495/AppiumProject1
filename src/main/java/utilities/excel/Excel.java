@@ -27,7 +27,7 @@ public class Excel {
     static String fileName;
 
     public Sheet getSheet(String fileName, int sheetID) throws IOException {
-        FileInputStream fileInput = new FileInputStream(new DataGenerator().getFilePath(fileName));
+        FileInputStream fileInput = new FileInputStream(new DataGenerator().getPathOfFileInResourcesRoot(fileName));
         return new XSSFWorkbook(fileInput).getSheetAt(sheetID);
     }
     
@@ -100,7 +100,7 @@ public class Excel {
     }
 
     public void writeCellValue(String fileName, int sheetId, int rowIndex, int columnIndex, String value) {
-        String filePath = new DataGenerator().getFilePath(fileName);
+        String filePath = new DataGenerator().getPathOfFileInResourcesRoot(fileName);
         System.out.println("filePath: "+filePath);
         try {
             FileInputStream excelFile = new FileInputStream(filePath);
