@@ -19,21 +19,21 @@ jobs:
 #          distribution: 'temurin'
 #          java-version: '22'
 #
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '16'
-#
-#      - name: Cache Node.js Modules
-#        uses: actions/cache@v3
-#        with:
-#          path: ~/.npm
-#          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-#          restore-keys: |
-#            ${{ runner.os }}-node-
-#
-#      - name: Install Appium
-#        run: npm install -g appium
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache Node.js Modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Appium
+        run: npm install -g appium
 
       - name: Install Xcode command-line tools
         run: xcode-select --install || true
@@ -72,6 +72,19 @@ jobs:
           echo "SIMULATOR_UDID=$DEVICE_UDID" >> $GITHUB_ENV
           echo "The iOS Simulator UDID is $DEVICE_UDID"
 
+      - name: Install XCUITest driver
+        run: appium driver install xcuitest
+
+      - name: Start Appium server
+        run: |
+          cwd=$(pwd)
+          pushd "$cwd"
+          cd ~
+          appium driver doctor xcuitest
+          nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
+          tail -f appium_log.txt &
+          popd
+
       - name: Build WebDriverAgent
         run: |
           cd WebDriverAgent
@@ -81,17 +94,6 @@ jobs:
         run: |
           cd WebDriverAgent
           xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'id=$DEVICE_UDID' test
-
-#      - name: Start Appium server
-#        run: |
-#          cwd=$(pwd)
-#          pushd "$cwd"
-#          cd ~
-#          appium driver install xcuitest
-#          appium driver doctor xcuitest
-#          nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
-#          tail -f appium_log.txt &
-#          popd
 
 #      - name: Install dependencies
 #        run: mvn install -DskipTests "-Dudid=$DEVICE_UDID"
