@@ -75,12 +75,12 @@ jobs:
       - name: Build WebDriverAgent
         run: |
           cd WebDriverAgent
-          xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' build
+          xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'id=$DEVICE_UDID' build
 
       - name: Run WebDriverAgent Tests
         run: |
           cd WebDriverAgent
-          xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' test
+          xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'id=$DEVICE_UDID' test
 
 #      - name: Start Appium server
 #        run: |
