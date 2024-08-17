@@ -91,14 +91,24 @@ jobs:
           tail -f appium_log.txt &
           popd
 
+      - name: Check WebDriverAgent Installation
+        run: |
+          if [ -d "$APPIUM_HOME/node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent" ]; then
+            echo "WebDriverAgent directory exists."
+            ls $APPIUM_HOME/node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent
+          else
+            echo "WebDriverAgent directory does not exist."
+            exit 1
+          fi
+
       - name: Build WebDriverAgent
         run: |
-          cd WebDriverAgent
+          cd $APPIUM_HOME/node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent
           xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'id=$DEVICE_UDID' build
 
       - name: Run WebDriverAgent Tests
         run: |
-          cd WebDriverAgent
+          cd $APPIUM_HOME/node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent
           xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'id=$DEVICE_UDID' test
 
 #      - name: Install dependencies
