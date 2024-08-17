@@ -12,32 +12,52 @@ jobs:
       APPIUM_TEST_SERVER_HOST: 0.0.0.0
 
     steps:
-      #      - uses: actions/checkout@v3
-      #
-      #      - uses: actions/setup-java@v3
-      #        with:
-      #          distribution: 'temurin'
-      #          java-version: '22'
-      #
-      #      - name: Set up Node.js
-      #        uses: actions/setup-node@v3
-      #        with:
-      #          node-version: '16'
-      #
-      #      - name: Install Appium
-      #        run: npm install -g appium
-      #
-      #      - name: Install Xcode command-line tools
-      #        run: xcode-select --install || true
-      #
-      #      - name: Install Carthage
-      #        run: brew install carthage
+      - uses: actions/checkout@v3
 
-      # Check available Xcode versions
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '22'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache Node.js Modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Appium
+        run: npm install -g appium
+
+      - name: Install Xcode command-line tools
+        run: xcode-select --install || true
+
+      - name: Install FFmpeg
+        run: brew install ffmpeg
+
+      - name: Verify FFmpeg Installation
+        run: ffmpeg -version
+
+      - name: Install Carthage
+        run: brew install carthage
+
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Check available Xcode versions
         run: ls /Applications/
 
-      # Use the correct path or the default
       - name: Set Xcode version
         run: sudo xcode-select --switch /Applications/Xcode.app
 
@@ -51,26 +71,39 @@ jobs:
           xcrun simctl boot $DEVICE_UDID
           echo "SIMULATOR_UDID=$DEVICE_UDID" >> $GITHUB_ENV
           echo "The iOS Simulator UDID is $DEVICE_UDID"
-#      - name: Start Appium server
-#        run: |
-#          cwd=$(pwd)
-#          pushd "$cwd"
-#          cd ~
-#          appium driver install uiautomator2
-#          appium driver doctor uiautomator2
-#          nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
-#          tail -f appium_log.txt &
-#          popd
-#
-#      - name: Install dependencies
-#        run: |
-#          mvn install -DskipTests
-#
-#      - name: Run Tests
-#        run: mvn test "-Dsurefire.suiteXmlFiles=testng.xml"
-#
-#      - name: Upload Test Reports
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: Test-Reports
-#          path: test-output/
+
+      - name: Start Appium server
+        run: |
+          cwd=$(pwd)
+          pushd "$cwd"
+          cd ~
+          appium driver install xcuitest
+          appium driver doctor xcuitest
+          nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
+          tail -f appium_log.txt &
+          popd
+
+      - name: Install dependencies
+        run: mvn install -DskipTests
+
+      - name: Run Tests
+        run: mvn test "-DsuiteFile=test_xml/iOS/createProductTest.xml" "-Dudid=$DEVICE_UDID"
+
+      - name: Upload all recording .mp4 files
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: MP4 Files
+          path: '**/*.mp4'
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Reports
+          path: |
+            **/appium_log.txt
+            **/html/index.html
+            **/reportng.css
+            **/reportng.js
+            **/suite*_test*_results.html

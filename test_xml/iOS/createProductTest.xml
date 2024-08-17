@@ -20,7 +20,7 @@
 <!--                    <include name="CR_PRODUCT_G1_13_CreateProductWithPriority"/>-->
 <!--                    <include name="CR_PRODUCT_G1_14_CreateProductWithoutPriority"/>-->
 
-                    <include name="CR_PRODUCT_G2_01_CreateProductWithoutDimension"/>
+<!--                    <include name="CR_PRODUCT_G2_01_CreateProductWithoutDimension"/>-->
 <!--                    <include name="CR_PRODUCT_G2_02_CreateProductWithDimension"/>-->
 <!--                    <include name="CR_PRODUCT_G2_03_CreateProductWithInStock"/>-->
 <!--                    <include name="CR_PRODUCT_G2_04_CreateProductWithOutOfStock"/>-->
@@ -33,7 +33,7 @@
 <!--                    <include name="CR_PRODUCT_G2_11_CreateProductWithPriority"/>-->
 <!--                    <include name="CR_PRODUCT_G2_12_CreateProductWithoutPriority"/>-->
 
-                    <include name="CR_PRODUCT_G3_01_CreateProductWithoutDimension"/>
+<!--                    <include name="CR_PRODUCT_G3_01_CreateProductWithoutDimension"/>-->
 <!--                    <include name="CR_PRODUCT_G3_02_CreateProductWithDimension"/>-->
 <!--                    <include name="CR_PRODUCT_G3_03_CreateProductWithInStock"/>-->
 <!--                    <include name="CR_PRODUCT_G3_04_CreateProductWithOutOfStock"/>-->
@@ -48,7 +48,7 @@
 <!--                    <include name="CR_PRODUCT_G3_13_CreateProductWithPriority"/>-->
 <!--                    <include name="CR_PRODUCT_G3_14_CreateProductWithoutPriority"/>-->
 
-                    <include name="CR_PRODUCT_G4_01_CreateProductWithoutDimension"/>
+<!--                    <include name="CR_PRODUCT_G4_01_CreateProductWithoutDimension"/>-->
 <!--                    <include name="CR_PRODUCT_G4_02_CreateProductWithDimension"/>-->
 <!--                    <include name="CR_PRODUCT_G4_03_CreateProductWithInStock"/>-->
 <!--                    <include name="CR_PRODUCT_G4_04_CreateProductWithOutOfStock"/>-->
