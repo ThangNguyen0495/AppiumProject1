@@ -23,8 +23,13 @@ jobs:
       - name: Install Carthage
         run: brew install carthage
 
+      # Check available Xcode versions
+      - name: Check available Xcode versions
+        run: ls /Applications/
+
+      # Use the correct path or the default
       - name: Set Xcode version
-        run: sudo xcode-select --switch /Applications/Xcode_13.4.1.app
+        run: sudo xcode-select --switch /Applications/Xcode.app
 
       - name: Start iOS Simulator
         run: |
