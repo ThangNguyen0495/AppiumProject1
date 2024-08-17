@@ -53,6 +53,13 @@ jobs:
       - name: Install Carthage
         run: brew install carthage
 
+      - name: Save Homebrew Cache
+        if: steps.homebrew-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v3
+        with:
+          path: /usr/local/Homebrew
+          key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
+
       - name: Cache Maven Dependencies
         uses: actions/cache@v3
         with:
