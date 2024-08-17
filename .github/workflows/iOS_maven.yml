@@ -72,23 +72,6 @@ jobs:
           echo "SIMULATOR_UDID=$DEVICE_UDID" >> $GITHUB_ENV
           echo "The iOS Simulator UDID is $DEVICE_UDID"
 
-      - name: Install WebDriverAgent
-        run: |
-          # Clone WebDriverAgent repository
-          git clone https://github.com/appium/WebDriverAgent.git ~/WebDriverAgent
-          cd ~/WebDriverAgent
-
-          # Check for Cartfile and create if missing
-          if [ ! -f Cartfile ]; then
-            echo 'github "facebook/WebDriverAgent" "main"' > Cartfile
-          fi
-
-          # Install dependencies with Carthage
-          carthage bootstrap --platform iOS
-
-          # Build WebDriverAgent
-          xcodebuild -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination 'id=${{ env.SIMULATOR_UDID }}' test | xcpretty
-
       - name: Start Appium server
         run: |
           cwd=$(pwd)
