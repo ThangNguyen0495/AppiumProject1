@@ -44,8 +44,9 @@ jobs:
       - name: Start iOS Simulator
         id: start_simulator
         run: |
-          UDID=$(xcrun simctl list | grep 'iPhone 13 (' | tail -1 | awk -F'[()]' '{print $2}')
-          echo "iOS Simulator UDID: $UDID"
+          RUNTIME=$(xcrun simctl list runtimes | grep 'iOS 16.4' | awk '{print $NF}' | tr -d '()')
+          UDID=$(xcrun simctl create "TestSimulator" com.apple.CoreSimulator.SimDeviceType.iPhone-13 $RUNTIME)
+          xcrun simctl boot $UDID
           echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
 
       - name: Start Appium server
