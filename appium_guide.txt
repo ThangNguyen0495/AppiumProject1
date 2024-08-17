@@ -46,3 +46,30 @@
     - adb shell pm path <app_bundle_id>
     - adb pull <app_path>, app_path get from prev step.
     - aapt.exe dump xmltree base.apk AndroidManifest.xml | findstr "<a_part_of_activity>"
+
+
+5. Create emulator
+# Navigate to cmdline-tools
+cd $ANDROID_HOME\cmdline-tools\latest\bin
+
+# Only Windows
+# Linux and Mac not required
+sdkmanager "extras;intel;Hardware_Accelerated_Execution_Manager"
+cd $ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
+silent_install.bat
+
+# Install sdk images
+cd $ANDROID_HOME\cmdline-tools\bin\
+sdkmanager --install "system-images;android-33;default;x86_64"
+
+# Create emulator
+# -n: AVD flag name
+# -d: AVD emulator name
+avdmanager create avd -n MyEmulatorAPI33 -k "system-images;android-33;default;x86_64" -d "pixel"
+
+# Get list AVD emulator
+cd $ANDROID_HOME/emulator
+./emulator -list-avds
+
+# Start emulator
+./emulator -avd avd_flag_name
