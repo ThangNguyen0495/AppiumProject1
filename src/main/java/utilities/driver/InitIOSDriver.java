@@ -37,7 +37,7 @@ public class InitIOSDriver {
             IOSDriver driver = getIOSDriver(udid);
 
             // Open GoSeller app
-            driver.installApp(System.getProperty("user.dir") + "src/main/resources/app/GoSeller STG.zip");
+            driver.installApp(System.getProperty("user.dir") + "/src/main/resources/app/GoSeller STG.zip");
             driver.terminateApp(goSELLERBundleId);
             driver.activateApp(goSELLERBundleId);
 
