@@ -12,26 +12,26 @@ jobs:
       APPIUM_TEST_SERVER_HOST: 0.0.0.0
 
     steps:
-#      - uses: actions/checkout@v3
-#
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: '22'
-#
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '16'
-#
-#      - name: Install Appium
-#        run: npm install -g appium
-#
-#      - name: Install Xcode command-line tools
-#        run: xcode-select --install || true
-#
-#      - name: Install Carthage
-#        run: brew install carthage
+      #      - uses: actions/checkout@v3
+      #
+      #      - uses: actions/setup-java@v3
+      #        with:
+      #          distribution: 'temurin'
+      #          java-version: '22'
+      #
+      #      - name: Set up Node.js
+      #        uses: actions/setup-node@v3
+      #        with:
+      #          node-version: '16'
+      #
+      #      - name: Install Appium
+      #        run: npm install -g appium
+      #
+      #      - name: Install Xcode command-line tools
+      #        run: xcode-select --install || true
+      #
+      #      - name: Install Carthage
+      #        run: brew install carthage
 
       # Check available Xcode versions
       - name: Check available Xcode versions
@@ -50,6 +50,7 @@ jobs:
           DEVICE_UDID=$(xcrun simctl create "iPhone-13" com.apple.CoreSimulator.SimDeviceType.iPhone-13 com.apple.CoreSimulator.SimRuntime.iOS-17-0)
           xcrun simctl boot $DEVICE_UDID
           echo "SIMULATOR_UDID=$DEVICE_UDID" >> $GITHUB_ENV
+          echo "The iOS Simulator UDID is $DEVICE_UDID"
 #      - name: Start Appium server
 #        run: |
 #          cwd=$(pwd)
