@@ -35,6 +35,12 @@ jobs:
       - name: Install Appium
         run: npm install -g appium
 
+      - name: Set APPIUM_HOME environment variable
+        run: echo "APPIUM_HOME=$(npm root -g)/appium" >> $GITHUB_ENV
+
+      - name: Verify APPIUM_HOME
+        run: echo "APPIUM_HOME is set to $APPIUM_HOME"
+
       - name: Install Xcode command-line tools
         run: xcode-select --install || true
 
