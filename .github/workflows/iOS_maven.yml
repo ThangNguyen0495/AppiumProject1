@@ -89,6 +89,15 @@ jobs:
       - name: Run Tests
         run: mvn test "-DsuiteFile=test_xml/iOS/createProductTest.xml" "-Dudid=$DEVICE_UDID"
 
+      - name: Start Appium server
+        if: always()
+        run: |
+          cwd=$(pwd)
+          pushd "$cwd"
+          cd ~
+          tail -f appium_log.txt
+          popd
+
       - name: Upload all recording .mp4 files
         if: always()
         uses: actions/upload-artifact@v3
