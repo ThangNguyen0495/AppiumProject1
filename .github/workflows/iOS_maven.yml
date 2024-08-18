@@ -141,7 +141,7 @@ on:
 
 jobs:
   disable-uac:
-    runs-on: self-hosted
+    runs-on: windows-latest
     steps:
       - name: Disable UAC
         run: |
