@@ -58,9 +58,13 @@ sdkmanager "extras;intel;Hardware_Accelerated_Execution_Manager"
 cd $ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
 silent_install.bat
 
+# Get list sdk images
+sdkmanager --list
+
 # Install sdk images
 cd $ANDROID_HOME\cmdline-tools\bin\
 sdkmanager --install "system-images;android-33;default;x86_64"
+system-images;android-35;google_apis_playstore;x86_64
 
 # Create emulator
 # -n: AVD flag name
