@@ -132,6 +132,7 @@
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <udid>${udid}</udid>
+        <appiumPort>${appiumPort}</appiumPort>
     </properties>
 
     <build>
@@ -147,6 +148,7 @@
                     </suiteXmlFiles>
                     <systemPropertyVariables>
                         <udid>${udid}</udid>
+                        <appiumPort>${appiumPort}</appiumPort>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

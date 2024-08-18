@@ -22,32 +22,35 @@ jobs:
     env:
       CI: true
       ANDROID_AVD: emulator
+      ANDROID_PORT: 5554
       APPIUM_TEST_SERVER_PORT: 4723
       APPIUM_TEST_SERVER_HOST: 0.0.0.0
-      _FORCE_LOGS: 1
-      TEST_PASS_THRESHOLD: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        name: Checkout code
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
           check-latest: true
-      - run: curl -sSL https://bit.ly/install-xq | sudo bash
+        name: Install node
+
       - run: |
-          npm install mocha-multi-reporters --save-dev
           npm install -g appium
-          npm install --no-save mjpeg-consumer
-        name: Install dev dependencies
+        name: Install appium
+
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '22'
+        name: Setup Java
+
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+
       - name: Cache Android SDK
         uses: actions/cache@v3
         with:
@@ -57,6 +60,7 @@ jobs:
           key: android-sdk-${{ hashFiles('**/build.gradle') }}
           restore-keys: |
             android-sdk-
+
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -64,6 +68,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
       - name: Cache npm modules
         uses: actions/cache@v3
         with:
@@ -71,6 +76,7 @@ jobs:
           key: npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             npm-
+
       - name: Cache AVD
         uses: actions/cache@v3
         with:
@@ -78,12 +84,14 @@ jobs:
             ~/.android/avd/*
             ~/.android/adb*
           key: avd-${{ matrix.apiLevel }}
+
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
+          emulator-port: ${{ env.ANDROID_PORT }}
           api-level: ${{ matrix.apiLevel }}
           disable-spellchecker: true
           target: ${{ matrix.emuTag }}
@@ -91,6 +99,7 @@ jobs:
           arch: ${{ matrix.arch }}
           disable-animations: true
           script: echo "Generated AVD snapshot for caching."
+
       - name: Start Appium server
         run: |
           cwd=$(pwd)
@@ -101,14 +110,16 @@ jobs:
           nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
           tail -f appium_log.txt &
           popd
+
       - name: Install dependencies
         run: |
-          mvn install -DskipTests "-Dudid=emulator-5554"
+          mvn install -DskipTests "-Dudid=emulator-${{ env.ANDROID_PORT }}"
+
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
         with:
           script: |
-            mvn test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dudid=emulator-5554"
+            mvn test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dudid=emulator-${{ env.ANDROID_PORT }}" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
           api-level: ${{ matrix.apiLevel }}
@@ -117,13 +128,20 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           arch: ${{ matrix.arch }}
           disable-animations: true
+
+      - name: Upload all recording .mp4 files
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: MP4 Files
+          path: '**/*.mp4'
+
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Test Reports
           path: |
-            **/appium_log.txt
             **/html/index.html
             **/reportng.css
             **/reportng.js
