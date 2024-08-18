@@ -47,7 +47,7 @@ jobs:
       - name: Install and Setup Intel HAXM
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
-          $installHaxm = Start-Process .\sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager" -Wait
+          $installHaxm =  Start-Process -FilePath ".\sdkmanager" -ArgumentList "--install", "extras;intel;Hardware_Accelerated_Execution_Manager" -Wait
           Write-Output "Intel HAXM installed: $installHaxm"
 
           cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
