@@ -55,13 +55,29 @@ jobs:
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
           $installHaxm = .\sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
-          Start-Sleep -Seconds 60
-          Write-Output "Intel HAXM installed: $installHaxm"
+          Write-Output "Intel HAXM installation output: $installHaxm"
 
-          cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
-          $setupHaxm = .\silent_install.bat
-          Write-Output "Intel HAXM setup result: $setupHaxm"
+          # Wait and check for successful installation
+          $haxmPath = "$env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager\silent_install.bat"
+          $attempts = 0
+          $maxAttempts = 10
+
+          while (-not (Test-Path $haxmPath) -and $attempts -lt $maxAttempts) {
+              Start-Sleep -Seconds 30
+              $attempts++
+              Write-Output "Waiting for HAXM to be installed... Attempt: $attempts"
+          }
+
+          if (Test-Path $haxmPath) {
+              Write-Output "HAXM installed successfully."
+              cd $haxmPath
+              $setupHaxm = .\silent_install.bat
+              Write-Output "Intel HAXM setup result: $setupHaxm"
+          } else {
+              Write-Error "HAXM installation failed or took too long."
+          }
         shell: pwsh
+
 
       - name: Install Latest SDK Images
         run: |
