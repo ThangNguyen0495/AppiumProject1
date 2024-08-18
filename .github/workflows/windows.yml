@@ -41,7 +41,7 @@ jobs:
           # Refresh environment variables
           $env:ANDROID_HOME = [System.Environment]::GetEnvironmentVariable("ANDROID_HOME", "Machine")
           $env:PATH += ";$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator"
-          Write-Output "Environment variables refreshed."
+          Write-Output "Environment: $env:ANDROID_HOME"
         shell: pwsh
 
       - name: List Files in cmdline-tools\latest\bin
