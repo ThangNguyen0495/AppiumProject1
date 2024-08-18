@@ -37,6 +37,7 @@ jobs:
 
       - name: Install and Setup Intel HAXM
         run: |
+          cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
           sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
           cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
           .\silent_install.bat
@@ -44,11 +45,13 @@ jobs:
 
       - name: Install Latest SDK Images
         run: |
+          cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
           sdkmanager --install "system-images;android-33;default;x86_64"
         shell: pwsh
 
       - name: Create AVD Emulator
         run: |
+          cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
           avdmanager create avd -n MyEmulatorAPI33 -k "system-images;android-33;default;x86_64" -d "pixel"
         shell: pwsh
 
