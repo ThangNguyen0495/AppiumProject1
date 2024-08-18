@@ -123,13 +123,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mvn install -DskipTests
+          mvn install -DskipTests "-Dudid=emulator-5554"
 
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
         with:
           script: |
-            mvn test "-DsuiteFile=test_xml/android/editProductTest.xml"
+            mvn test "-DsuiteFile=test_xml/android/editProductTest.xml" "-Dudid=emulator-5554"
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
           api-level: ${{ matrix.apiLevel }}
