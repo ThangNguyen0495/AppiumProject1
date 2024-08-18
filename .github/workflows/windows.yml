@@ -66,6 +66,7 @@ jobs:
               Start-Sleep -Seconds 30
               $attempts++
               Write-Output "Waiting for HAXM to be installed... Attempt: $attempts"
+              Write-Output "Intel HAXM installation output: $installHaxm"
           }
 
           if (Test-Path $haxmPath) {
