@@ -120,7 +120,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           script: |
-            mvn test "-DsuiteFile=test_xml/android/updateProductTest.xml" "-Dudid=emulator-${{ env.ANDROID_PORT }}" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
+            mvn test "-DsuiteFile=test_xml/android/editProductTest.xml" "-Dudid=emulator-${{ env.ANDROID_PORT }}" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
           api-level: ${{ matrix.apiLevel }}
