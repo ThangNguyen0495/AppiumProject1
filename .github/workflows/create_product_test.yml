@@ -113,7 +113,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mvn install -DskipTests "-Dudid=emulator-${{ env.ANDROID_PORT }}"
+          mvn install -DskipTests "-Dudid=emulator-${{ env.ANDROID_PORT }}" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
 
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
