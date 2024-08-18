@@ -44,39 +44,35 @@ jobs:
           Write-Output "Environment: $env:ANDROID_HOME"
         shell: pwsh
 
-      - name: List Files in cmdline-tools\latest\bin
-        run: |
-          $files = Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin"
-          Write-Output "Files in cmdline-tools\latest\bin:"
-          $files | ForEach-Object { Write-Output $_.FullName }
-        shell: pwsh
-
       - name: Install and Setup Intel HAXM
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
           $installHaxm = .\sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
-          Write-Output "Intel HAXM installation output: $installHaxm"
-
-          # Wait and check for successful installation
-          $haxmPath = "$env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager\silent_install.bat"
-          $attempts = 0
-          $maxAttempts = 10
-
-          while (-not (Test-Path $haxmPath) -and $attempts -lt $maxAttempts) {
-              Start-Sleep -Seconds 30
-              $attempts++
-              Write-Output "Waiting for HAXM to be installed... Attempt: $attempts"
-              Write-Output "Intel HAXM installation output: $installHaxm"
-          }
-
-          if (Test-Path $haxmPath) {
-              Write-Output "HAXM installed successfully."
-              cd $haxmPath
-              $setupHaxm = .\silent_install.bat
-              Write-Output "Intel HAXM setup result: $setupHaxm"
-          } else {
-              Write-Error "HAXM installation failed or took too long."
-          }
+          Write-Output "Intel HAXM installed: $installHaxm"
+          
+          cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
+          $setupHaxm = .\silent_install.bat
+          Write-Output "Intel HAXM setup result: $setupHaxm"
+          shell: pwsh
+          
+          Function Show-Tree {
+                  param (
+                      [string]$Path = (Get-Location),
+                      [int]$Indent = 0
+                  )
+          
+                  $items = Get-ChildItem -Path $Path
+          
+                  foreach ($item in $items) {
+                      Write-Output (' ' * $Indent + '+- ' + $item.Name)
+          
+                      if ($item.PSIsContainer) {
+                          Show-Tree -Path $item.FullName -Indent ($Indent + 2)
+                      }
+                  }
+              }
+            
+          Show-Tree -Path "$env:USERPROFILE\AppData\Local\Android\Sdk"
         shell: pwsh
 
 
