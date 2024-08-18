@@ -83,7 +83,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.apiLevel }}
+          key: avd-${{ matrix.apiLevel }}-${{ env.ANDROID_PORT }}
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
