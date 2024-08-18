@@ -35,6 +35,11 @@ jobs:
           $env:PATH += ";$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator"
         shell: pwsh
 
+      - name: List Files in cmdline-tools\latest\bin
+        run: |
+          Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin" | ForEach-Object { Write-Host $_.FullName }
+        shell: pwsh
+
       - name: Install and Setup Intel HAXM
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
