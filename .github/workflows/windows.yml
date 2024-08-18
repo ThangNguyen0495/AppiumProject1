@@ -49,29 +49,31 @@ jobs:
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
           $installHaxm = .\sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
           Write-Output "Intel HAXM installed: $installHaxm"
-          
-          cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
-          $setupHaxm = .\silent_install.bat
-          Write-Output "Intel HAXM setup result: $setupHaxm"
-          shell: pwsh
-          
+#
+#          cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
+#          $setupHaxm = .\silent_install.bat
+#          Write-Output "Intel HAXM setup result: $setupHaxm"
+        shell: pwsh
+
+      - name: Show tree
+        run: |
           Function Show-Tree {
                   param (
                       [string]$Path = (Get-Location),
                       [int]$Indent = 0
                   )
-          
+
                   $items = Get-ChildItem -Path $Path
-          
+
                   foreach ($item in $items) {
                       Write-Output (' ' * $Indent + '+- ' + $item.Name)
-          
+
                       if ($item.PSIsContainer) {
                           Show-Tree -Path $item.FullName -Indent ($Indent + 2)
                       }
                   }
               }
-            
+
           Show-Tree -Path "$env:USERPROFILE\AppData\Local\Android\Sdk"
         shell: pwsh
 
