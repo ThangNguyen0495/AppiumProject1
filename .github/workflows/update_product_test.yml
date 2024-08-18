@@ -22,7 +22,6 @@ jobs:
     env:
       CI: true
       ANDROID_AVD: emulator
-      ANDROID_PORT: 5556
       APPIUM_TEST_SERVER_PORT: 4724
       APPIUM_TEST_SERVER_HOST: 0.0.0.0
     runs-on: ubuntu-latest
@@ -92,7 +91,6 @@ jobs:
         with:
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
-          emulator-port: ${{ env.ANDROID_PORT }}
           api-level: ${{ matrix.apiLevel }}
           disable-spellchecker: true
           target: ${{ matrix.emuTag }}
@@ -114,13 +112,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mvn install -DskipTests "-Dudid=emulator-${{ env.ANDROID_PORT }}" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
+          mvn install -DskipTests "-Dudid=emulator-5554" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
 
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
         with:
           script: |
-            mvn test "-DsuiteFile=test_xml/android/editProductTest.xml" "-Dudid=emulator-${{ env.ANDROID_PORT }}" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
+            mvn test "-DsuiteFile=test_xml/android/editProductTest.xml" "-Dudid=emulator-5554" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
           api-level: ${{ matrix.apiLevel }}
