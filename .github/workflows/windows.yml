@@ -12,56 +12,73 @@ jobs:
     steps:
       - name: Disable UAC (No Restart)
         run: |
-          Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 0
+          $result = Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 0
+          Write-Output "UAC has been disabled: $result"
         shell: pwsh
 
       - name: Install SDK and Set Environment Variables
         run: |
           # Download the command line tools
-          Invoke-WebRequest -Uri "https://dl.google.com/android/repository/commandlinetools-win-8512546_latest.zip" -OutFile "commandlinetools.zip"
-          Expand-Archive -Path "commandlinetools.zip" -DestinationPath "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools"
+          $downloadResult = Invoke-WebRequest -Uri "https://dl.google.com/android/repository/commandlinetools-win-8512546_latest.zip" -OutFile "commandlinetools.zip"
+          Write-Output "Downloaded command line tools: $downloadResult"
+
+          # Extract the command line tools
+          $extractResult = Expand-Archive -Path "commandlinetools.zip" -DestinationPath "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools"
+          Write-Output "Extracted command line tools: $extractResult"
 
           # Move the extracted folder to the correct location
-          Move-Item "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\cmdline-tools" "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest"
+          $moveResult = Move-Item "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\cmdline-tools" "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest"
+          Write-Output "Moved command line tools to latest folder: $moveResult"
 
           # Set ANDROID_HOME environment variable
-          setx ANDROID_HOME "$env:USERPROFILE\AppData\Local\Android\Sdk" /M
+          $setAndroidHome = setx ANDROID_HOME "$env:USERPROFILE\AppData\Local\Android\Sdk" /M
+          Write-Output "ANDROID_HOME set: $setAndroidHome"
 
           # Add SDK tools to the PATH
-          setx PATH "$env:PATH;$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator" /M
+          $setPath = setx PATH "$env:PATH;$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator" /M
+          Write-Output "PATH updated: $setPath"
 
           # Refresh environment variables
           $env:ANDROID_HOME = [System.Environment]::GetEnvironmentVariable("ANDROID_HOME", "Machine")
           $env:PATH += ";$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator"
+          Write-Output "Environment variables refreshed."
         shell: pwsh
 
       - name: List Files in cmdline-tools\latest\bin
         run: |
-          Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin" | ForEach-Object { Write-Host $_.FullName }
+          $files = Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin"
+          Write-Output "Files in cmdline-tools\latest\bin:"
+          $files | ForEach-Object { Write-Output $_.FullName }
         shell: pwsh
 
       - name: Install and Setup Intel HAXM
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
-          sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
+          $installHaxm = .\sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
+          Write-Output "Intel HAXM installed: $installHaxm"
+
           cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
-          .\silent_install.bat
+          $setupHaxm = .\silent_install.bat
+          Write-Output "Intel HAXM setup result: $setupHaxm"
         shell: pwsh
 
       - name: Install Latest SDK Images
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
-          sdkmanager --install "system-images;android-33;default;x86_64"
+          $installImages = .\sdkmanager --install "system-images;android-33;default;x86_64"
+          Write-Output "SDK Images installed: $installImages"
         shell: pwsh
 
       - name: Create AVD Emulator
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
-          avdmanager create avd -n MyEmulatorAPI33 -k "system-images;android-33;default;x86_64" -d "pixel"
+          $createAVD = .\avdmanager create avd -n MyEmulatorAPI33 -k "system-images;android-33;default;x86_64" -d "pixel"
+          Write-Output "AVD Emulator created: $createAVD"
         shell: pwsh
 
       - name: Get List of AVDs
         run: |
           cd $env:ANDROID_HOME\emulator
-          .\emulator -list-avds
+          $listAVDs = .\emulator -list-avds
+          Write-Output "List of AVDs: $listAVDs"
         shell: pwsh
