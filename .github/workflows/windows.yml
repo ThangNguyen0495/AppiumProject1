@@ -1,0 +1,53 @@
+name: Setup Android Environment on Windows
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  setup-android:
+    runs-on: windows-latest
+
+    steps:
+      - name: Disable UAC (No Restart)
+        run: |
+          Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 0
+        shell: pwsh
+
+      - name: Install SDK and Set Environment Variables
+        run: |
+          setx ANDROID_HOME "C:\Users\runneradmin\AppData\Local\Android\Sdk" /M
+          setx PATH "%PATH%;%ANDROID_HOME%\cmdline-tools\latest\bin;%ANDROID_HOME%\platform-tools;%ANDROID_HOME%\emulator" /M
+          $env:ANDROID_HOME = [System.Environment]::GetEnvironmentVariable("ANDROID_HOME", "Machine")
+          $env:PATH += ";$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator"
+          sdkmanager --install "cmdline-tools;latest" "platform-tools"
+
+      - name: Navigate to cmdline-tools
+        run: |
+          cd $env:ANDROID_HOME\cmdline-tools\latest\bin
+        shell: pwsh
+
+      - name: Install and Setup Intel HAXM
+        run: |
+          sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
+          cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
+          .\silent_install.bat
+        shell: pwsh
+
+      - name: Install Latest SDK Images
+        run: |
+          cd $env:ANDROID_HOME\cmdline-tools\latest\bin
+          sdkmanager --install "system-images;android-33;default;x86_64"
+        shell: pwsh
+
+      - name: Create AVD Emulator
+        run: |
+          avdmanager create avd -n MyEmulatorAPI33 -k "system-images;android-33;default;x86_64" -d "pixel"
+        shell: pwsh
+
+      - name: Get List of AVDs
+        run: |
+          cd $env:ANDROID_HOME\emulator
+          .\emulator -list-avds
+        shell: pwsh
