@@ -47,12 +47,12 @@ jobs:
       - name: Install and Setup Intel HAXM
         run: |
           cd $env:USERPROFILE\AppData\Local\Android\Sdk\cmdline-tools\latest\bin
-          $installHaxm = .\sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager"
+          $installHaxm = Start-Process .\sdkmanager --install "extras;intel;Hardware_Accelerated_Execution_Manager" -Wait
           Write-Output "Intel HAXM installed: $installHaxm"
-#
-#          cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
-#          $setupHaxm = .\silent_install.bat
-#          Write-Output "Intel HAXM setup result: $setupHaxm"
+
+          cd $env:ANDROID_HOME\extras\intel\Hardware_Accelerated_Execution_Manager
+          $setupHaxm = .\silent_install.bat
+          Write-Output "Intel HAXM setup result: $setupHaxm"
         shell: pwsh
 
       - name: Show tree
