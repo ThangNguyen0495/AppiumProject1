@@ -22,45 +22,34 @@ jobs:
     env:
       CI: true
       ANDROID_AVD: emulator
-      APPIUM_TEST_SERVER_PORT: 4723
+      APPIUM_TEST_SERVER_PORT: 4724
       APPIUM_TEST_SERVER_HOST: 0.0.0.0
-      _FORCE_LOGS: 1
-      TEST_PASS_THRESHOLD: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        name: Checkout code
+
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
           check-latest: true
-      - run: curl -sSL https://bit.ly/install-xq | sudo bash
+        name: Install node
+
       - run: |
-          npm install mocha-multi-reporters --save-dev
           npm install -g appium
-          npm install --no-save mjpeg-consumer
-        name: Install dev dependencies
+        name: Install appium
+
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '22'
+        name: Setup Java
+
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-
-      - name: Cache APT packages and lists
-        uses: actions/cache@v3
-        with:
-          path: |
-            /var/cache/apt
-            /var/lib/apt/lists
-          key: apt-cache-${{ runner.os }}-${{ hashFiles('**/build.gradle') }}
-          restore-keys: |
-            apt-cache-${{ runner.os }}-
-
-      - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Cache Android SDK
         uses: actions/cache@v3
@@ -94,7 +83,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.apiLevel }}
+          key: avd-${{ matrix.apiLevel }}-${{ env.ANDROID_PORT }}
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -123,13 +112,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mvn install -DskipTests
+          mvn install -DskipTests "-Dudid=emulator-5554" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
 
       - name: Run Appium tests with Maven
         uses: reactivecircus/android-emulator-runner@v2
         with:
           script: |
-            mvn test "-DsuiteFile=test_xml/android/editProductTest.xml"
+            mvn test "-DsuiteFile=test_xml/android/editProductTest.xml" "-Dudid=emulator-5554" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
           avd-name: ${{ env.ANDROID_AVD }}
           force-avd-creation: false
           api-level: ${{ matrix.apiLevel }}
@@ -152,7 +141,6 @@ jobs:
         with:
           name: Test Reports
           path: |
-            **/appium_log.txt
             **/html/index.html
             **/reportng.css
             **/reportng.js

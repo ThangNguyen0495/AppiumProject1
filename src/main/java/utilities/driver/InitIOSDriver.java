@@ -5,6 +5,7 @@ import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.xddf.usermodel.XDDFRelativeRectangle;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -24,6 +25,7 @@ public class InitIOSDriver {
         capabilities.setCapability("udid", udid);
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("newCommandTimeout", 300000);
+        capabilities.setCapability("wdaStartupRetries", 5);
         capabilities.setCapability("automationName", "XCUITest");
         return new IOSDriver(new URL(url), capabilities);
     }
@@ -35,6 +37,7 @@ public class InitIOSDriver {
             IOSDriver driver = getIOSDriver(udid);
 
             // Open GoSeller app
+            driver.installApp(System.getProperty("user.dir") + "/src/main/resources/app/GoSeller STG.zip");
             driver.terminateApp(goSELLERBundleId);
             driver.activateApp(goSELLERBundleId);
 
