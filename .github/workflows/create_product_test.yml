@@ -28,8 +28,13 @@ jobs:
       TEST_PASS_THRESHOLD: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: lts/*
           check-latest: true
