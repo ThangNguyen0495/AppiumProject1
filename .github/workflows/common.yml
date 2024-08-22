@@ -2,12 +2,6 @@ name: Common Workflow
 
 on: workflow_call
 
-inputs:
-  file_path:
-    description: 'File path to read'
-    required: true
-    type: string
-
 jobs:
   checkout-and-run:
     runs-on: ubuntu-latest
