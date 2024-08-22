@@ -1,25 +1,49 @@
-name: Upload and Delete Artifact Workflow
+name: Conditional Job Execution
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  jobA:
+  job_a:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-  
-      - name: Create test file
-        run: echo hello > test.txt
-  
-      - uses: actions/upload-artifact@v4
-        with:
-            name: my-artifact
-            path: test.txt
-  jobB:
+      - name: Run Job A
+        run: echo "Job A running"
+
+  job_b:
     runs-on: ubuntu-latest
-    needs: jobA
+    needs: job_a
     steps:
-      - uses: geekyeggo/delete-artifact@v5
-        with:
-            name: my-artifact
+      - name: Run Job B
+        run: echo "Job B running"
+
+  job_c:
+    runs-on: ubuntu-latest
+    needs: job_a
+    steps:
+      - name: Run Job C
+        run: echo "Job C running"
+
+  job_d:
+    runs-on: ubuntu-latest
+    needs: job_a
+    steps:
+      - name: Run Job D
+        run: cd /job_d
+
+  job_e:
+    runs-on: ubuntu-latest
+    needs: job_a
+    steps:
+      - name: Run Job E
+        run: echo "Job E running"
+
+  job_f:
+    runs-on: ubuntu-latest
+    needs: [job_b, job_c, job_d, job_e]
+    if: always() # Ensures Job F runs regardless of success or failure of previous jobs
+    steps:
+      - name: Run Job F
+        run: echo "Job F running"
