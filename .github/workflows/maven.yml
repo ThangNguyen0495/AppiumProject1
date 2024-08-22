@@ -6,27 +6,17 @@ jobs:
   jobA:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run Job A
-        run: |
-          echo "Creating an artifact"
-          echo "This is a sample file" > sample.txt
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+  
+      - name: Create test file
+        run: echo hello > test.txt
+  
+      - uses: actions/upload-artifact@v4
         with:
-          name: sample-artifact
-          path: sample.txt
+            name: my-artifact
+            path: test.txt
+  
       - uses: geekyeggo/delete-artifact@v5
         with:
-            name: sample-artifact
-
-  jobCleanup:
-    runs-on: ubuntu-latest
-    needs: jobA  # Ensures jobCleanup runs after jobA
-    steps:
-       - uses: geekyeggo/delete-artifact@v5
-         with:
-            name: sample-artifact
+            name: my-artifact
