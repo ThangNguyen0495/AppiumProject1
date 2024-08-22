@@ -80,9 +80,15 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/actions/artifacts" \
             | jq '.artifacts[] | select(.name == "sample-artifact") | .id')
           echo "ARTIFACT_ID=${ARTIFACT_ID}" >> $GITHUB_ENV
+          echo "Artifact ID: $ARTIFACT_ID"  # Debugging output
 
       - name: Delete artifact
         run: |
           echo "Deleting artifact"
-          curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ env.ARTIFACT_ID }}"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ env.ARTIFACT_ID }}")
+          echo "Response Code: $RESPONSE"  # Debugging output
+          if [ "$RESPONSE" -ne 204 ]; then
+            echo "Failed to delete artifact. HTTP response code: $RESPONSE"
+            exit 1
+          fi
