@@ -1,4 +1,4 @@
-name: Conditional Job Execution
+name: Dependent Jobs Workflow
 
 on:
   push:
@@ -6,45 +6,19 @@ on:
       - master
 
 jobs:
-  job_a:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run Job A
-        run: echo "Job A running"
+  jobB:
+    uses: ./.github/workflows/common.yml
+    with:
+      file_path: '.github/workflows/iOS_maven.yml'
 
-  job_b:
-    runs-on: ubuntu-latest
-    needs: job_a
-    steps:
-      - name: Run Job B
-        run: echo "Job B running"
+  jobA:
+    needs: jobB
+    uses: ./.github/workflows/common.yml
+    with:
+      file_path: '.github/workflows/iOS_maven.yml'
 
-  job_c:
-    runs-on: ubuntu-latest
-    needs: job_a
-    steps:
-      - name: Run Job C
-        run: echo "Job C running"
-
-  job_d:
-    runs-on: ubuntu-latest
-    needs: job_a
-    steps:
-      - name: Run Job D
-        run: echo "Job D running"
-
-  job_e:
-    runs-on: ubuntu-latest
-    needs: job_a
-    steps:
-      - name: Run Job E
-        run: cd /job_e
-
-  job_f:
-    runs-on: ubuntu-latest
-    needs: [job_b, job_c, job_d, job_e]
-    if: always() # Ensures Job F runs regardless of success or failure of previous jobs
-    steps:
-      - name: Run Job F
-        run: echo "Job F running"
-
+  jobC:
+    needs: [jobA, jobB]
+    uses: ./.github/workflows/common.yml
+    with:
+      file_path: '.github/workflows/iOS_maven.yml'
