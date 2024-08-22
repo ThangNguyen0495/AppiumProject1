@@ -1,0 +1,54 @@
+name: Example Workflow
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  jobA:
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Checkout code
+      #   uses: actions/checkout@v3
+        
+      - name: Run Job A
+        run: |
+          echo "Running Job A"
+          # Add the commands you need to run Job A here
+
+  jobB:
+    runs-on: ubuntu-latest
+    needs: jobA  # This makes Job B dependent on Job A
+    steps:
+      # - name: Checkout code
+      #   uses: actions/checkout@v3
+        
+      - name: Run Job B
+        run: |
+          echo "Running Job B"
+          # Add the commands you need to run Job B here
+
+  jobC:
+    runs-on: ubuntu-latest
+    needs: jobA  # This makes Job C dependent on Job A
+    steps:
+      # - name: Checkout code
+      #   uses: actions/checkout@v3
+        
+      - name: Run Job C
+        run: |
+          echo "Running Job C"
+          # Add the commands you need to run Job C here
+
+  jobD:
+    runs-on: ubuntu-latest
+    needs: jobA  # This makes Job D dependent on Job A
+    steps:
+      # - name: Checkout code
+      #   uses: actions/checkout@v3
+        
+      - name: Run Job D
+        run: |
+          echo "Running Job D"
+          # Add the commands you need to run Job D here
