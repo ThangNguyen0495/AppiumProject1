@@ -1,14 +1,13 @@
-name: Common Workflow
-
-on: workflow_call
+name: Reusable Workflow
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
 
 jobs:
-  checkout-and-run:
+  job1:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Read File
-        run: |
-          echo "Reading file from ${{ inputs.file_path }}"
-          cat ${{ inputs.file_path }}
+      - run: echo "Hello ${{ inputs.name }}!"

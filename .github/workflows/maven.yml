@@ -1,24 +1,11 @@
-name: Dependent Jobs Workflow
-
+name: Main Workflow
 on:
   push:
     branches:
       - master
 
 jobs:
-  jobB:
+  call-reusable:
     uses: ./.github/workflows/common.yml
     with:
-      file_path: '.github/workflows/iOS_maven.yml'
-
-  jobA:
-    needs: jobB
-    uses: ./.github/workflows/common.yml
-    with:
-      file_path: '.github/workflows/iOS_maven.yml'
-
-  jobC:
-    needs: [jobA, jobB]
-    uses: ./.github/workflows/common.yml
-    with:
-      file_path: '.github/workflows/iOS_maven.yml'
+      name: "GitHub Actions"
