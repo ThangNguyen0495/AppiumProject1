@@ -19,6 +19,9 @@ jobs:
         with:
           name: sample-artifact
           path: sample.txt
+      - uses: geekyeggo/delete-artifact@v5
+        with:
+            name: sample-artifact
 
   jobCleanup:
     runs-on: ubuntu-latest
