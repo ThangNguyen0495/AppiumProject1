@@ -16,7 +16,9 @@ jobs:
         with:
             name: my-artifact
             path: test.txt
-  
+  jobB:
+    runs-on: ubuntu-latest
+    steps:
       - uses: geekyeggo/delete-artifact@v5
         with:
             name: my-artifact
