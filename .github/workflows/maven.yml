@@ -109,13 +109,16 @@ jobs:
 
       - name: Install additional Android SDK packages
         run: |
-          sdkmanager "platform-tools" "system-images;android-33;google_apis;x86_64" "emulator"
+          sdkmanager --install "system-images;android-35;google_apis_playstore;x86_64"
 
       - name: Create Android emulator
-        run: echo "no" | avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
+        run: avdmanager create avd -n emulatorDevice -k "system-images;android-35;google_apis_playstore;x86_64" -d "pixel"
+
+      - name: Verify Emulator is created
+        run: emulator -list-avd
 
       - name: Start Android emulator
         run: |
-          nohup emulator -avd test -no-audio -no-window -gpu off &
+          nohup emulator -avd emulatorDevice -no-audio -no-window -gpu off &
           adb wait-for-device
           adb shell input keyevent 82 # Unlock screen
