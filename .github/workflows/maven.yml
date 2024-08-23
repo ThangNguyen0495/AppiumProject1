@@ -53,5 +53,3 @@ jobs:
       - name: List available AVDs
         run: |
           $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager list avd
-          $HOME/android-sdk/emulator/emulator -list-avd
-

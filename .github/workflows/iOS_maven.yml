@@ -106,7 +106,6 @@ jobs:
           -destination 'id=$DEVICE_UDID' \
           clean build test &
 
-
       - name: Install dependencies
         run: mvn install -DskipTests "-Dudid=$DEVICE_UDID"
 
