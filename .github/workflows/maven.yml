@@ -62,7 +62,7 @@ jobs:
       - name: Install SDK packages
         if: steps.cache-android-sdk.outputs.cache-hit != 'true'
         run: |
-          $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "build-tools;33.0.0" "system-images;android-33;google_apis;x86_64" "emulator"
+          $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0" "system-images;android-33;google_apis;x86_64" "emulator"
 
       - name: Check aapt
         run: |
