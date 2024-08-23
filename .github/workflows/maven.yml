@@ -64,7 +64,7 @@ jobs:
           $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
 
       - name: Check aapt
-        run:
+        run: |
           cd $HOME/android-sdk/build-tools
           ls -l
 
