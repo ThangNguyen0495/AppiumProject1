@@ -77,3 +77,20 @@ jobs:
         run: |
           $ANDROID_HOME/platform-tools/adb devices
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21'
+
+      - name: Install Appium
+        run: |
+          npm install -g appium
+
+      - name: Install Appium Doctor
+        run: |
+          npm install -g appium-doctor
+
+      - name: Check Android Config
+        run: |
+          appium-doctor --android
+
