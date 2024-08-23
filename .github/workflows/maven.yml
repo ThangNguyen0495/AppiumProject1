@@ -31,7 +31,7 @@ jobs:
       - name: Create emulator
         run: |
           cd Android/Sdk/tools/bin/
-          ./sdkmanager --install "system-images;android-35;google_apis_playstore;x86_64"
+          ./sdkmanager --sdk_root=~/Android/Sdk --install "system-images;android-35;google_apis_playstore;x86_64"
           ./avdmanager create avd -n emulator -k "system-images;android-33;default;x86_64" -d "pixel"
 
       - name: Check list AVDs
