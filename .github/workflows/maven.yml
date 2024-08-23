@@ -55,12 +55,6 @@ jobs:
           echo $ANDROID_HOME
           echo $PATH
 
-      - name: Check Platform folder
-        run: |
-          cd /usr/local/lib/android/sdk/platform-tools
-          ls -l
-      
-
       - name: Accept Android SDK licenses
         run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
 
@@ -72,6 +66,11 @@ jobs:
       - name: Create Android emulator
         run: |
           echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
+
+      - name: Check Platform folder
+        run: |
+          cd /usr/local/lib/android/sdk/platform-tools
+          ls -l
 
       - name: Start Android emulator
         run: |
