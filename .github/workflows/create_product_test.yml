@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Android Emulator
-        uses: ThangNguyen0495/Android-Emulator@v1@v1
+        uses: ThangNguyen0495/Customs
         with:
           sdk-version: '33'
           java-version: '22'
