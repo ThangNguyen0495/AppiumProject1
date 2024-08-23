@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-workflow:
-    uses: Customs/.github/workflows/reusable.yml@main
+    uses: ThangNguyen0495/Customs/.github/workflows/reusable.yml@main
     with:
       example_input: 'Hello World'
 
