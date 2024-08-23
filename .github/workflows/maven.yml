@@ -10,7 +10,7 @@ on:
 
 jobs:
   setup-android-sdk:
-    name: Setup Android SDK and Create Emulator
+    name: Setup Android SDK, Create and Start Emulator
     runs-on: ubuntu-latest
 
     steps:
@@ -50,6 +50,20 @@ jobs:
         run: |
           echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
 
-      - name: List available AVDs
+      - name: Start Android emulator
         run: |
-          $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager list avd
+          $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -no-snapshot &
+
+      - name: Wait for emulator to start
+        run: |
+          adb wait-for-device
+
+      - name: Get emulator UDID and save to GitHub environment
+        run: |
+          UDID=$(adb devices | grep "emulator" | awk '{print $1}')
+          echo "EMULATOR_UDID=$UDID" >> $GITHUB_ENV
+
+      - name: Output UDID
+        run: |
+          echo "Emulator UDID: ${{ env.EMULATOR_UDID }}"
+
