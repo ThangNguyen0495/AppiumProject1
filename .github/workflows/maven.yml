@@ -49,10 +49,10 @@ jobs:
 
       - name: Set up Ubuntu global environment variables
         run: |
-          sudo nano /etc/profile
+          sudo nano /etc/environment
           export ANDROID_HOME="$HOME/android-sdk1"
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
-          source /etc/profile
+          source /etc/environment
 
       - name: Check Ubuntu environment variables
         run: |
