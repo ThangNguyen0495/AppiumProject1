@@ -1,20 +1,67 @@
-name: Common Workflow
+name: Setup and Check Appium
 
-on: workflow_call
-
-inputs:
-  file_path:
-    description: 'File path to read'
-    required: true
-    type: string
+on: [push]
 
 jobs:
-  checkout-and-run:
+  setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Read File
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Specify the Node.js version
+
+      - name: Install Appium
         run: |
-          echo "Reading file from ${{ inputs.file_path }}"
-          cat ${{ inputs.file_path }}
+          npm install -g appium
+
+      - name: Install Appium Doctor
+        run: |
+          npm install -g appium-doctor
+
+      - name: Install Android SDK Command Line Tools
+        run: |
+          mkdir -p ~/Android/Sdk
+          cd ~/Android/Sdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          unzip commandlinetools-linux-8512546_latest.zip
+
+      - name: Set up Android SDK Environment Variables
+        run: |
+          echo "ANDROID_HOME=~/Android/Sdk" >> $GITHUB_ENV
+          echo "PATH=$PATH:$ANDROID_HOME/emulator" >> $GITHUB_ENV
+          echo "PATH=$PATH:$ANDROID_HOME/tools" >> $GITHUB_ENV
+          echo "PATH=$PATH:$ANDROID_HOME/tools/bin" >> $GITHUB_ENV
+          echo "PATH=$PATH:$ANDROID_HOME/platform-tools" >> $GITHUB_ENV
+
+      - name: Install Android SDK Packages
+        run: |
+          sdkmanager --update
+          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0" "system-images;android-33;google_apis;x86_64"
+
+      - name: Check Android Setup
+        run: |
+          appium-doctor --android
+
+      - name: Verify aapt2 Installation
+        run: |
+          if [ ! -f "$ANDROID_HOME/build-tools/33.0.0/aapt2" ]; then
+            echo "aapt2 not found in build-tools directory. Installing build-tools."
+            sdkmanager "build-tools;33.0.0"
+          else
+            echo "aapt2 found."
+          fi
+
+      - name: Start Android Emulator
+        run: |
+          nohup emulator -avd my_avd -no-snapshot -noaudio -no-boot-anim &
+          # Wait for emulator to start
+          adb wait-for-device
+
+      - name: Kill Android Emulator
+        run: |
+          adb devices
+          adb -s emulator-5554 emu kill
