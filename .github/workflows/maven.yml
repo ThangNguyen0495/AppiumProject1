@@ -30,7 +30,7 @@ jobs:
 
       - name: Create emulator
         run: |
-          cd Android/Sdk/tools/bin/sdkmanager
+          cd Android/Sdk/tools/bin/
           ./sdkmanager --sdk_root=${ANDROID_HOME} "tools"
           ./sdkmanager --update
           ./sdkmanager --list
