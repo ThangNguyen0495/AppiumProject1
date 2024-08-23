@@ -70,18 +70,18 @@ jobs:
           cd $HOME/android-sdk/build-tools/33.0.0
           ls -l
 
-#      - name: Create Android emulator
-#        run: |
-#          echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
-#
-#      - name: Start Android emulator
-#        run: |
-#          nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
-#          $ANDROID_HOME/platform-tools/adb wait-for-device
-#
-#      - name: Check list devices
-#        run: |
-#          $ANDROID_HOME/platform-tools/adb devices
+      - name: Create Android emulator
+        run: |
+          echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
+
+      - name: Start Android emulator
+        run: |
+          nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
+          $ANDROID_HOME/platform-tools/adb wait-for-device
+
+      - name: Check list devices
+        run: |
+          $ANDROID_HOME/platform-tools/adb devices
 #
 #      - name: Set up Node.js
 #        uses: actions/setup-node@v3
