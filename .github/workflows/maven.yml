@@ -23,7 +23,15 @@ jobs:
           distribution: 'temurin'
           java-version: '22'
 
+      - name: Cache Android SDK
+        id: cache-android-sdk
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/android-sdk
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('**/build.gradle', '**/pom.xml', '**/*.sdk-version') }}-33
+
       - name: Install Android SDK
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip
@@ -41,8 +49,10 @@ jobs:
         run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
 
       - name: Install SDK packages
+        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
         run: |
           $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
+
       - name: Create Android emulator
         run: |
           echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
