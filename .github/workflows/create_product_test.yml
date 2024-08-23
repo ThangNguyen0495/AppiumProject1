@@ -110,11 +110,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mvn install -DskipTests "-Dudid=emulator-5554" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
+          mvn install -DskipTests
+
       - name: Run Appium tests with Maven
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          script: |
+        run: |
             mvn test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dudid=emulator-5554" "-DappiumPort=${{ env.APPIUM_TEST_SERVER_PORT }}"
 
       - name: Kill Android Emulator
