@@ -71,7 +71,6 @@ jobs:
         run: |
           nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
           $ANDROID_HOME/platform-tools/adb wait-for-device
-          $ANDROID_HOME/platform-tools/adb shell input keyevent 82 # Unlock screen
 
       - name: Check list devices
         run: |
