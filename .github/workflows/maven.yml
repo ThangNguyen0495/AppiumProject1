@@ -69,7 +69,7 @@ jobs:
 
       - name: Check Platform folder
         run: |
-          cd /usr/local/lib/android/sdk/platform-tools
+          cd $ANDROID_HOME/platform-tools
           ls -l
 
       - name: Start Android emulator
