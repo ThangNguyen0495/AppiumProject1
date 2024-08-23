@@ -42,11 +42,11 @@ jobs:
           export ANDROID_HOME="$HOME/android-sdk"
           source ~/.bashrc
           export PATH="$HOME/android-sdk/cmdline-tools/tools/bin:$PATH"
-          source ~/.bashrc
+          source ~/.profile
           export PATH="$HOME/android-sdk/platform-tools:$PATH"
-          source ~/.bashrc
+          source ~/.profile
           export PATH="$HOME/android-sdk/emulator:$PATH"
-          source ~/.bashrc
+          source ~/.profile
           echo $PATH
 
       - name: Check Ubuntu environment variables
