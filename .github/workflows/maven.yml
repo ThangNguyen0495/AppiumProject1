@@ -52,7 +52,7 @@ jobs:
           sudo nano /etc/profile
           export ANDROID_HOME="$HOME/android-sdk1"
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
-          source /etc/environment
+          source /etc/profile
 
       - name: Check Ubuntu environment variables
         run: |
