@@ -3,24 +3,13 @@ name: Call Reusable Workflow
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   call-workflow:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout common1 repo
-        uses: actions/checkout@v3
-
-#      - name: Set up Git for private repo access
-#        run: |
-#          git config --global url."https://x-access-token:${{ secrets.REUSABLE_REPO_PAT }}@github.com/".insteadOf "https://github.com/"
-
-      - name: Call reusable workflow
-        uses: ThangNguyen0495/Customs/.github/workflows/reusable.yml@main
-        with:
-          example_input: 'Hello World'
-
+    uses: ThangNguyen0495/Customs/.github/workflows/reusable.yml@main
+    with:
+      example_input: 'Hello World'
 
 #jobs:
 #  test:
