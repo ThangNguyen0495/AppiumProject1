@@ -7,9 +7,14 @@ on:
 
 jobs:
   call-workflow:
-    uses: ThangNguyen0495/Customs/.github/workflows/reusable.yml@main
-    with:
-      example_input: 'Hello World'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git for private repo access
+        run: |
+            git config --global url."https://x-access-token:${{ secrets.PAT }}@github.com/".insteadOf "https://github.com/"
+      - uses: ThangNguyen0495/Customs/.github/workflows/reusable.yml@main
+        with:
+          example_input: 'Hello World'
 
 #jobs:
 #  test:
