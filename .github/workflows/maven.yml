@@ -14,66 +14,65 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up JDK 22
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '22'
-
-      - name: Cache Android SDK
-        id: cache-android-sdk
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/android-sdk
-          key: android-sdk-${{ runner.os }}-${{ hashFiles('**/build.gradle', '**/pom.xml', '**/*.sdk-version') }}-33
-
-      - name: Install Android SDK
-        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/tools
+#      - name: Set up JDK 22
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '22'
+#
+#      - name: Cache Android SDK
+#        id: cache-android-sdk
+#        uses: actions/cache@v3
+#        with:
+#          path: ${{ github.workspace }}/android-sdk
+#          key: android-sdk-${{ runner.os }}-${{ hashFiles('**/build.gradle', '**/pom.xml', '**/*.sdk-version') }}-33
+#
+#      - name: Install Android SDK
+#        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y wget unzip
+#          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+#          mkdir -p $HOME/android-sdk/cmdline-tools
+#          unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
+#          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/tools
 
       - name: Set up Ubuntu global environment variables
         run: |
           export ANDROID_HOME="$HOME/android-sdk"
           source ~/.bashrc
           export PATH="$HOME/android-sdk/cmdline-tools/tools/bin:$PATH"
-          source ~/.profile
+          source ~/.bash_profile
           export PATH="$HOME/android-sdk/platform-tools:$PATH"
-          source ~/.profile
+          source ~/.bash_profile
           export PATH="$HOME/android-sdk/emulator:$PATH"
-          source ~/.profile
-          echo $PATH
+          source ~/.bash_profile
 
       - name: Check Ubuntu environment variables
         run: |
           echo $ANDROID_HOME
           echo $PATH
 
-      - name: Accept Android SDK licenses
-        run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
-
-      - name: Install SDK packages
-        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
-        run: |
-          $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
-
-      - name: Create Android emulator
-        run: |
-          echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
-
-      - name: Start Android emulator
-        run: |
-          nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
-
-      - name: Wait for Android emulator to start
-        run: |
-          adb wait-for-device
-          adb shell input keyevent 82
-
-      - name: Check list devices
-        run: adb devices
+#      - name: Accept Android SDK licenses
+#        run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
+#
+#      - name: Install SDK packages
+#        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+#        run: |
+#          $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
+#
+#      - name: Create Android emulator
+#        run: |
+#          echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
+#
+#      - name: Start Android emulator
+#        run: |
+#          nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
+#
+#      - name: Wait for Android emulator to start
+#        run: |
+#          adb wait-for-device
+#          adb shell input keyevent 82
+#
+#      - name: Check list devices
+#        run: adb devices
