@@ -39,12 +39,14 @@ jobs:
           mkdir -p $HOME/android-sdk/cmdline-tools
           unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/tools
+
       - name: Set up environment variables
         run: |
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH" >> $GITHUB_ENV
           echo "PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$PATH" >> $GITHUB_ENV
+
       - name: Accept Android SDK licenses
         run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
 
@@ -56,6 +58,12 @@ jobs:
       - name: Create Android emulator
         run: |
           echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
-      - name: List available AVDs
+
+      - name: Start Android emulator
         run: |
-          $HOME/android-sdk/emulator/emulator -list-avd
+          nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
+
+      - name: Wait for Android emulator to start
+        run: |
+          adb wait-for-device
+          adb shell input keyevent 82
