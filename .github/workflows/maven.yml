@@ -45,7 +45,7 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH" >> $GITHUB_ENV
-          echo "PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$PATH" >> $GITHUB_ENV
+          echo "PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
       - name: Accept Android SDK licenses
         run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
@@ -67,3 +67,6 @@ jobs:
         run: |
           adb wait-for-device
           adb shell input keyevent 82
+
+      - name: Check list devices
+        run: adb devices
