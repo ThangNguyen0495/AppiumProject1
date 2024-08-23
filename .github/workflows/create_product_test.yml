@@ -78,6 +78,9 @@ jobs:
         run: |
           $ANDROID_HOME/platform-tools/adb devices
 
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -101,16 +104,8 @@ jobs:
 
       - name: Start Appium server
         run: |
-          # Install Appium drivers
           appium driver install uiautomator2
-          appium driver doctor uiautomator2
-          # Start Appium server in the background and log output
           nohup appium -a $APPIUM_TEST_SERVER_HOST -p $APPIUM_TEST_SERVER_PORT -pa /wd/hub > appium_log.txt 2>&1 &
-          # Wait for Appium server to be ready
-          while ! nc -z $APPIUM_TEST_SERVER_HOST $APPIUM_TEST_SERVER_PORT; do
-            sleep 1
-          done
-          # Stream Appium logs to the console
           tail -f appium_log.txt &
 
       - name: Install dependencies
