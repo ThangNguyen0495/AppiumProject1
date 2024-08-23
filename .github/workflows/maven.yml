@@ -82,5 +82,7 @@ jobs:
 #          adb shell input keyevent 82
 
       - name: Check list devices
-        run: adb devices
+        run: |
+          cd $ANDROID_HOME/platform-tools/
+          adb devices
 
