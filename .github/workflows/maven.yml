@@ -36,16 +36,16 @@ jobs:
           echo "PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH" >> $GITHUB_ENV
 
       - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses
+        run: yes | ./sdkmanager --licenses
 
       - name: Install SDK packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
+          ./sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
 
       - name: Create Android emulator
         run: |
-          echo "no" | avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
+          echo "no" | ./avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
 
       - name: List available AVDs
         run: |
-          avdmanager list avd
+          ./avdmanager list avd
