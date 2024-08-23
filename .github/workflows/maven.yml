@@ -14,9 +14,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Set up JDK 22
         uses: actions/setup-java@v3
         with:
@@ -49,10 +46,9 @@ jobs:
 
       - name: Set up Ubuntu global environment variables
         run: |
-          sudo nano /etc/environment
           export ANDROID_HOME="$HOME/android-sdk1"
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
-          source /etc/environment
+          source ~/.bashrc
 
       - name: Check Ubuntu environment variables
         run: |
