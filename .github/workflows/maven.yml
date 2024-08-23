@@ -39,18 +39,15 @@ jobs:
 
       - name: Set up Ubuntu global environment variables
         run: |
+          nano ~/.bashrc
           export ANDROID_HOME="$HOME/android-sdk"
-          source ~/.bashrc
           export PATH="$HOME/android-sdk/cmdline-tools/tools/bin:$PATH"
-          source ~/.bash_profile
           export PATH="$HOME/android-sdk/platform-tools:$PATH"
-          source ~/.bash_profile
           export PATH="$HOME/android-sdk/emulator:$PATH"
-          source ~/.bash_profile
+          source ~/.bashrc
 
       - name: Check Ubuntu environment variables
         run: |
-          echo $ANDROID_HOME
           echo $PATH
 
 #      - name: Accept Android SDK licenses
