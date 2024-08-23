@@ -55,6 +55,12 @@ jobs:
           echo $ANDROID_HOME
           echo $PATH
 
+      - name: Check Platform folder
+        run: |
+          cd /usr/local/lib/android/sdk/platform-tools
+          ls -l
+      
+
       - name: Accept Android SDK licenses
         run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
 
@@ -71,10 +77,10 @@ jobs:
         run: |
           nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
 
-      - name: Wait for Android emulator to start
-        run: |
-          adb wait-for-device
-          adb shell input keyevent 82
+#      - name: Wait for Android emulator to start
+#        run: |
+#          adb wait-for-device
+#          adb shell input keyevent 82
 
       - name: Check list devices
         run: adb devices
