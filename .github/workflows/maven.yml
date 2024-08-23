@@ -47,7 +47,7 @@ jobs:
       - name: Set up Ubuntu global environment variables
         run: |
           export ANDROID_HOME="$HOME/android-sdk"
-          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          export PATH="PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
           source ~/.bashrc
 
       - name: Check Ubuntu environment variables
