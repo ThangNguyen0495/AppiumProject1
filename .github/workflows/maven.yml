@@ -67,19 +67,14 @@ jobs:
         run: |
           echo "no" | $HOME/android-sdk/cmdline-tools/tools/bin/avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel"
 
-      - name: Check Platform folder
+      - name: Get list AVDs
         run: |
-          cd $ANDROID_HOME/platform-tools
-          ls -l
+          $HOME/android-sdk/emulator/emulator -list-avds
 
       - name: Start Android emulator
         run: |
           nohup $HOME/android-sdk/emulator/emulator -avd test -no-snapshot-save -no-boot-anim -wipe-data -no-window -gpu off &
-
-#      - name: Wait for Android emulator to start
-#        run: |
-#          adb wait-for-device
-#          adb shell input keyevent 82
+          sleep 60
 
       - name: Check list devices
         run: |
