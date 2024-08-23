@@ -1,15 +1,10 @@
 package utilities.driver;
 
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.xddf.usermodel.XDDFRelativeRectangle;
-import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import utilities.commons.UICommonIOS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
