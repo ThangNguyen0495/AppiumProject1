@@ -18,21 +18,17 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Install SDK and Create emulator
+      - name: Install SDK
         run: |
           wget https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip
           mkdir -p Android/Sdk
           unzip commandlinetools-linux-6200805_latest.zip -d Android/Sdk
-          
+
+      - name: Set environment
+        run: |
           export ANDROID_HOME=$HOME/Android/Sdk
           export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH"
-          
-          ./sdkmanager --sdk_root=${ANDROID_HOME} "tools"
-          
-          ./sdkmanager --update
-          ./sdkmanager --list
-          ./sdkmanager "build-tools;28.0.3" "platform-tools" "platforms;android-28" "tools"
-          ./sdkmanager --licenses
+
 
       - name: Check list AVDs
         run: |
