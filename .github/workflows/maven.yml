@@ -58,14 +58,14 @@ jobs:
       - name: Accept Android SDK licenses
         run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
 
-      - name: Install SDK packages
-        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
-        run: |
-          $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
+#      - name: Install SDK packages
+#        if: steps.cache-android-sdk.outputs.cache-hit != 'true'
+#        run: |
+#          $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "system-images;android-33;google_apis;x86_64" "emulator"
 
       - name: Check aapt
         run: |
-          cd $HOME/android-sdk/build-tools
+          cd $HOME/android-sdk
           ls -l
 
 #      - name: Create Android emulator
