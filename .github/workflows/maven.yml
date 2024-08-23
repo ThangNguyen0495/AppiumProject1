@@ -37,22 +37,23 @@ jobs:
           unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/tools
 
-      - name: Set up Github environment variables
-        run: |
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH" >> $GITHUB_ENV
-          echo "PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+#      - name: Set up Github environment variables
+#        run: |
+#          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+#          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+##          echo "PATH=$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH" >> $GITHUB_ENV
+##          echo "PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
       - name: Set up Ubuntu global environment variables
         run: |
-          export ANDROID_HOME="$HOME/android-sdk1"
+          export ANDROID_HOME="$HOME/android-sdk"
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
           source ~/.bashrc
 
       - name: Check Ubuntu environment variables
         run: |
           echo $ANDROID_HOME
+          echo $PATH
 
       - name: Accept Android SDK licenses
         run: yes | $HOME/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
