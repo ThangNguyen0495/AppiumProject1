@@ -63,7 +63,7 @@ sdkmanager --list
 
 # Install sdk images
 cd $ANDROID_HOME\cmdline-tools\bin\
-sdkmanager --install "system-images;android-33;default;x86_64"
+sdkmanager "platform-tools" "build-tools;33.0.0" "system-images;android-33;google_apis;x86_64" "emulator"
 system-images;android-35;google_apis_playstore;x86_64
 
 # Create emulator
