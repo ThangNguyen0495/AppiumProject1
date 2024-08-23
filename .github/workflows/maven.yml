@@ -25,7 +25,7 @@ jobs:
           unzip commandlinetools-linux-6200805_latest.zip -d Android/Sdk
           
           sudo apt-get install tree
-          cd ~/Android/Sdk
+          cd Android/Sdk
           tree
 
 
