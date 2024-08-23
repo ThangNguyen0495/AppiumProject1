@@ -83,6 +83,5 @@ jobs:
 
       - name: Check list devices
         run: |
-          cd $ANDROID_HOME/platform-tools
-          ./adb devices
+          $ANDROID_HOME/platform-tools/adb devices
 
