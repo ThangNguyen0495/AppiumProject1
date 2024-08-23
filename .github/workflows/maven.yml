@@ -47,8 +47,7 @@ jobs:
 
       - name: Set up Ubuntu global environment variables
         run: |
-          echo "export PATH=\$PATH:/usr/local/bin:/your/custom/path" >> $GITHUB_ENV
-          export PATH="$HOME/android-sdk/emulator:$PATH"
+          echo "export PATH=\$PATH:/usr/local/bin:/your/custom/path"
           source ~/.bashrc
 
       - name: Check Ubuntu environment variables
