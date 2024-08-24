@@ -10,7 +10,7 @@ jobs:
     Android-CreateProduct: # Job name
       uses: ThangNguyen0495/Reusable/.github/workflows/androidAppiumConfigs.yml@main
       with:
-        appium_port: "4723" # Appium server port
+        appium_port: "4724" # Appium server port
         artifact: ""
         test_name: "Android-CreateProduct" # Report artifact
         test_config: "test_config/android/seller/productManagementTest.xml" # Test config path
