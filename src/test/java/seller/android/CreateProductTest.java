@@ -22,7 +22,7 @@ public class CreateProductTest extends BaseTest {
     @BeforeClass
     void setup() throws MalformedURLException {
         // init WebDriver
-        String uuid = Optional.ofNullable(System.getProperty("udid")).orElse(PropertiesUtil.getEnvironmentData("udidAndroidThang"));
+        String uuid = Optional.ofNullable(System.getProperty("udidAndroid")).orElse(PropertiesUtil.getEnvironmentData("udidAndroidThang"));
         driver = new InitAndroidDriver().getSellerDriver(uuid);
 
         // init login information

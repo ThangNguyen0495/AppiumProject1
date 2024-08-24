@@ -131,7 +131,9 @@
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <udid>emulator-5554</udid>
+        <suiteXmlFiles>test_config/web/run_all.xml</suiteXmlFiles>
+        <udidAndroid>emulator-5554</udidAndroid>
+        <udidIOS>DFA832D0-43A1-4CBE-89CA-29F2617DAF2B</udidIOS>
         <appiumPort>4723</appiumPort>
     </properties>
 
@@ -147,8 +149,9 @@
                         <suiteXmlFile>${suiteFile}</suiteXmlFile>
                     </suiteXmlFiles>
                     <systemPropertyVariables>
-                        <udid>${udid}</udid>
+                        <udidAndroid>${udidAndroid}</udidAndroid>
                         <appiumPort>${appiumPort}</appiumPort>
+                        <udidIOS>${udidIOS}</udidIOS>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

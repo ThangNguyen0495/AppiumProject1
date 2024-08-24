@@ -21,7 +21,7 @@ public class CreateProductTest extends BaseTest {
     @BeforeClass
     void setup() {
         // init WebDriver
-        String udid = Optional.ofNullable(System.getProperty("udid")).orElse(PropertiesUtil.getEnvironmentData("udidIOSThang"));
+        String udid = Optional.ofNullable(System.getProperty("udidIOS")).orElse(PropertiesUtil.getEnvironmentData("udidIOSThang"));
         driver = new InitIOSDriver().getSellerDriver(udid);
 
         // init login information

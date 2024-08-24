@@ -20,7 +20,7 @@ public class ProductManagementTest extends BaseTest {
     @BeforeClass
     void setup() {
         // Init driver
-        String uuid = Optional.ofNullable(System.getProperty("udid")).orElse(PropertiesUtil.getEnvironmentData("udidIOSThang"));
+        String uuid = Optional.ofNullable(System.getProperty("udidIOS")).orElse(PropertiesUtil.getEnvironmentData("udidIOSThang"));
         driver = new InitIOSDriver().getSellerDriver(uuid);
 
         // Init login information
