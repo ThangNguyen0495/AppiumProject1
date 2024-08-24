@@ -117,7 +117,7 @@ jobs:
         run: mvn install -DskipTests "-Dudid=$DEVICE_UDID"
 
       - name: Run Tests
-        run: mvn test "-DsuiteFile=test_xml/iOS/createProductTest.xml" "-Dudid=$SIMULATOR_UDID" "-DappiumPort=$APPIUM_TEST_SERVER_PORT"
+        run: mvn test "-DsuiteFile=test_xml/iOS/createProductTest.xml" "-Dudid=$DEVICE_UDID" "-DappiumPort=$APPIUM_TEST_SERVER_PORT"
 
       - name: Upload all recording .mp4 files
         if: always()
