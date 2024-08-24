@@ -57,6 +57,7 @@ jobs:
     Android-CreateProduct:
       uses: ThangNguyen0495/Reusable/.github/workflows/androidAppiumConfigs.yml@main
       with:
+        appium_port: "4723"
         artifact: ""
         test_name: "Android-CreateProduct"
         test_config: "test_xml/android/createProductTest.xml"
