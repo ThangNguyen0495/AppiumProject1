@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - master
-#
-#concurrency:
-#  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-#  cancel-in-progress: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
 #  CloneGit:
@@ -53,6 +53,14 @@ jobs:
 #        with:
 #          name: GitCloned
 #          path: CheckoutFolder
+
+    Android-CreateProduct:
+      uses: ThangNguyen0495/Reusable/.github/workflows/iosAppiumConfigs.yml@main
+      with:
+        appium_port: "4723"
+        artifact: ""
+        test_name: "Android-CreateProduct"
+        test_config: "test_xml/android/createProductTest.xml"
 
     IOS-CreateProduct:
       uses: ThangNguyen0495/Reusable/.github/workflows/iosAppiumConfigs.yml@main
