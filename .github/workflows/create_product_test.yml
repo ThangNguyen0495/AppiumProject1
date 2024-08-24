@@ -9,7 +9,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: ThangNguyen0495/Customs@v1.0.9
+      - uses: ThangNguyen0495/Customs@v1.1.0
 
 
 
