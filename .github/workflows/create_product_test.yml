@@ -6,10 +6,12 @@ on:
       - master
 
 jobs:
-  call-workflow:
-    uses: ThangNguyen0495/Customs/.github/workflows/reusable.yml@main
-    with:
-      example_input: 'Hello World'
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ThangNguyen0495/Customs@v1.0.9
+
+
 
 #jobs:
 #  test:
