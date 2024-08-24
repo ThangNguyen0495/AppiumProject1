@@ -109,10 +109,10 @@ jobs:
 
 
       - name: Install dependencies
-        run: mvn install -DskipTests "-Dudid=$SIMULATOR_UDID"
+        run: mvn install -DskipTests "-DudidIOS=$SIMULATOR_UDID"
 
       - name: Run Tests
-        run: mvn test "-DsuiteFile=test_xml/iOS/createProductTest.xml" "-Dudid=$SIMULATOR_UDID" "-DappiumPort=$APPIUM_TEST_SERVER_PORT"
+        run: mvn test "-DsuiteFile=test_xml/iOS/createProductTest.xml" "-DudidIOS=$SIMULATOR_UDID" "-DappiumPort=$APPIUM_TEST_SERVER_PORT"
 
       - name: View appium log
         if: always()
