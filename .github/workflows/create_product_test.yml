@@ -3,80 +3,34 @@ name: Pipeline
 on:
   push:
     branches:
-      - master
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+      - master # Trigger push on "master" branch
 
 jobs:
-#  CloneGit:
-#    runs-on: ubuntu-20.04
-#
-#    steps:
-#      - name: Checkout the current repository
-#        uses: actions/checkout@v2
-#
-#      - name: Install OpenVPN
-#        run: |
-#          sudo apt update -y
-#          sudo apt install -y openvpn
-#
-#      - name: Create VPN Credentials File
-#        run: |
-#          echo "${{ secrets.VPN_USERNAME }}" > $HOME/author.txt
-#          echo "${{ secrets.VPN_PASSWORD }}" >> $HOME/author.txt
-#          chmod 600 $HOME/author.txt
-#
-#      - name: Start OpenVPN
-#        run: |
-#          sudo nohup openvpn --verb 4 --config $(pwd)/.github/client.ovpn --auth-user-pass $HOME/author.txt > $HOME/openvpn.log 2>&1 &
-#
-#      - name: Try connect to Gitlab by VPN
-#        run: |
-#          for i in {1..5}; do
-#           echo "$(curl -Is ${{ secrets.GIT_REPO }} | head -1)"
-#           cat $HOME/openvpn.log
-#           if grep -q "Initialization Sequence Completed" $HOME/openvpn.log; then
-#             echo "OpenVPN started successfully."
-#             break
-#           fi
-#           echo "OpenVPN start failed, retrying..."
-#          done
-#      - name: Clone GitLab repository
-#        run: |
-#          git clone ${{ secrets.GIT_REPO }} CheckoutFolder
-#      - name: Stop OpenVPN
-#        run: |
-#          sudo pkill -f openvpn
-#      - uses: actions/upload-artifact@v4
-#        with:
-#          name: GitCloned
-#          path: CheckoutFolder
-
-    Android-CreateProduct:
-      uses: ThangNguyen0495/Reusable/.github/workflows/iosAppiumConfigs.yml@main
+    # Android jobs
+    Android-CreateProduct: # Job name
+      uses: ThangNguyen0495/Reusable/.github/workflows/androidAppiumConfigs.yml@main
       with:
-        appium_port: "4723"
+        appium_port: "4723" # Appium server port
         artifact: ""
-        test_name: "Android-CreateProduct"
-        test_config: "test_xml/android/createProductTest.xml"
+        test_name: "Android-CreateProduct" # Report artifact
+        test_config: "test_config/android/seller/productManagementTest.xml" # Test config path
 
-    IOS-CreateProduct:
-      uses: ThangNguyen0495/Reusable/.github/workflows/iosAppiumConfigs.yml@main
-      with:
-        appium_port: "4724"
-        artifact: ""
-        test_name: "IOS-CreateProduct"
-        test_config: "test_xml/iOS/createProductTest.xml"
-  #
-  #  Dashboard-UpdateProduct:
-  #    needs: CloneGit
-  #    uses: ThangNguyen0495/Reusable/.github/workflows/seleniumConfigs.yml@main
-  #    with:
-  #      test_name: "Dashboard-UpdateProduct"
-  #      test_config: "test_config/web/updateProductTest.xml"
-  #      branch_name: "GoSELL-Thang"
+#   # iOS jobs
+#    IOS-CreateProduct:
+#      uses: ThangNguyen0495/Reusable/.github/workflows/iosAppiumConfigs.yml@main
+#      with:
+#        appium_port: "4724"
+#        artifact: ""
+#        test_name: "IOS-CreateProduct"
+#        test_config: "test_xml/iOS/createProductTest.xml"
+#
+#    # Selenium job
+#    Dashboard-UpdateProduct:
+#      uses: ThangNguyen0495/Reusable/.github/workflows/seleniumConfigs.yml@main
+#      with:
+#        artifact: ""
+#        test_name: "Dashboard-UpdateProduct"
+#        test_config: "test_config/web/updateProductTest.xml"
 
   #  Dashboard-ProductManagement:
   #    needs:
