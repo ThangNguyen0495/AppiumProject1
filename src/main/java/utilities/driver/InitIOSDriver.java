@@ -20,7 +20,10 @@ public class InitIOSDriver {
         capabilities.setCapability("udid", udid);
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("newCommandTimeout", 300000);
-        capabilities.setCapability("wdaStartupRetries", 5);
+        capabilities.setCapability("wdaLaunchTimeout", 180000); // 120 seconds
+        capabilities.setCapability("wdaConnectionTimeout", 180000); // 120 seconds
+
+//        capabilities.setCapability("wdaStartupRetries", 5);
         capabilities.setCapability("automationName", "XCUITest");
         return new IOSDriver(new URL(url), capabilities);
     }
