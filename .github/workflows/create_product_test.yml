@@ -54,12 +54,12 @@ jobs:
 #          name: GitCloned
 #          path: CheckoutFolder
 
-    Dashboard-CreateProduct:
-      uses: ThangNguyen0495/Reusable/.github/workflows/seleniumConfigs.yml@main
+    Android-CreateProduct:
+      uses: ThangNguyen0495/Reusable/.github/workflows/androidAppiumConfigs.yml@main
       with:
         artifact: ""
-        test_name: "Dashboard-CreateProduct"
-        test_config: "test_config/web/createProductTest.xml"
+        test_name: "Android-CreateProduct"
+        test_config: "test_xml/android/createProductTest.xml"
   #
   #  Dashboard-UpdateProduct:
   #    needs: CloneGit
