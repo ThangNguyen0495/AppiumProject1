@@ -9,7 +9,7 @@ jobs:
   IOS-CreateProduct:
     uses: ThangNguyen0495/Reusable/.github/workflows/iosAppiumConfigs.yml@main
     with:
-      appium_port: "4725"
+      appium_port: "4726"
       artifact: ""
       test_name: "IOS-CreateProduct"
       test_config: "test_xml/iOS/createProductTest.xml"
