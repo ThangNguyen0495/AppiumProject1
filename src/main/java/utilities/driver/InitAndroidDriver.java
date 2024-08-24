@@ -17,7 +17,7 @@ import static utilities.environment.goSELLEREnvironment.goSELLERLoginActivity;
 
 public class InitAndroidDriver {
     Logger logger = LogManager.getLogger();
-    private final static String url = "http://localhost:%s/wd/hub".formatted(System.getProperty("appiumPort"));
+    String url = "http://127.0.0.1:%s/wd/hub".formatted(System.getProperty("appiumPort"));
 
     /**
      * This method returns an instance of the AppiumDriver class. It takes in the following parameters:
@@ -63,6 +63,7 @@ public class InitAndroidDriver {
 
 
     public AndroidDriver getSellerDriver(String udid) throws MalformedURLException {
+        System.out.println(System.getProperty("appiumPort"));
         AndroidDriver driver = getAndroidDriver(udid, System.getProperty("user.dir") + "/src/main/resources/app/GoSELLER STAG.apk");
         new UICommonAndroid(driver).relaunchApp(goSELLERBundleId, goSELLERLoginActivity);
         return driver;

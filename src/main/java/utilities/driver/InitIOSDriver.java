@@ -13,7 +13,7 @@ import static utilities.environment.goSELLEREnvironment.goSELLERBundleId;
 
 public class InitIOSDriver {
     Logger logger = LogManager.getLogger();
-    private final static String url = "http://127.0.0.1:4723/wd/hub";
+    String url = "http://127.0.0.1:%s/wd/hub".formatted(System.getProperty("appiumPort"));
 
     public IOSDriver getIOSDriver(String udid) throws MalformedURLException {
         DesiredCapabilities capabilities = new DesiredCapabilities();
@@ -30,6 +30,8 @@ public class InitIOSDriver {
         try {
             // Init driver
             IOSDriver driver = getIOSDriver(udid);
+
+            System.out.println("Port: " + System.getProperty("appiumPort"));
 
             // Open GoSeller app
             driver.installApp(System.getProperty("user.dir") + "/src/main/resources/app/GoSeller STG.zip");
