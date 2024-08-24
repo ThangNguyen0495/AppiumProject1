@@ -13,7 +13,7 @@ jobs:
         appium_port: "4723" # Appium server port
         artifact: ""
         test_name: "Android-CreateProduct" # Report artifact
-        test_config: "test_config/android/seller/productManagementTest.xml" # Test config path
+        test_config: "test_xml/android/productManagementTest.xml" # Test config path
 
 #   # iOS jobs
 #    IOS-CreateProduct:
