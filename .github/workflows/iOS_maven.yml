@@ -20,11 +20,11 @@ jobs:
           path: private-repo
 
       - name: Copy reusable workflow to current repository
-        run: cp private-repo/new_folder/seleniumConfigs.yml@main .github/workflows/
+        run: cp private-repo/new_folder/seleniumConfigs.yml .github/workflows/
 
   use_reusable_workflow:
     needs: setup_reusable_workflow
-    uses: ./.github/workflows/your-reusable-workflow.yml
+    uses: ./.github/workflows/seleniumConfigs.yml
     with:
       test_name: "IOS-CreateProduct"
       test_config: "test_xml/iOS/createProductTest.xml"
