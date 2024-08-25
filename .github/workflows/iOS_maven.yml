@@ -7,7 +7,7 @@ on:
 
 jobs:
   IOS-CreateProduct:
-    uses: ThangNguyen0495/Reusable/new_folder/seleniumConfigs.yml@main
+    uses: ThangNguyen0495/Reusable/.github/workflows/seleniumConfigs.yml@main
     with:
       test_name: "IOS-CreateProduct"
       test_config: "test_xml/iOS/createProductTest.xml"
