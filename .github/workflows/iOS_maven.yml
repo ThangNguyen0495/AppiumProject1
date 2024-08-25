@@ -6,11 +6,35 @@ on:
       - master
 
 jobs:
-  IOS-CreateProduct:
-    uses: ThangNguyen0495/Reusable/new_folder/seleniumConfigs.yml@main
+  setup_reusable_workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v3
+
+      - name: Checkout private repository
+        uses: actions/checkout@v3
+        with:
+          repository: ThangNguyen0495/Reusable
+          token: ${{ secrets.PAT }}
+          path: private-repo
+
+      - name: Copy reusable workflow to current repository
+        run: cp private-repo/new_folder/seleniumConfigs.yml@main .github/workflows/
+
+  use_reusable_workflow:
+    needs: setup_reusable_workflow
+    uses: ./.github/workflows/your-reusable-workflow.yml
     with:
       test_name: "IOS-CreateProduct"
       test_config: "test_xml/iOS/createProductTest.xml"
+
+
+#  IOS-CreateProduct:
+#    uses: ThangNguyen0495/Reusable/new_folder/seleniumConfigs.yml@main
+#    with:
+#      test_name: "IOS-CreateProduct"
+#      test_config: "test_xml/iOS/createProductTest.xml"
 #  build:
 #    runs-on: macos-latest
 #
