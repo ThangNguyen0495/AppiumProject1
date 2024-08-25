@@ -9,6 +9,7 @@ jobs:
   IOS-CreateProduct:
     uses: SMTG-04/Reusable/.github/workflows/iosAppiumConfigs.yml@main
     with:
+      appium_port: "4723"
       test_name: "IOS-CreateProduct"
       test_config: "test_xml/iOS/createProductTest.xml"
 #  build:
