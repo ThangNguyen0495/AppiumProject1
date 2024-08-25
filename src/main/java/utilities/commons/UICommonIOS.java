@@ -1,12 +1,10 @@
 package utilities.commons;
 
-import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
@@ -16,7 +14,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 public class UICommonIOS {
     private final static Logger logger = LogManager.getLogger();
@@ -33,6 +30,7 @@ public class UICommonIOS {
         args.put("action", "accept");
         args.put("buttonLabel", optionText);
         ((IOSDriver) driver).executeScript("mobile: alert", args);
+        logger.info("Allow permission, option: {}", optionText);
     }
 
     void hidKeyboard() {
@@ -40,7 +38,7 @@ public class UICommonIOS {
         By loc_btnDone = By.xpath("//XCUIElementTypeButton[@name=\"Done\"]");
         if (!driver.findElements(loc_btnDone).isEmpty()) {
             // Hid keyboard
-            tap(loc_btnDone);
+            click(loc_btnDone);
         }
     }
 
@@ -48,10 +46,9 @@ public class UICommonIOS {
         return new WebDriverWait(driver, Duration.ofMillis(milSeconds));
     }
 
-    public List<WebElement> getListElements(By locator, int... milSeconds) {
-        int waitTime = (milSeconds.length == 0) ? 3000 : milSeconds[0];
+    public List<WebElement> getListElement(By locator) {
         try {
-            customWait(waitTime).until(ExpectedConditions.presenceOfElementLocated(locator));
+            customWait(3000).until(ExpectedConditions.presenceOfElementLocated(locator));
         } catch (TimeoutException ignored) {
         }
 
@@ -60,15 +57,14 @@ public class UICommonIOS {
                 : wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
     }
 
-    public WebElement getElement(String predicateString) {
-        return wait.until(ExpectedConditions.presenceOfElementLocated(AppiumBy.iOSNsPredicateString(predicateString)));
-    }
-
     public WebElement getElement(By locator) {
         try {
             return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
         } catch (StaleElementReferenceException ex) {
             return driver.findElement(locator);
+        } catch (TimeoutException ex) {
+            System.out.println(driver.getPageSource());
+            throw new TimeoutException("Can not find element");
         }
     }
 
@@ -91,6 +87,21 @@ public class UICommonIOS {
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         ((IOSDriver) driver).perform(List.of(tapPosition));
+    }
+
+    public void doubleTapInCenter(int x, int y) {
+        // Create an instance of PointerInput
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence doubleTap = new Sequence(finger, 1);
+
+        // Move to the element and perform the double tap
+        doubleTap.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), x, y))
+                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(finger, Duration.ofMillis(100))) // Small pause between taps
+                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        ((IOSDriver) driver).perform(List.of(doubleTap));
     }
 
     public void tapByCoordinatesInPercent(double x, double y) {
@@ -118,14 +129,6 @@ public class UICommonIOS {
         tapByCoordinates(rightTopX, rightTopY);
     }
 
-    public void tap(By locator) {
-        tapOnCenter(getElement(locator));
-    }
-
-    public void tap(By locator, int index) {
-        tapOnCenter(getElement(locator, index));
-    }
-
     public void tapOnRightTopCorner(By locator) {
         tapOnRightTopCorner(getElement(locator));
     }
@@ -135,23 +138,41 @@ public class UICommonIOS {
     }
 
     public void click(By locator) {
-        getElement(locator).click();
+        switch (getElement(locator).getAttribute("type")) {
+            case "XCUIElementTypeImage", "XCUIElementTypeOther" -> tapOnCenter(getElement(locator));
+            default -> getElement(locator).click();
+        }
     }
 
     public void click(By locator, int index) {
-        getElement(locator, index).click();
+        switch (getElement(locator, index).getAttribute("type")) {
+            case "XCUIElementTypeImage", "XCUIElementTypeOther" -> tapOnCenter(getElement(locator, index));
+            default -> getElement(locator, index).click();
+        }
     }
 
     public void sendKeys(By locator, CharSequence content) {
-        getElement(locator).clear();
-        getElement(locator).sendKeys(content);
-        hidKeyboard();
+        try {
+            getElement(locator).clear();
+            getElement(locator).sendKeys(content);
+            hidKeyboard();
+        } catch (StaleElementReferenceException ex) {
+            getElement(locator).clear();
+            getElement(locator).sendKeys(content);
+            hidKeyboard();
+        }
     }
 
     public void sendKeys(By locator, int index, CharSequence content) {
-        getElement(locator, index).clear();
-        getElement(locator, index).sendKeys(content);
-        hidKeyboard();
+        try {
+            getElement(locator, index).clear();
+            getElement(locator, index).sendKeys(content);
+            hidKeyboard();
+        } catch (StaleElementReferenceException ex) {
+            getElement(locator, index).clear();
+            getElement(locator, index).sendKeys(content);
+            hidKeyboard();
+        }
     }
 
     public String getText(By locator) {
@@ -199,4 +220,8 @@ public class UICommonIOS {
         return element.getAttribute("value").equals("1");
     }
 
+    public void relaunchApp(String bundleId) {
+        ((IOSDriver) driver).terminateApp(bundleId);
+        ((IOSDriver) driver).activateApp(bundleId);
+    }
 }

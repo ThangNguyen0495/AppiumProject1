@@ -27,7 +27,7 @@ public class AddIMEIScreen extends AddIMEIElement {
 
     public void addIMEI(int quantity, String branchName, String variation) {
         // Remove old IMEI
-        int numberOfIMEIs = commonIOS.getListElements(loc_icnRemoveIMEI).size();
+        int numberOfIMEIs = commonIOS.getListElement(loc_icnRemoveIMEI).size();
         IntStream.range(0, numberOfIMEIs)
                 .forEach(index -> commonIOS.tapOnRightTopCorner(loc_icnRemoveIMEI));
 
@@ -38,13 +38,13 @@ public class AddIMEIScreen extends AddIMEIElement {
             commonIOS.sendKeys(loc_txtIMEI, imei);
 
             // Add
-            commonIOS.tap(loc_btnAdd);
+            commonIOS.click(loc_btnAdd);
 
             // Log
             logger.info("Add imei into branch '{}', value: {}", branchName, imei);
         });
 
         // Save changes
-        commonIOS.tap(loc_btnSave);
+        commonIOS.click(loc_btnSave);
     }
 }
