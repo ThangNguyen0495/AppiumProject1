@@ -7,9 +7,8 @@ on:
 
 jobs:
   IOS-CreateProduct:
-    uses: ThangNguyen0495/Reusable/.github/workflows/iosAppiumConfigs.yml@main
+    uses: ThangNguyen0495/Reusable/new_folder/seleniumConfigs.yml@main
     with:
-      appium_port: "4723"
       test_name: "IOS-CreateProduct"
       test_config: "test_xml/iOS/createProductTest.xml"
 #  build:
