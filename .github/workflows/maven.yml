@@ -18,6 +18,6 @@ jobs:
           java-version: '22'
 
       - name: Create and start emulator
-        uses: ThangNguyen0495/Customs@v1.2.8
+        uses: ThangNguyen0495/Customs@v1.2.9
 
 
