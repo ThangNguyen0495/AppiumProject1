@@ -18,6 +18,6 @@ jobs:
           java-version: '21'
 
       - name: Enable KVM group perms
-        uses: ThangNguyen0495/Customs@v1.1.6
+        uses: ThangNguyen0495/Customs@v1.1.7
 
 
