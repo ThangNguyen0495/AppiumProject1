@@ -18,6 +18,60 @@ jobs:
           java-version: '22'
 
       - name: Create and start emulator
-        uses: ThangNguyen0495/Customs@v1.3.3
+        uses: ThangNguyen0495/Customs@v1.3.4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21'
+
+      - name: Install Appium
+        run: |
+          npm install -g appium
+
+      - name: Install Appium Doctor
+        run: |
+          npm install -g appium-doctor
+
+      - name: Check Android Config
+        run: |
+          appium-doctor --android
+
+      - name: Cache npm modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+
+      - name: Install UIAutomator2 driver
+        run: appium driver install uiautomator2
+
+      - name: Start Appium server
+        run: |
+          nohup appium -a 0.0.0.0 -p 4723 -pa /wd/hub > appium_log.txt 2>&1 &
+
+      - name: Install dependencies
+        run: |
+          mvn install -DskipTests
+
+      - name: Run Appium tests with Maven
+        run: |
+          mvn test "-DsuiteFile=test_xml/android/createProductTest.xml" "-Dudid=emulator-5554" "-DappiumPort=4723"
+
+      - name: Appium log
+        if: always()
+        run: cat appium_log.txt
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Reports
+          path: |
+            target/BufferLog.log
+            target/ExtentReport.html
+            recording_video
 
 
