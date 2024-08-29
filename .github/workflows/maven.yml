@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '22'
+          java-version: '21'
 
       - name: Enable KVM group perms
         uses: ThangNguyen0495/Customs@v1.1.5
