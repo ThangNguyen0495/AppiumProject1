@@ -21,7 +21,7 @@ jobs:
           java-version: '22'
 
       - name: Create and start emulator
-        uses: ThangNguyen0495/Customs@v1.3.7
+        uses: ThangNguyen0495/Customs@v1.3.8
 
 #      - name: Set up Node.js
 #        uses: actions/setup-node@v3
