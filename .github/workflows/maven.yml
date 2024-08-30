@@ -8,7 +8,7 @@ on:
 jobs:
   setup-android-sdk:
     name: Setup Android SDK and Create Emulator
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
       - name: Checkout code
