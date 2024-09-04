@@ -11,9 +11,9 @@ jobs:
 
     steps:
       - name: Try selenium test
-        uses: ThangNguyen0495/Customs@s1.0.1
+        uses: ThangNguyen0495/execute-appium-ios-test@v1.0.0
         with:
-          test_config: "test_xml/android/createProductTest.xml"
+          test_config: "test_xml/iOS/createProductTest.xml"
           test_name: "test selenium"
 #      - name: Set up Node.js
 #        uses: actions/setup-node@v3
